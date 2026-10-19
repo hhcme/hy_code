@@ -1,0 +1,39 @@
+name: HcFileViewer
+options:
+  bundleIdPrefix: com.hhc
+  createIntermediateGroups: true
+  deploymentTarget:
+    macOS: "14.0"
+packages:
+  HcCoreSwift:
+    path: ../packages/HcCoreSwift
+settings:
+  base:
+    SWIFT_VERSION: "5"
+targets:
+  HcFileViewer:
+    type: application
+    platform: macOS
+    sources:
+      - path: HcFileViewer
+    dependencies:
+      - package: HcCoreSwift
+        products:
+          - HcCore
+          - HcLibrary
+    info:
+      path: HcFileViewer/Info.plist
+      properties:
+        CFBundleDisplayName: HC 文件浏览器
+        LSApplicationCategoryType: public.app-category.utilities
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hhc.hcfileviewer
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_HARDENED_RUNTIME: YES
+schemes:
+  HcFileViewer:
+    build:
+      targets:
+        HcFileViewer: all

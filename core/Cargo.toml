@@ -1,0 +1,16 @@
+[package]
+name = "hc_core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "hc_core"
+crate-type = ["rlib", "staticlib", "cdylib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "uniffi-bindgen.rs"
+
+[dependencies]
+uniffi = { version = "0.32.2", features = ["cli"] }
+zip = { version = "9.0.5", default-features = false, features = ["deflate"] }

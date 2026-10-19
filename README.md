@@ -13,6 +13,7 @@
 | [产品需求与格式范围](docs/PRODUCT_REQUIREMENTS.md) | 用户明确表达的目标、候选格式、预览深度、使用流程、验收方向和待定事项 |
 | [技术、离线与上架可行性](docs/FEASIBILITY_AND_DISTRIBUTION.md) | 原生模块与下载资源包的区别、离线边界、个人开发者发布、国内合规问题、成本与竞争判断 |
 | [开发约定](docs/DEVELOPMENT.md) | 开发与测试过程中需要遵守的工作规则（如测试静默运行、不抢占前台焦点） |
+| [技术结构（工程骨架）](docs/TECH_DESIGN.md) | 目录结构、UniFFI 桥接链路、构建与测试命令 |
 
 后续开展设计或开发前，先阅读上述两份文档。文档中的“已明确”来自用户表达；“建议”和“待确认”均不能直接当作已批准的实施决定。
 
@@ -28,3 +29,15 @@
 - 希望以个人 Apple 开发者身份开展，尽量减少公司、服务器及额外资质的负担。
 
 记录日期：2026-10-19。政策、费用和平台能力的参考资料见可行性文档，正式实施与提交上架前应复核。
+
+## 工程骨架状态
+
+工程骨架已搭建并通过验证：Rust core（UniFFI）+ Swift 桥接包 + macOS SwiftUI 应用，能以“打开 ZIP → 复制入库 → Rust 列出条目 → 界面展示”跑通全链路（含中文文件名用例）。详见[技术结构](docs/TECH_DESIGN.md)。本地开发快速开始：
+
+```bash
+scripts/build-core.sh            # 构建 Rust core，生成 Swift 绑定与 xcframework
+cd App && xcodegen generate      # 生成 Xcode 工程
+open HcFileViewer.xcodeproj
+```
+
+测试全部静默运行：`core` 下 `cargo test`，`packages/HcCoreSwift` 下 `swift test`。

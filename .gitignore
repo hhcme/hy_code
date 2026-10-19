@@ -11,6 +11,12 @@ xcuserdata/
 
 # Swift Package Manager
 .build/
+.swiftpm/
 
 # Rust
 target/
+
+# scripts/build-core.sh 的生成产物（重新生成即可，不入库）
+packages/HcCoreSwift/hc_coreFFI.xcframework/
+packages/HcCoreSwift/Sources/HcCore/
+packages/HcCoreSwift/Headers/
