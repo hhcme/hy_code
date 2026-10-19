@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# 本会话工具生成
+.v2c/
+
+# Xcode
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+
+# Rust
+target/
