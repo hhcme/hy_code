@@ -15,7 +15,8 @@ public struct WorkspaceEntry: Codable, Hashable, Identifiable, Sendable {
     /// percent signs and Unicode. Supply the known kind to avoid a synchronous
     /// metadata probe. This does not grant, resolve, or canonicalize file access.
     public func url(relativeTo root: URL) -> URL {
-        relativePath.isEmpty ? root : root.appendingPathComponent(relativePath, isDirectory: isDirectory)
+        if relativePath.hasPrefix("/") { return URL(fileURLWithPath: relativePath, isDirectory: isDirectory) }
+        return relativePath.isEmpty ? root : root.appendingPathComponent(relativePath, isDirectory: isDirectory)
     }
 
     public init(name: String, relativePath: String, kind: Kind, size: UInt64? = nil, modifiedMs: UInt64? = nil) {

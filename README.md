@@ -6,7 +6,7 @@ A high-performance, native macOS code editor — built with Swift and Rust, full
 
 HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **macOS（Apple Silicon）**，采用 **Swift 原生界面 + Rust 内核**，借鉴 IDEA 的工作台组织，追求快速启动、低输入延迟和可控的资源占用。
 
-**当前已建立 macOS 文件工作台和基础文本编辑。** 启动恢复上次项目，项目树单击文件进入原生编辑；默认停止输入 800 ms 后自动保存，可在设置关闭，也可使用 ⌘S。文件使用独立撤销历史，首次修改固定标签，保存冲突保留更改；目录只在树中浏览。当前支持不超过 8 MiB 的 UTF-8 与带 BOM 的 UTF-16 文本，尚无语法高亮或代码分析器。静默构建与后台测试已通过，真实输入、窗口及性能尚未验证。旧实现保留在 Git 历史中，尚无正式应用发布。
+**当前已建立 macOS 文件工作台和基础文本编辑。** 启动恢复上次项目，项目树单击文件进入原生编辑；默认停止输入 800 ms 后自动保存，可在设置关闭，也可使用 ⌘S。文件使用独立撤销历史，首次修改固定标签，保存冲突保留更改；目录只在树中浏览。当前支持不超过 8 MiB 的 UTF-8 与带 BOM 的 UTF-16 文本，已接入逻辑行号和 Dart、Web、C/C++、Rust 等语言的基础着色；Dart/Flutter 已接入外部 SDK 分析器的诊断、悬浮、定义/引用、显式补全和格式化，以及 Pub 依赖管理，详见 [Dart/Flutter 工具](docs/DART_FLUTTER.md)。Flutter 已增加运行/调试、热更新、测试/构建和基础 Inspector 入口，真实 Flutter/设备仍未验证；完整 DevTools、智能补全与跨文件重构等缺口见[完整能力清单](docs/FLUTTER_PLAN.md)。静默构建与后台测试已通过，真实输入、窗口及性能尚未验证。旧实现保留在 Git 历史中，尚无正式应用发布。
 
 - 源码：[hhcme/hy_code](https://github.com/hhcme/hy_code)
 - 许可证：[MIT](LICENSE)
@@ -37,6 +37,8 @@ HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **m
 | [品牌与应用图标](docs/BRANDING.md) | 同系列设计、资源、提示词与打包 |
 | [当前文件工作台](docs/WORKBENCH.md) | 布局、交互、源码地图、构建及验证边界 |
 | [基础编辑与保存](docs/EDITING.md) | 单击编辑、自动保存开关、文档所有权与安全写入 |
+| [行号与语法高亮](docs/SYNTAX.md) | 语言范围、增量解析、可见行及资源边界 |
+| [Dart / Flutter 工具](docs/DART_FLUTTER.md) | SDK 设置、诊断/导航、补全/格式化、依赖与验证限制 |
 | [实施路线](docs/ROADMAP.md) | macOS 分阶段目标和验收条件 |
 | [性能设计与验收](docs/PERFORMANCE.md) | 测量口径、样本和待确定的预算 |
 | [编辑内核与语言服务](docs/CODE_INTELLIGENCE.md) | 文本、语法、语义的候选与边界 |

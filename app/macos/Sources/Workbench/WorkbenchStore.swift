@@ -24,6 +24,8 @@ final class WorkbenchStore {
     var selectedEntry: WorkspaceEntry?
     var docking = WorkbenchDocking()
     let editing = EditorWorkspace()
+    let dart = DartWorkspaceController()
+    let flutter = FlutterWorkspaceController()
     var autoSave: Bool {
         get { editing.autoSave }
         set { editing.autoSave = newValue }
@@ -44,6 +46,7 @@ final class WorkbenchStore {
     var location: BrowserLocation? { browsingLocation }
     var currentDirectory: String {
         guard let location else { return "" }
+        if location.path.hasPrefix("/") { return "" }
         if case .directory(let path) = location { return path }
         return location.path.split(separator: "/").dropLast().joined(separator: "/")
     }
@@ -83,6 +86,9 @@ final class WorkbenchStore {
         projectIntent = intent
         editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
             guard let self, allowed, self.projectIntent == intent else { return }
+            await self.stopProjectTools()
+            guard self.projectIntent == intent else { return }
+            self.editing.releaseClosingProtection()
             self.installProject(url)
         }
     }
@@ -91,6 +97,42 @@ final class WorkbenchStore {
         resetProject()
         access = WorkspaceAccess(url: url)
         rootURL = url
+        editing.language = dart
+        dart.flutter = flutter
+        dart.configure(access: access)
+        flutter.configure(access: access)
+        flutter.onNavigate = { [weak self] in self?.navigateSemantic($0) }
+        flutter.executionAllowed = { [weak self] in
+            guard let self else { return false }
+            return !self.dart.toolRunning && !self.editing.isClosing
+        }
+        flutter.prepareRun = { [weak self] in
+            guard let self, !self.dart.toolRunning, !self.editing.isClosing else { return false }
+            return await self.editing.saveAll()
+        }
+        flutter.onReveal = { [weak self] in
+            guard let self else { return }
+            if !self.docking.isVisible(.debug) { self.docking.toggle(.debug) }
+        }
+        flutter.onBreakpointsChanged = { [weak self] in
+            for document in self?.editing.documents.values ?? [String: EditorDocument]().values {
+                document.editor?.presentation?.gutter.needsDisplay = true
+            }
+        }
+        dart.onNavigate = { [weak self] in self?.navigateSemantic($0) }
+        let session = sessionID
+        dart.prepareTool = { [weak self] root in
+            guard let self, self.sessionID == session else { return false }
+            return await self.editing.preparePackageTool(root)
+        }
+        dart.finishedTool = { [weak self] root in
+            guard let self, self.sessionID == session else { return }
+            self.editing.finishPackageTool(root)
+        }
+        dart.onShowResults = { [weak self] in
+            guard let self else { return }
+            if !self.docking.isVisible(.problems) { self.docking.toggle(.problems) }
+        }
         navigate(.directory(""), preview: false)
         requestDirectory("")
         recentProjects.remember(RecentProject(path: url.path))
@@ -149,12 +191,21 @@ final class WorkbenchStore {
         switchProject(project)
     }
 
+    private func stopProjectTools() async {
+        let analysis = dart.stop()
+        let runtime = flutter.stop()
+        await analysis.value
+        await runtime.value
+    }
+
     func closeProject() {
         startupAttempted = true
         let intent = UUID()
         projectIntent = intent
         editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
             guard let self, allowed, self.projectIntent == intent else { return }
+            await self.stopProjectTools()
+            guard self.projectIntent == intent else { return }
             self.recentProjects.closeWorkspace()
             self.saveRecentProjects()
             self.resetProject()
@@ -163,6 +214,8 @@ final class WorkbenchStore {
 
     private func resetProject() {
         editing.reset()
+        dart.configure(access: nil)
+        flutter.configure(access: nil)
         projectIntent = UUID()
         sessionID = UUID()
         for request in requests.values { request.cancel() }
@@ -186,6 +239,7 @@ final class WorkbenchStore {
         guard rootURL != nil, !editing.isClosing else { return }
         let currentEntries = snapshots[location.parentDirectory ?? ""]?.entries ?? []
         let resolved = location.resolvingFile(in: currentEntries)
+        if case .file(let entry) = resolved { dart.refreshProject(path: entry.relativePath) }
         browsingLocation = resolved
         tabs.open(resolved, preview: preview)
         if case .file(let entry) = resolved, let access {
@@ -219,6 +273,7 @@ final class WorkbenchStore {
         guard !editing.isClosing else { return }
         tabs.activate(id)
         guard let active = tabs.active else { return }
+        dart.refreshProject(path: active.location.path)
         browsingLocation = active.location
         history.visit(active.location)
         if case .file(let entry) = active.location { selectedEntry = entry }
@@ -239,6 +294,7 @@ final class WorkbenchStore {
         tabs.close(id)
         selectedEntry = nil
         browsingLocation = tabs.active?.location ?? .directory(currentDirectory)
+        dart.refreshProject(path: browsingLocation?.path ?? "")
         if let location {
             history.visit(location)
             requestDirectory(currentDirectory)
@@ -257,6 +313,7 @@ final class WorkbenchStore {
         let session = sessionID
         editing.confirmClosing([document]) { [weak self] allowed in
             guard let self, allowed, self.sessionID == session else { return }
+            self.editing.releaseClosingProtection()
             self.editing.remove(document.path)
             self.editing.open(path: document.path, access: access) { [weak self] in
                 guard let self, self.sessionID == session,
@@ -271,6 +328,7 @@ final class WorkbenchStore {
         editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
             if allowed, let self {
                 self.editing.reset()
+                await self.stopProjectTools()
                 self.tabs = BrowserTabs()
                 self.history = NavigationHistory()
                 self.browsingLocation = self.rootURL == nil ? nil : .directory("")
@@ -281,6 +339,15 @@ final class WorkbenchStore {
     func goBack() {
         guard !editing.isClosing else { return }
         if let destination = history.back() { navigate(destination, preview: true, recordHistory: false) }
+    }
+    func navigateSemantic(_ target: LSPLocation) {
+        guard let rootURL, let url = URL(string: target.uri), url.isFileURL, url.host == nil || url.host == "localhost"
+        else { return }
+        let path = url.standardizedFileURL.path
+        let relative = path.hasPrefix(rootURL.path + "/") ? String(path.dropFirst(rootURL.path.count + 1)) : path
+        let entry = WorkspaceEntry(name: url.lastPathComponent, relativePath: relative, kind: .file)
+        navigate(.file(entry), preview: false)
+        editing.documents[relative]?.reveal(target.range)
     }
     func goForward() {
         guard !editing.isClosing else { return }

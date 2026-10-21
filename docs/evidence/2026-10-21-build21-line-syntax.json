@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 21",
+  "mode": "headless logical line numbers and incremental syntax coloring",
+  "source_state": "uncommitted working tree based on 49313112f3b658f872c3bda9a9bdff4b6c9285f0",
+  "source_sha256": {
+    "Cargo.lock": "c442ba7d5f68b2a5890ef6dd32a62a89cc43cfdc9aa975b3f1ff05ca8af52b62",
+    "app/macos/Resources/Info.plist": "276037e1946b6c207755e475b586c894960cdb149a6e5f1a79eb22ab2b624d1a",
+    "app/macos/Sources/Editor/EditorDocument.swift": "9c45aebb3c4529d3ca7ba9598b3b4eda8c009a17b41b44487dd391b470712b85",
+    "app/macos/Sources/Editor/EditorLineRuler.swift": "57e440f5c35ce337d8e896b28bef2aaf49ce2774ec56edf2b9e79c350689b968",
+    "app/macos/Sources/Editor/EditorPanel.swift": "75ab235eda71076cebd03b55a984c73a89172e40803b0b1a7368198727cab7af",
+    "app/macos/Sources/Editor/EditorPresentation.swift": "3945a427c9b3ae9bc4e29a24434b730fbe309a96bfc06d765a237847d679db55",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "dc4ae026c012f75b1225797b245748927a69ea9c862496956f20c5ec816318b4",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "7da6dc9440a6dc1939f3ef20b9297b353a90080049b388b395304bddc6050b4a",
+    "bindings/CHyCodeCore/include/hycode_core.h": "7eac7101b80dc82dffae01e454f604ea457f7dcf7aa5f1c83373c25f77bb3ed0",
+    "crates/hycode-core/Cargo.toml": "d6150b3994c11caba8b8909f7a9521a881f99c9046acbcaf8dad97d4797793d1",
+    "crates/hycode-core/src/document.rs": "20f5bd0e105557ed3b05b091b75cece6639426de11b1d9bb1e18519508dffa66",
+    "crates/hycode-core/src/document_ffi.rs": "c2730088f76c651a2e969a0d88471de2f8eb50e5266a05320aabeb91e4d7b724",
+    "crates/hycode-core/src/lib.rs": "dd3f7d2d32d0cf6a605d0017a553a5b341fcb7501b9523fe8a8a53c3a8c99c93",
+    "crates/hycode-core/src/syntax.rs": "bad7cc45970be42d382eb8b7bbf8a82ff8bb6f6084569b1afd9b4fbdfa5d3037",
+    "crates/hycode-core/src/syntax_language.rs": "940c84f5743b2e079252be402135dd2cc4cbd84698e504c5ba6ce301df18b1f7",
+    "crates/hycode-core/src/syntax_tests.rs": "f0201f99e0479d6e28d8f007257d30c6b5edce7b37fecc6bcc5a0d82eea66c84",
+    "packages/HyCodeWorkspace/Sources/NativeTextDocument.swift": "447da63eaae5352d3dff90c2aee697f6db826fad974e21ff0f2f399ce40a55a5",
+    "packages/HyCodeWorkspace/Sources/SyntaxHighlight.swift": "2a1f0a32ad0c6b17d1070e6a35fed9db0141f412532f1a7822e54a8bd3b02b13",
+    "packages/HyCodeWorkspace/Sources/TextLineIndex.swift": "9384ce8756a9dc9f613ad2303b4eb329baaf918136014abe967066920afb9cf1",
+    "packages/HyCodeWorkspace/Tests/SyntaxHighlightTests.swift": "f2af1671658b75bcbaab413335cb90e22a520b8ebf42aa36e30ef11de8effaba",
+    "packages/HyCodeWorkspace/Tests/TextLineIndexTests.swift": "22daf328ee5d259e32182400e2d7625d24c19b5c5d6ce2d65be90be71e3e530b"
+  },
+  "ownership": {
+    "formal_text": "Rust TextDocument",
+    "syntax_cache": "per-document SyntaxState, no duplicate text",
+    "grammar_queries": "shared immutable cache",
+    "native_view": "TextKit 1 and per-document UndoManager",
+    "line_index": "UTF-16 native projection with balanced blocks"
+  },
+  "languages": [
+    "Dart",
+    "JavaScript / JSX",
+    "TypeScript",
+    "TSX",
+    "HTML",
+    "Vue",
+    "CSS",
+    "JSON",
+    "YAML",
+    "TOML",
+    "C",
+    "C++",
+    "Rust"
+  ],
+  "embedded_languages": [
+    "visible script: JS/JSX, TS/TSX",
+    "visible style: CSS",
+    "Vue interpolation: TypeScript"
+  ],
+  "limits": {
+    "syntax_utf8_bytes": 1048576,
+    "editable_file_bytes": 8388608,
+    "viewport_utf16_units": 65536,
+    "total_spans": 4096,
+    "embedded_block_bytes": 262144,
+    "parse_query_cooperative_budget_ms": 100,
+    "grammar_initialization_included_in_parse_budget": false,
+    "maximum_line_offsets_per_balanced_block": 512
+  },
+  "checks": {
+    "swift_tests": 74,
+    "rust_tests": 15,
+    "new_swift_sanitizer_tests": 7,
+    "new_rust_syntax_tests": 5,
+    "formatting": true,
+    "clippy": true,
+    "c11_cpp17_headers": true,
+    "shell_syntax": true,
+    "documentation_links_and_history_hashes": true,
+    "release_build": true
+  },
+  "cases": [
+    "all 13 language modes load queries and color fixtures",
+    "Unicode UTF-16 captures",
+    "incremental parse equals fresh parse after multiline edit",
+    "revision rejection and unchanged saved content",
+    "opening tag, closing tag and embedded body viewport clipping",
+    "merged injection result cap",
+    "explicit plain/size-limit fallback with continued editing",
+    "CRLF/emoji/random edits compared with rebuilt index",
+    "200000-line cross-block edits",
+    "2000 same-location inserts and 1500 deletes with bounded index block count"
+  ],
+  "address_sanitizer": {
+    "swift_selected_tests": 7,
+    "passed": true,
+    "rust_and_c_static_libraries_instrumented": false
+  },
+  "review": {
+    "independent_read_only": true,
+    "remaining_confirmed_p1_p2": false,
+    "fixed": [
+      "embedded body/window intersection before relative offsets",
+      "global merged span and time budgets",
+      "pre-edit temporary color clearing",
+      "balanced line block split and neighboring merge"
+    ]
+  },
+  "licenses": {
+    "locked_crates": 37,
+    "retained_files_matching_crate_sources": 36,
+    "missing_crate_license_files_retrieved_at_upstream_revision": [
+      {
+        "crate": "tree-sitter-cpp",
+        "version": "0.23.4",
+        "url": "https://github.com/tree-sitter/tree-sitter-cpp/blob/f41e1a044c8a84ea9fa8577fdd2eab92ec96de02/LICENSE",
+        "notice_sha256": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+      },
+      {
+        "crate": "tree-sitter-html",
+        "version": "0.23.2",
+        "url": "https://github.com/tree-sitter/tree-sitter-html/blob/5a5ca8551a179998360b4a4ca2c0f366a35acc03/LICENSE",
+        "notice_sha256": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+      },
+      {
+        "crate": "tree-sitter-json",
+        "version": "0.24.8",
+        "url": "https://github.com/tree-sitter/tree-sitter-json/blob/ee35a6ebefcef0c5c416c0d1ccec7370cfca5a24/LICENSE",
+        "notice_sha256": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+      },
+      {
+        "crate": "tree-sitter-toml-ng",
+        "version": "0.7.0",
+        "url": "https://github.com/tree-sitter-grammars/tree-sitter-toml/blob/64b56832c2cffe41758f28e05c756a3a98d16f41/LICENSE",
+        "notice_sha256": "b727eee929bee836e8102cecf749a795b199f291b58c885bcd81cae727ac5a46"
+      },
+      {
+        "crate": "tree-sitter-typescript",
+        "version": "0.23.2",
+        "url": "https://github.com/tree-sitter/tree-sitter-typescript/blob/f975a621f4e7f532fe322e13c4f79495e0a7b2e7/LICENSE",
+        "notice_sha256": "49bf33cf78ef5897e4e161ce1517df7de1ae5042a65b6bcfd44401e0fc606559"
+      }
+    ],
+    "inventory_sha256": "55e67cc8930c07e7b223d906b38b66490d0eda2501dc0de5020cead12145015e"
+  },
+  "local_release": {
+    "architecture": "arm64",
+    "minimum_os": "14.0",
+    "bundle_bytes": 18975149,
+    "executable_sha256": "9980c6b98805428e803bab69b0db07ad3c9199d79f6121ed471788d7943ae93e"
+  },
+  "gui_started": false,
+  "desktop_interaction": false,
+  "clipboard_accessed": false,
+  "distribution_signing": false,
+  "public_binary_release": false,
+  "not_verified": [
+    "Real line-number pixels, wrapped-line rendering and scroll synchronization",
+    "Native colors, theme/toggle clearing, IME, undo and selection behavior",
+    "Real input/scroll FPS and end-to-end editor performance",
+    "Complete language grammar/version compatibility",
+    "Older macOS runtime and signed distribution"
+  ],
+  "not_implemented": [
+    "semantic diagnostics",
+    "completion",
+    "definition/references/rename",
+    "language servers",
+    "Flutter run/debug/hot reload/Inspector"
+  ]
+}

@@ -17,6 +17,9 @@ struct WorkbenchHeader: View {
                     .disabled(!store.history.canGoForward)
             }
             Spacer(minLength: 12)
+            if store.flutter.available || store.flutter.active || store.flutter.commandRunning {
+                FlutterRunToolbar(controller: store.flutter)
+            }
             if store.isLoading {
                 ProgressView().controlSize(.mini).frame(width: 16)
                 Text("正在读取目录").font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)

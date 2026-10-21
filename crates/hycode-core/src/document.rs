@@ -29,6 +29,7 @@ pub struct TextDocument {
     revision: u64,
     utf16_len: usize,
     hint: (usize, usize),
+    syntax: Option<crate::syntax::SyntaxState>,
 }
 
 impl TextDocument {
@@ -91,6 +92,7 @@ impl TextDocument {
             revision: 0,
             utf16_len,
             hint: (0, 0),
+            syntax: None,
         })
     }
 
@@ -150,6 +152,9 @@ impl TextDocument {
             .revision
             .checked_add(1)
             .ok_or_else(|| error("revision_exhausted", "文档修订已达上限"))?;
+        if let Some(syntax) = &mut self.syntax {
+            syntax.edit(&self.text, a, b, replacement);
+        }
         self.text.replace_range(a..b, replacement);
         self.utf16_len = units;
         self.hint = (start + replacement_units, a + replacement.len());
@@ -176,6 +181,17 @@ impl TextDocument {
             return Ok(self.text.len());
         }
         Err(error("invalid_range", "编辑范围越界或切分了 Unicode 字符"))
+    }
+
+    pub fn syntax(
+        &mut self,
+        expected: u64,
+        path: &str,
+        start: usize,
+        end: usize,
+    ) -> Result<crate::syntax::SyntaxSnapshot, WorkspaceError> {
+        self.check_revision(expected)?;
+        crate::syntax::snapshot(&mut self.syntax, &self.text, path, start, end)
     }
 
     pub fn bytes(&self, expected: u64) -> Result<Vec<u8>, WorkspaceError> {

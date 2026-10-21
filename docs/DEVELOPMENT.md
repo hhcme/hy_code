@@ -1,6 +1,6 @@
 # HyCode 开发约定
 
-更新：2026-10-21。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件工作台、原生基础编辑、Rust 文本/目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)和[编辑说明](EDITING.md)。
+更新：2026-10-22。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件工作台、原生基础编辑、Rust 文本/目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)和[编辑说明](EDITING.md)。
 
 ## 开始工作
 
@@ -26,6 +26,8 @@ nice -n 10 swift run --jobs 2 HyCodeDirectoryProbe
 
 原生脚本最多使用两个构建任务；日常可用 `nice -n 10 bash scripts/check_native.sh` 降低优先级。`swift test --disable-xctest` 运行文本增量/编码/保存冲突/权限/取消、工作区、工具停靠/分隔交互状态及最近项目记录、CoreGraphics 几何/离屏像素合成、CoreText 后台文件名测量的 Swift Testing 命令行入口，不链接应用 target 为测试宿主，不启动 `NSApplication` 或创建窗口。AppKit/SwiftUI 只参与编译，没有 UI 自动化测试。
 
+Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并行高亮用例遇到既有 100 ms 后台预算超时，失败记录保留，未放宽生产预算或断言。降载后通过不能代替高亮实际延迟、冷缓存或前台帧率验收。
+
 脚本只读取文档，检查 UTF-8、本地链接目标及历史 manifest 哈希，不请求网络、不构建应用、不启动窗口。GitHub Actions 的 `Documentation` 工作流运行同一检查；它不是 macOS 应用构建或验收。
 
 当前仓库组织：
@@ -46,9 +48,16 @@ nice -n 10 swift run --jobs 2 HyCodeDirectoryProbe
 | `scripts/build_core.sh`、`scripts/build_macos.sh`、`scripts/check_native.sh` | 真实构建和静默检查 |
 | `scripts/build_icons.sh` | 源 PNG → 十尺寸 iconset → ICNS，纯后台，不操作 Dock/Finder |
 | `tools/DirectoryProbe/` | 无 AppKit/应用宿主的单层读取探针，默认使用临时样本 |
+| `tools/DebugProbe/` | 显式 SDK DAP 探针，只调试生成的 Dart 控制台；当前 fork 因 VM 参数拒绝而未通过，不自动运行 |
+| `tools/fixtures/dap_adapter.py` | 自有无 SDK stdio 替身，供协议测试；不执行项目/GUI/设备 |
+| `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `20`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `26`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+
+Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
+
+新增 DAP 使用自有 `tools/fixtures/dap_adapter.py` stdio fixture；`HyCodeDebugProbe /path/to/sdk` 是另一个显式入口，只尝试调试生成的 Dart 控制台脚本，不是 Flutter 应用。本机 fork 拒绝 `enable_vm_service` 等启动参数，当前真实 DAP 探针未通过；不把该入口自动加入通用测试，不为补验收改动外部 SDK 或启动 GUI/设备。完整 Flutter 必做范围见[能力清单](FLUTTER_PLAN.md)。
 
 ## 静默测试规则
 

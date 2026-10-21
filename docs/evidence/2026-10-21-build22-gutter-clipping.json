@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 22",
+  "mode": "headless gutter clipping regression fix",
+  "source_state": "uncommitted working tree based on 49313112f3b658f872c3bda9a9bdff4b6c9285f0",
+  "previous_feature_evidence": "2026-10-21-build21-line-syntax.json",
+  "source_sha256": {
+    "app/macos/Resources/Info.plist": "776ac40b3f444e9792e23caaad56e4b2bae3bceaaa9f6a38445f4f8f1b07b405",
+    "app/macos/Sources/Editor/EditorLineRuler.swift": "65d620819df83b5dc1e636495a53bcf1b6341a0a824c8dfc7d73adeda14af4f8",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "dc4ae026c012f75b1225797b245748927a69ea9c862496956f20c5ec816318b4",
+    "app/macos/Sources/Editor/EditorPresentation.swift": "3945a427c9b3ae9bc4e29a24434b730fbe309a96bfc06d765a237847d679db55",
+    "packages/HyCodeWorkspace/Sources/EditorGutterDrawing.swift": "f65bbe088504da52d0b357d53b84f993237f33785a7e6c09cf028394d3e77981",
+    "packages/HyCodeWorkspace/Tests/EditorGutterDrawingTests.swift": "2900f9c4b566e6cc08b66310ca866ffa397abe0e96985bc8a5d50dfe1ce463c6"
+  },
+  "reported_symptom": "User screenshot shows line numbers but no editor content; native window recovery not reproduced or verified.",
+  "confirmed_source_defect": "Gutter background filled an unbounded AppKit dirty rectangle without an explicit view or graphics clip.",
+  "fix": [
+    "Set EditorLineRuler.clipsToBounds to true.",
+    "Clip all gutter background and label drawing to bounds intersect dirtyRect.",
+    "Save and restore graphics state around gutter drawing."
+  ],
+  "official_reference": "https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-14",
+  "checks": {
+    "swift_tests": 77,
+    "swift_suites": 13,
+    "rust_tests": 15,
+    "new_coregraphics_raster_tests": 3,
+    "new_swift_address_sanitizer_tests": 3,
+    "formatting": true,
+    "clippy": true,
+    "c11_cpp17_headers": true,
+    "shell_syntax": true,
+    "documentation_links_and_history_hashes": true,
+    "release_build": true
+  },
+  "cases": [
+    "Oversized damage and fill cannot overwrite body or adjacent header sentinel pixels.",
+    "Partial repaint affects only the view/damage intersection.",
+    "Invalid or disjoint damage does not draw; infinite damage clips to view bounds.",
+    "Graphics state is restored so later text can draw outside the gutter."
+  ],
+  "commands": [
+    "nice -n 10 bash scripts/check_native.sh",
+    "nice -n 10 swift test --jobs 2 --disable-xctest --sanitize address --filter EditorGutterDrawingTests",
+    "nice -n 10 bash scripts/build_macos.sh release"
+  ],
+  "address_sanitizer": {
+    "swift_selected_tests": 3,
+    "passed": true,
+    "rust_and_c_static_libraries_instrumented": false
+  },
+  "review": {
+    "independent_read_only": true,
+    "remaining_confirmed_p1_p2": false
+  },
+  "local_release": {
+    "architecture": "arm64",
+    "minimum_os": "14.0",
+    "bundle_bytes": 18976813,
+    "executable_sha256": "8e96b79d39e3ef4b99405a4f1fb5dee2eef836ae7ce3f70dcf27b4308ef6c717"
+  },
+  "gui_started": false,
+  "desktop_interaction": false,
+  "clipboard_accessed": false,
+  "distribution_signing": false,
+  "public_binary_release": false,
+  "not_verified": [
+    "Actual screenshot symptom recovery in an AppKit window.",
+    "Native line-number, text and tab rendering, wrapped lines, scrolling and theme changes.",
+    "Real input, IME, undo, performance and older macOS runtime."
+  ],
+  "test_boundary": "Pure CoreGraphics bitmap tests invoke the shared production clipping helper, without an AppKit application or window host."
+}

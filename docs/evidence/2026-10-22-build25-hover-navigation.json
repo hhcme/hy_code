@@ -1,0 +1,165 @@
+{
+  "date": "2026-10-22",
+  "build": 25,
+  "scope": "Compact Dart hover presentation, whole-symbol request reuse and confirmed definition navigation feedback",
+  "base_commit": "49313112f3b658f872c3bda9a9bdff4b6c9285f0",
+  "working_tree": "Preserves existing uncommitted builds 21-24. No commit/push performed in this task.",
+  "implementation": [
+    "Bounded parsing of LSP Markdown/MarkedString/plaintext into signature, declaration, type and documentation",
+    "Intrinsic-height rounded child panel without an arrow/focus request; signature colors, safe inline Markdown, lower-right menu and optional expanded docs",
+    "One cancellable worker slot per document, concurrent hover/definition, complete Unicode identifier hits instead of nearest-whitespace hits",
+    "140 ms dwell for uncached normal hover, zero dwell for Command hover; movement within a word does not reset dwell or requests",
+    "16-entry semantic-context LRU including negative results; edits/open/close/restart/Pub completion invalidate stale context",
+    "Confirmed definition temporary underline and pointing hand; middle click, Command-click and Command-B, complete cached locations reused",
+    "Diagnostic underline restoration, edit/scroll/focus/resize/theme cleanup, delayed card entry with whitespace bridge",
+    "Anchor-screen placement including negative coordinates and screen-edge clamping"
+  ],
+  "external_sdk": {
+    "dart": "3.11.5",
+    "flutter_metadata": "3.41.10-ohos-0.0.2-beta",
+    "location": "Explicit installed external SDK, local absolute path intentionally omitted",
+    "redistributed": false,
+    "diagnostics_version": "Dart 3.11.5 omits push diagnostic versions. Ordering gates cannot prove freshness; diagnostics never drive automatic text writes."
+  },
+  "verification": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "rust_tests": 15,
+      "swift_tests": 112,
+      "swift_suites": 18,
+      "includes": [
+        "Rust fmt/clippy",
+        "Swift strict format",
+        "C11/C++17 header syntax",
+        "headless Rust/Swift tests",
+        "docs/history hashes",
+        "git diff --check"
+      ],
+      "sequence": "Run before the final menu-expansion threshold fix; only app presentation changed afterward. Final app was release-compiled and strict-format checked again; model sources/tests unchanged."
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --disable-xctest --sanitize address --filter DartHoverTests",
+      "result": "pass",
+      "tests": 11,
+      "suites": 1,
+      "limit": "Pure Foundation geometry/parser/state tests; Swift address checks only, no AppKit host or Rust instrumentation."
+    },
+    {
+      "command": "nice -n 10 swift run --jobs 2 HyCodeDartProbe <explicit-sdk-root>",
+      "result": "pass",
+      "fixtures": "Generated temporary Dart source and owned analyzer cache; no Pub, GUI, devices, downloads or user project",
+      "assertions": [
+        "SDK constructor signature/declaration/docs extraction",
+        "consistent hover within a whole symbol",
+        "SDK hover range matches local identifier range",
+        "type diagnostics and unsaved incremental fix",
+        "local/SDK definitions and references",
+        "completion and hierarchical symbols",
+        "formatting and unchanged disk text"
+      ],
+      "timing_ms": {
+        "first_ready_constructor_hover": 1.453875,
+        "repeated_same_symbol_hover": 0.359417
+      },
+      "timing_limit": "Single tiny fixture after analysis readiness; not a benchmark, UI latency, project indexing or FPS result."
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "application_launched": false
+    },
+    {
+      "command": "xcrun swift-format lint --strict app/macos/Sources/Language/DartHoverCard.swift; python3 scripts/check_docs.py; git diff --check",
+      "result": "pass",
+      "sequence": "Final strict format and documentation/diff checks after the menu-expansion fix."
+    }
+  ],
+  "review": {
+    "mode": "Independent read-only source review under requesting-code-review skill; no GUI/build/SDK executed by reviewer",
+    "result": "No remaining confirmed P1/P2 after follow-up source reads",
+    "fixed": [
+      "Pub completion semantic cache invalidation",
+      "reachable whitespace bridge between symbol and card",
+      "anchor screen rather than parent screen",
+      "short wrapped/truncated content always has an expansion entry"
+    ]
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "configuration": "release",
+    "bundle_id": "io.github.hhcme.hycode",
+    "version": "0.1.0",
+    "build": "25",
+    "architecture": "arm64",
+    "minimum_macos": "14.0",
+    "bytes": 20406137,
+    "executable_sha256": "eb96fbaa71326976c1a72946f44e26679ed68a05a05f3a07475adaee4d14df37",
+    "licenses_present": true,
+    "status": "Local development build only; no distribution signing, notarization, install or publication"
+  },
+  "not_verified": [
+    "Real native hover card size/expansion, mouse bridge/menu reachability, focus and multi-monitor behavior",
+    "Underline/cursor cleanup and middle click/Command-click/keyboard navigation in an actual window",
+    "IME, undo and diagnostic underline interaction in a running app",
+    "Real project analyzer latency, indexing load and frame rate",
+    "Pub/network/real-project coordination, older macOS runtimes and other SDK versions"
+  ],
+  "unchanged_limits": [
+    "No file watcher for external disk changes",
+    "Dart 3.11.5 unversioned push diagnostics are best-effort display",
+    "Flutter run/debug/hot reload/Inspector and cross-file refactoring remain unimplemented"
+  ],
+  "source_sha256": {
+    "Package.swift": "b18e8869acf4141ab066efce0770baf3e72c8ddf30acb981bdc4b909512776dc",
+    "app/macos/Resources/Info.plist": "d97d1e7996d0f72326393249acf5c6846c9292f811e1f5b2ef29f82b822d42ea",
+    "app/macos/Sources/Editor/EditorCloseGuard.swift": "a21f9fcbb75a8b847ff8964ac62a098a24e80c2bf561d932cd8f050451c2c810",
+    "app/macos/Sources/Editor/EditorDocument.swift": "5e8407c6a23a2e05fd60f3a2bf5433219708c08dc6d1d3fe0b5644f81609b0e5",
+    "app/macos/Sources/Editor/EditorLineRuler.swift": "65d620819df83b5dc1e636495a53bcf1b6341a0a824c8dfc7d73adeda14af4f8",
+    "app/macos/Sources/Editor/EditorPanel.swift": "5023d8dfccf4aa9e0e8718d991f25ea86545454294e6fcb7a99a226327ec4e56",
+    "app/macos/Sources/Editor/EditorPresentation.swift": "828e0f79b10454736aaf0b972715c53f533c305e61803b2c4f40aef3a3591bba",
+    "app/macos/Sources/Editor/EditorWorkspace.swift": "d63378f4a1b0bd60af92fcc93359d653b115f41e9b738fc1df743076283e669a",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "1becb70a4118973fb24791c54d49d817c56de3c19e01ce9387e2c4b2513934fd",
+    "app/macos/Sources/HyCodeApp.swift": "e1f7de36294d5d0574be392c6c899f4cf58738c160353cf9512e2d0dd8675c8c",
+    "app/macos/Sources/Language/DartEditorFeatures.swift": "8f777c06c20fbe8344b64e40b6e2cb706e6cddb9d347026f2c533c138a164e0a",
+    "app/macos/Sources/Language/DartHoverCard.swift": "c50f396a143c9d2dfa4e934a21719c882fe9429a4779d4981614ce9fb80274e6",
+    "app/macos/Sources/Language/DartHoverController.swift": "f5985907e005ed8abf07ff7d039c934e6a01a67c7e0583b644648ed0fad3b9f4",
+    "app/macos/Sources/Language/DartToolPanels.swift": "0db12bd13ae4494b8be4c446200bde722012df956fe84a13ca16300eab168eb3",
+    "app/macos/Sources/Language/DartWorkspaceController.swift": "3dfea22cceeb1f1e86cf85d0b91cd1ebf822fe18020cf5306e7df7736c69e06a",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "2f9516a2b3cc5033c18c3f0e1c8e80e282a53606cd198ac2432259e23d2de628",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "f78e4da846af39cd1358740329126f436383afd21f93fd7c0dd7c9bee16c1232",
+    "packages/HyCodeWorkspace/Sources/Language/DartHoverContent.swift": "65f805112b7a1fb9ecd21d0eebda59ac72765d2449651fbeed873f492e750e0d",
+    "packages/HyCodeWorkspace/Sources/Language/DartHoverPlacement.swift": "c7cc83dc368e92a966340f5be14c9fad3a42aec4984aba3f858b53d0ada57cee",
+    "packages/HyCodeWorkspace/Sources/Language/DartHoverState.swift": "7b7ed1697895922b4378b7deec009dcb347590697581cc2c8bfacaa0108c80f7",
+    "packages/HyCodeWorkspace/Sources/Language/DartLanguageServer.swift": "a2d7fede6651f7d871f438436fb5a3402a841d0ddd273ea33235808beef39672",
+    "packages/HyCodeWorkspace/Sources/Language/DartPackageLock.swift": "ab14c14d09a1d6b8e3f0e64ea086810e4aa96af46f490601154311e383760b85",
+    "packages/HyCodeWorkspace/Sources/Language/DartToolchain.swift": "4e9d82a33b3eb43d55ef0557959c553d91d9f6b9da5fb060b3f90d1d5840eea8",
+    "packages/HyCodeWorkspace/Sources/Language/DeveloperToolTask.swift": "9a50126c133091ed6dffada16f7d03bdca4948757d990dffc7e2abf9bf75e0cf",
+    "packages/HyCodeWorkspace/Sources/Language/JSONValue.swift": "1201480ecbffc67b782ab8b4b723fbd2c21d6cee6a379a6e76c89b1165b5e15f",
+    "packages/HyCodeWorkspace/Sources/Language/LSPDocumentChange.swift": "945bccdb1080ba512534baf7c2b2f1128e14ce442bcae15bbbead9a5f963c057",
+    "packages/HyCodeWorkspace/Sources/Language/LSPFraming.swift": "7ae026d800311dd782223415de750d632c7a4d979a7bfda3dd7d735c41b63f0d",
+    "packages/HyCodeWorkspace/Sources/Language/LSPTextEdits.swift": "a9e1024ad8284bb93195c000513b7ebd457c4ba33be1e9600452607c76e7e67d",
+    "packages/HyCodeWorkspace/Sources/Language/LanguageModels.swift": "a2aed0cfd31ad31d3862e2114c3211a685a8bedd18d520eacb086f29ac1ee751",
+    "packages/HyCodeWorkspace/Sources/Language/LanguageServerConnection.swift": "48772125b292e698eada1118b1b78f70c64b4fd62d7c3b7cd9ea427258118c8e",
+    "packages/HyCodeWorkspace/Sources/Language/OwnedToolProcess.swift": "9dde08d0cf14ebba0f55bfa10e04565410b60cd2788c2cdaa17233813d87e12d",
+    "packages/HyCodeWorkspace/Sources/Language/UTF8OutputDecoder.swift": "2e0ad9785163c4352bffe1d26c8475d059e2ebfe457d40d73a603c5a14940d20",
+    "packages/HyCodeWorkspace/Sources/NativeTextDocument.swift": "42749845c6dbc6db587249d44ebd20e394e625e7e6a3082609b90304363cd752",
+    "packages/HyCodeWorkspace/Sources/TextLineIndex.swift": "f1a90be811ba5a01d7d1d6d81cf2e5b06bc98b80cc6ec7ae2234fbc20c1ab031",
+    "packages/HyCodeWorkspace/Sources/WorkspaceEntry.swift": "30dff80416ca4b300b180a5e0a647ba779ad8cea0813eb53a207a68903e05dc1",
+    "packages/HyCodeWorkspace/Tests/DartHoverTests.swift": "9ae6fd619fc24c1e1a75dd6ba301a7e2e776472ecc1c378e730507cfce211064",
+    "packages/HyCodeWorkspace/Tests/DartProjectTests.swift": "3ece9be4608757741a102f8c5e6d1b3355497cbd3373a7267e8d7c9d95eec12f",
+    "packages/HyCodeWorkspace/Tests/LanguageProcessTests.swift": "654768664af4e445e1477fe0c73671b5b5c35938b88b2ffaff1cbd5305458460",
+    "packages/HyCodeWorkspace/Tests/LanguageProtocolTests.swift": "50e42262567b6e459caf787573a7707cdfc1bcc7c30fd38b40ee31ab32089028",
+    "scripts/check_native.sh": "bdfa4c094a006f2c5290f350cbe25c3c0f932d162e133ddd4327214b14661171",
+    "tools/DartProbe/main.swift": "8e2a1271490e8aa3d77b635142d53ce6027ae2cb51af06cbfc704fd75520c4d0"
+  },
+  "fixture_sha256": {
+    "dart_probe_initial_text": "1fef3ee6641c37fdd5cb7f18e365349bdfe7d06b76d48bcfbac7392b403d0a43"
+  },
+  "log_sha256": {
+    ".build/build25-check-native.log": "ba25710565bd1fac4cb652d2a7e7fb04fee07fd07e9b072bf10fb362663ebf48",
+    ".build/build25-asan.log": "e8351fe139069399db1ec1032b017948316d83ddbe979f8847a3465ce56979eb",
+    ".build/build25-dart-probe.log": "5243e81f99bf5de1dc9c302dfe1ec3fe7806433f4ba7cef4320beedf0c247170",
+    ".build/build25-release.log": "1d7f2f619e1f9e62e7cb4c6ba5ef7a2d87bde7c162a307bad890403fe785088b"
+  }
+}

@@ -1,0 +1,232 @@
+import AppKit
+import HyCodeWorkspace
+import SwiftUI
+
+@MainActor final class DartEditorFeatures: NSObject {
+    weak var document: EditorDocument?
+    private(set) weak var controller: DartWorkspaceController?
+    let uri: String
+    private(set) var lines: TextLineIndex
+    var version: Int { Int(document?.edits.revision ?? 0) }
+    private var pending: (LSPRange, String)?
+    private var underlines: [NSRange] = []
+    private var diagnostics: [LSPDiagnostic] = []
+    private(set) lazy var hoverInteraction = DartHoverController(feature: self)
+    init(document: EditorDocument, controller: DartWorkspaceController, content: TextDocumentContent) {
+        self.document = document
+        self.controller = controller
+        uri = document.sourceURL.absoluteString
+        lines = content.protocolLineIndex
+        super.init()
+        controller.opened(self, text: content.text)
+    }
+    func reopen() {
+        hoverInteraction.invalidate()
+        guard let text = document?.editor?.textView.string else { return }
+        clearDiagnostics()
+        controller?.opened(self, text: text)
+    }
+    func willReplace(change: TextLineChange, protocolChange: LSPDocumentChange?) {
+        hoverInteraction.invalidate()
+        clearDiagnostics()
+        pending = protocolChange.map {
+            (LSPRange(start: .at($0.range.location, in: lines), end: .at(NSMaxRange($0.range), in: lines)), $0.text)
+        }
+        if let pending { controller?.flutter?.sourceEdited(uri: uri, range: pending.0, text: pending.1) }
+        lines.apply(change)
+    }
+    func didReplace() {
+        guard let pending else { return }
+        self.pending = nil
+        controller?.changed(uri: uri, range: pending.0, text: pending.1, version: version)
+    }
+    func close() {
+        hoverInteraction.invalidate()
+        controller?.flutter?.sourceClosed(uri: uri)
+        controller?.closed(uri: uri)
+    }
+    func breakpointSnapshot() -> [FlutterBreakpoint] {
+        controller?.flutter?.breakpoints[document?.sourceURL.path ?? ""] ?? []
+    }
+    func saved(breakpoints: [FlutterBreakpoint]) {
+        controller?.saved(uri: uri)
+        controller?.flutter?.sourceSaved(uri: uri, snapshot: breakpoints, clean: document?.isDirty == false)
+    }
+    func setDiagnostics(_ diagnostics: [LSPDiagnostic]) {
+        clearDiagnostics()
+        self.diagnostics = diagnostics
+        guard document?.composing == false else { return }
+        guard let view = document?.editor?.textView, let source = view.textStorage?.mutableString,
+            let layout = view.layoutManager
+        else { return }
+        for item in diagnostics {
+            guard let range = item.range.range(in: lines, source: source), range.length > 0 else { continue }
+            layout.addTemporaryAttributes(
+                [
+                    .underlineStyle: NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue,
+                    .underlineColor: item.severity == 1 ? NSColor.systemRed : NSColor.systemOrange,
+                ], forCharacterRange: range)
+            underlines.append(range)
+        }
+        hoverInteraction.restoreLink()
+    }
+    func diagnosticMessages(at offset: Int) -> String {
+        guard let source = document?.editor?.textView.textStorage?.mutableString else { return "" }
+        return String(
+            diagnostics.filter { item in
+                guard let range = item.range.range(in: lines, source: source) else { return false }
+                return NSLocationInRange(offset, range)
+            }.map(\.message).joined(separator: "\n").prefix(2_000))
+    }
+    func restoreDiagnosticUnderline(in restored: NSRange) {
+        guard let view = document?.editor?.textView, let source = view.textStorage?.mutableString else { return }
+        for item in diagnostics {
+            guard let range = item.range.range(in: lines, source: source) else { continue }
+            let intersection = NSIntersectionRange(range, restored)
+            if intersection.length > 0 {
+                view.layoutManager?.addTemporaryAttributes(
+                    [
+                        .underlineStyle: NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue,
+                        .underlineColor: item.severity == 1 ? NSColor.systemRed : NSColor.systemOrange,
+                    ], forCharacterRange: intersection)
+            }
+        }
+    }
+    func refreshDiagnostics() { setDiagnostics(diagnostics) }
+    private func clearDiagnostics() {
+        guard let view = document?.editor?.textView else { return }
+        for range in underlines {
+            view.layoutManager?.removeTemporaryAttribute(.underlineStyle, forCharacterRange: range)
+            view.layoutManager?.removeTemporaryAttribute(.underlineColor, forCharacterRange: range)
+        }
+        underlines.removeAll()
+        diagnostics.removeAll()
+        hoverInteraction.restoreLink()
+    }
+    func dismissHover() { hoverInteraction.dismiss() }
+    @objc func definition() { navigate("textDocument/definition") }
+    @objc func references() { navigate("textDocument/references") }
+    @objc func structure() { controller?.showSymbols(self) }
+    func navigate(_ method: String, at offset: Int? = nil) {
+        let cached =
+            (method == "textDocument/definition")
+            ? hoverInteraction.cachedDefinition(at: offset ?? document?.editor?.textView.selectedRange().location ?? 0)
+            : nil
+        dismissHover()
+        guard let view = document?.editor?.textView, let controller else { return }
+        if let cached, !cached.isEmpty {
+            controller.showLocations(cached, jumpIfSingle: true)
+            return
+        }
+        let position = LSPPosition.at(offset ?? view.selectedRange().location, in: lines)
+        let revision = version
+        Task { [weak self] in
+            do {
+                guard let self else { return }
+                let result = try await controller.query(method, feature: self, position: position)
+                guard self.version == revision else { return }
+                controller.showLocations(
+                    try LSPLocation.locations(result), jumpIfSingle: method != "textDocument/references")
+            } catch { controller.report(error) }
+        }
+    }
+    @objc func format() {
+        guard let controller, document?.readOnly == false else { return }
+        let revision = version
+        Task { [weak self] in
+            do {
+                guard let self else { return }
+                let result = try await controller.query("textDocument/formatting", feature: self)
+                if result == .null { return }
+                try await self.apply(try result.decode([LSPTextEdit].self), revision: revision)
+            } catch { controller.report(error) }
+        }
+    }
+    func complete() {
+        guard let view = document?.editor?.textView, let controller, document?.readOnly == false else { return }
+        let selected = view.selectedRange()
+        let revision = version
+        let partial = view.rangeForUserCompletion
+        Task { [weak self] in
+            do {
+                guard let self else { return }
+                let result = try await controller.query(
+                    "textDocument/completion", feature: self, position: .at(selected.location, in: self.lines))
+                guard self.version == revision, view.window != nil, view.selectedRange() == selected else { return }
+                let values = result["items"].array.isEmpty ? result.array : result["items"].array
+                let menu = NSMenu()
+                var actions: [DartCompletionAction] = []
+                for value in values.prefix(100) where value["insertTextFormat"].int != 2 {
+                    guard let label = value["label"].string else { continue }
+                    let action = DartCompletionAction { [weak self] in
+                        guard let self, self.version == revision else { return }
+                        Task {
+                            do {
+                                let fallback = LSPRange(
+                                    start: .at(
+                                        partial.location == NSNotFound ? selected.location : partial.location,
+                                        in: self.lines),
+                                    end: .at(
+                                        partial.location == NSNotFound ? NSMaxRange(selected) : NSMaxRange(partial),
+                                        in: self.lines))
+                                let editRange =
+                                    value["textEdit"]["range"] != .null
+                                    ? value["textEdit"]["range"] : value["textEdit"]["insert"]
+                                let range = (try? editRange.decode(LSPRange.self)) ?? fallback
+                                let text = value["textEdit"]["newText"].string ?? value["insertText"].string ?? label
+                                var edits = (try? value["additionalTextEdits"].decode([LSPTextEdit].self)) ?? []
+                                let primary = LSPTextEdit(range: range, newText: text)
+                                edits.append(primary)
+                                try await self.apply(edits, revision: revision, primary: primary)
+                            } catch { controller.report(error) }
+                        }
+                    }
+                    actions.append(action)
+                    let item = NSMenuItem(
+                        title: label, action: #selector(DartCompletionAction.chooseCompletion), keyEquivalent: "")
+                    item.target = action
+                    item.toolTip = value["detail"].string
+                    menu.addItem(item)
+                }
+                if menu.items.isEmpty { return }
+                let rect = view.firstRect(forCharacterRange: selected, actualRange: nil)
+                let point = view.convert(view.window!.convertPoint(fromScreen: rect.origin), from: nil)
+                withExtendedLifetime(actions) { _ = menu.popUp(positioning: nil, at: point, in: view) }
+            } catch { controller.report(error) }
+        }
+    }
+    private func apply(_ edits: [LSPTextEdit], revision: Int, primary: LSPTextEdit? = nil) async throws {
+        guard !edits.isEmpty, let document, !document.readOnly, !document.composing,
+            let view = document.editor?.textView, version == revision
+        else { return }
+        let text = view.string
+        let previousOffset = view.selectedRange().location
+        let result = try await Task.detached(priority: .utility) {
+            let replacement = try LSPTextEdits.apply(edits, to: text)
+            let offset =
+                try primary.map {
+                    try LSPTextEdits.completionOffset(primary: $0, additional: Array(edits.dropLast()), text: text)
+                } ?? previousOffset
+            return (replacement, min(max(0, offset), replacement.utf16.count))
+        }.value
+        guard version == revision, !document.composing, view.isEditable else { return }
+        view.insertText(result.0, replacementRange: NSRange(location: 0, length: view.textStorage?.length ?? 0))
+        guard version != revision else { return }
+        view.setSelectedRange(NSRange(location: result.1, length: 0))
+        view.scrollRangeToVisible(view.selectedRange())
+    }
+    func reveal(_ range: LSPRange) {
+        guard let view = document?.editor?.textView, let source = view.textStorage?.mutableString,
+            let selection = range.range(in: lines, source: source)
+        else { return }
+        view.setSelectedRange(selection)
+        view.scrollRangeToVisible(selection)
+        view.window?.makeFirstResponder(view)
+    }
+}
+
+@MainActor private final class DartCompletionAction: NSObject {
+    let action: () -> Void
+    init(_ action: @escaping () -> Void) { self.action = action }
+    @objc func chooseCompletion() { action() }
+}

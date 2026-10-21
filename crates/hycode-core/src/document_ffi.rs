@@ -116,6 +116,31 @@ pub unsafe extern "C" fn hycode_text_bytes(
     })
 }
 /// # Safety
+/// Live document with exclusive serial access; path bytes remain readable for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn hycode_text_syntax(
+    document: *mut TextDocument,
+    expected: u64,
+    path: *const u8,
+    path_len: usize,
+    start: usize,
+    end: usize,
+) -> HyCodeTextResult {
+    guarded(|| {
+        let document = unsafe { document.as_mut() }
+            .ok_or_else(|| WorkspaceError::new("invalid_input", "文档为空"))?;
+        if path_len > 16_384 {
+            return Err(WorkspaceError::new("invalid_input", "文件名过长"));
+        }
+        let path = std::str::from_utf8(unsafe { bytes(path, path_len) }?)
+            .map_err(|_| WorkspaceError::new("invalid_utf8", "文件名不是 UTF-8"))?;
+        let snapshot = document.syntax(expected, path, start, end)?;
+        let json = serde_json::to_vec(&snapshot)
+            .map_err(|_| WorkspaceError::new("encoding_failed", "高亮编码失败"))?;
+        Ok((json, document.revision()))
+    })
+}
+/// # Safety
 /// Exactly once for an owned document, after all operations have completed.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn hycode_text_free(document: *mut TextDocument) {

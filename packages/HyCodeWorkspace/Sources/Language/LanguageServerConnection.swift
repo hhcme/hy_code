@@ -1,0 +1,304 @@
+import Darwin
+import Foundation
+
+private actor LanguageServerWriter {
+    let handle: FileHandle
+    private var closed = false
+    init(_ handle: FileHandle) {
+        self.handle = handle
+        _ = fcntl(handle.fileDescriptor, F_SETNOSIGPIPE, 1)
+    }
+    func write(_ data: Data) throws {
+        guard !closed else { throw LanguageServiceFailure("语言服务写端已关闭") }
+        try handle.write(contentsOf: data)
+    }
+    func close() {
+        closed = true
+        try? handle.close()
+    }
+}
+
+/// Owns one stdio child and every request continuation. Blocking reads run on
+/// utility workers; all framing, writes, replies and shutdown are actor-serial.
+public enum StdioProtocol: Sendable { case languageServer, debugAdapter }
+
+public actor StdioProtocolConnection {
+    public nonisolated let events: AsyncStream<JSONValue>
+    private let emitter: AsyncStream<JSONValue>.Continuation
+    private var process: OwnedToolProcess?
+    private var exitWait: Task<Int32, Never>?
+    private let input = Pipe()
+    private var framing = LSPFraming()
+    private var nextID = 0
+    private struct Pending {
+        let continuation: CheckedContinuation<JSONValue, Error>
+        let timeout: Task<Void, Never>
+    }
+    private var pending: [Int: Pending] = [:]
+    private var readers: [Task<Void, Never>] = []
+    private var alive = false
+    private var started = false
+    private var terminating = false
+    private var writer: LanguageServerWriter?
+    private var configuration = JSONValue.null
+    private let wire: StdioProtocol
+    public init(wire: StdioProtocol = .languageServer) {
+        self.wire = wire
+        let stream = AsyncStream<JSONValue>.makeStream(bufferingPolicy: .bufferingNewest(512))
+        events = stream.stream
+        emitter = stream.continuation
+    }
+    public func start(executable: URL, arguments: [String], directory: URL, configuration: JSONValue = .null) throws {
+        guard !started else { throw LanguageServiceFailure("此连接不能重复启动，请创建新连接") }
+        started = true
+        writer = LanguageServerWriter(input.fileHandleForWriting)
+        self.configuration = configuration
+        let child = try OwnedToolProcess.launch(
+            executable: executable, arguments: arguments, directory: directory, input: input.fileHandleForReading,
+            environment: ["DASH__IDE_NAME": "HyCode", "DASH__IDE_VERSION": "0.1.0"])
+        process = child
+        try? input.fileHandleForReading.close()
+        alive = true
+        let stdout = child.stdout
+        let stderr = child.stderr
+        exitWait = Task.detached(priority: .utility) { [weak self] in
+            let status = child.wait()
+            await self?.disconnected()
+            return status
+        }
+        readers.append(
+            Task.detached(priority: .utility) { [weak self] in
+                defer { try? stdout.close() }
+                var bytes = [UInt8](repeating: 0, count: 65_536)
+                while true {
+                    let count = bytes.withUnsafeMutableBytes {
+                        Darwin.read(stdout.fileDescriptor, $0.baseAddress, $0.count)
+                    }
+                    if count < 0 && errno == EINTR { continue }
+                    guard count > 0 else { break }
+                    await self?.receive(Data(bytes.prefix(count)))
+                }
+                await self?.disconnected()
+            })
+        // Drain stderr to prevent pipe backpressure. Protocol errors are exposed
+        // by requests/exit; stderr is never retained without a bounded log owner.
+        readers.append(
+            Task.detached(priority: .utility) { [weak self] in
+                defer { try? stderr.close() }
+                var bytes = [UInt8](repeating: 0, count: 16_384)
+                while true {
+                    let count = bytes.withUnsafeMutableBytes {
+                        Darwin.read(stderr.fileDescriptor, $0.baseAddress, $0.count)
+                    }
+                    if count < 0 && errno == EINTR { continue }
+                    guard count > 0 else { break }
+                    await self?.stderrMessage(String(decoding: bytes.prefix(count), as: UTF8.self))
+                }
+            })
+    }
+    private func stderrMessage(_ text: String) {
+        let message =
+            wire == .languageServer
+            ? JSONValue(["method": "hycode/stderr", "params": ["message": String(text.prefix(4_096))]])
+            : JSONValue([
+                "type": "event", "event": "output",
+                "body": ["category": "stderr", "output": String(text.prefix(4_096))],
+            ])
+        if case .dropped = emitter.yield(message), wire == .debugAdapter { disconnected() }
+    }
+    public func request(
+        _ method: String, params: JSONValue, timeout: Int = 15,
+        onSent: (@Sendable () async -> Void)? = nil
+    ) async throws -> JSONValue {
+        try Task.checkCancellation()
+        guard alive, pending.count < 128 else { throw LanguageServiceFailure("语言服务未连接或请求过多") }
+        nextID += 1
+        let id = nextID
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                guard !Task.isCancelled else {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+                let timer = Task { [weak self] in
+                    do { try await Task.sleep(for: .seconds(timeout)) } catch { return }
+                    await self?.expire(id)
+                }
+                pending[id] = Pending(continuation: continuation, timeout: timer)
+                Task { [weak self] in await self?.sendRequest(id, method: method, params: params, onSent: onSent) }
+            }
+        } onCancel: {
+            Task { await self.cancel(id) }
+        }
+    }
+    private func sendRequest(
+        _ id: Int, method: String, params: JSONValue, onSent: (@Sendable () async -> Void)?
+    ) async {
+        guard pending[id] != nil else { return }
+        do {
+            let message =
+                wire == .languageServer
+                ? JSONValue(["jsonrpc": "2.0", "id": id, "method": method, "params": params])
+                : JSONValue(["seq": id, "type": "request", "command": method, "arguments": params])
+            try await write(message)
+            await onSent?()
+        } catch {
+            if let request = pending.removeValue(forKey: id) {
+                request.timeout.cancel()
+                request.continuation.resume(throwing: error)
+            }
+        }
+    }
+    public func notify(_ method: String, params: JSONValue) async throws {
+        guard alive, wire == .languageServer else { throw LanguageServiceFailure("语言服务已断开或不支持通知") }
+        try await write(JSONValue(["jsonrpc": "2.0", "method": method, "params": params]))
+    }
+    private func write(_ message: JSONValue) async throws {
+        guard alive, let writer else { throw LanguageServiceFailure("语言服务已断开") }
+        try await writer.write(LSPFraming.encode(message))
+    }
+    private func receive(_ data: Data) async {
+        guard alive else { return }
+        do {
+            for message in try framing.append(data) {
+                if wire == .debugAdapter {
+                    try await receiveDAP(message)
+                    continue
+                }
+                if let method = message["method"].string {
+                    if message["id"] != .null {
+                        try await respond(to: message, method: method)
+                    } else {
+                        emitter.yield(message)
+                    }
+                } else if let id = message["id"].int, let request = pending.removeValue(forKey: id) {
+                    request.timeout.cancel()
+                    let continuation = request.continuation
+                    if message["error"] != .null {
+                        continuation.resume(
+                            throwing: LanguageServiceFailure(message["error"]["message"].string ?? "语言服务请求失败"))
+                    } else {
+                        continuation.resume(returning: message["result"])
+                    }
+                }
+            }
+        } catch {
+            disconnected()
+            terminate()
+        }
+    }
+    private func receiveDAP(_ message: JSONValue) async throws {
+        switch message["type"].string {
+        case "event":
+            let event: JSONValue
+            if message["event"].string == "output" {
+                event = JSONValue([
+                    "type": "event", "event": "output",
+                    "body": [
+                        "category": String((message["body"]["category"].string ?? "console").prefix(64)),
+                        "output": String((message["body"]["output"].string ?? "").prefix(16_384)),
+                    ],
+                ])
+            } else {
+                guard try JSONEncoder().encode(message).count <= 65_536 else { throw LanguageServiceFailure("调试事件过大") }
+                event = message
+            }
+            if case .dropped = emitter.yield(event) {
+                throw LanguageServiceFailure("调试事件积压，已断开以防状态错乱")
+            }
+        case "response":
+            guard let id = message["request_seq"].int, let request = pending.removeValue(forKey: id) else { return }
+            request.timeout.cancel()
+            if message["success"] == .bool(true) {
+                request.continuation.resume(returning: message["body"])
+            } else {
+                request.continuation.resume(
+                    throwing: LanguageServiceFailure(
+                        message["message"].string ?? message["body"]["error"]["format"].string ?? "调试请求失败"))
+            }
+        case "request":
+            // Never let an adapter spawn a terminal or debugger through a reverse
+            // request. Launching is exclusively the explicit owned process path.
+            nextID += 1
+            try await write(
+                JSONValue([
+                    "seq": nextID, "type": "response", "request_seq": message["seq"],
+                    "command": message["command"], "success": false, "message": "Unsupported client request",
+                ]))
+        default: throw LanguageServiceFailure("调试协议消息无效")
+        }
+    }
+    private func respond(to message: JSONValue, method: String) async throws {
+        let result: JSONValue
+        switch method {
+        case "workspace/configuration":
+            result = .array(
+                message["params"]["items"].array.map { item in
+                    let section = item["section"].string ?? ""
+                    return section.isEmpty || section == "dart" ? configuration : .null
+                })
+        case "client/registerCapability", "client/unregisterCapability", "window/workDoneProgress/create":
+            result = .null
+        case "workspace/applyEdit": result = JSONValue(["applied": false, "failureReason": "请使用编辑器中的显式编辑入口"])
+        case "window/showMessageRequest": result = .null
+        default:
+            try await write(
+                JSONValue([
+                    "jsonrpc": "2.0", "id": message["id"],
+                    "error": ["code": -32601, "message": "Unsupported client request"],
+                ]))
+            return
+        }
+        // JSONValue embedded in Any dictionaries must stay a JSONValue, rather
+        // than passing through the Foundation conversion initializer again.
+        try await write(.object(["jsonrpc": .string("2.0"), "id": message["id"], "result": result]))
+    }
+    private func expire(_ id: Int) {
+        guard let request = pending.removeValue(forKey: id) else { return }
+        request.timeout.cancel()
+        request.continuation.resume(throwing: LanguageServiceFailure("语言服务请求超时"))
+        if wire == .languageServer { Task { try? await notify("$/cancelRequest", params: JSONValue(["id": id])) } }
+    }
+    private func cancel(_ id: Int) {
+        guard let request = pending.removeValue(forKey: id) else { return }
+        request.timeout.cancel()
+        request.continuation.resume(throwing: CancellationError())
+        if wire == .languageServer { Task { try? await notify("$/cancelRequest", params: JSONValue(["id": id])) } }
+    }
+    private func disconnected() {
+        guard alive else { return }
+        alive = false
+        terminate()
+        let requests = pending
+        pending.removeAll()
+        for request in requests.values {
+            request.timeout.cancel()
+            request.continuation.resume(throwing: LanguageServiceFailure("语言服务已退出，可重新启动"))
+        }
+        emitter.yield(JSONValue(["method": "hycode/disconnected"]))
+        emitter.finish()
+    }
+    public func stop() async {
+        started = true
+        disconnected()
+        terminate()
+        _ = await exitWait?.value
+        for reader in readers { await reader.value }
+        readers.removeAll()
+        await writer?.close()
+        process = nil
+        exitWait = nil
+    }
+    private func terminate() {
+        guard !terminating, let child = process else { return }
+        terminating = true
+        child.signal(SIGTERM)
+        Task.detached(priority: .utility) {
+            try? await Task.sleep(for: .seconds(2))
+            child.signal(SIGKILL)
+        }
+    }
+}
+
+/// Source-compatible name for the language-service policy of the owned transport.
+public typealias LanguageServerConnection = StdioProtocolConnection

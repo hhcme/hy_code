@@ -25,6 +25,12 @@ struct WorkbenchView: View {
         .background(WorkbenchColors.chrome)
         .background(WorkbenchWindowChrome())
         .background(EditorWindowCloseGuard(store: store))
+        .sheet(item: Binding(get: { store.flutter.dialog }, set: { store.flutter.dialog = $0 })) { dialog in
+            switch dialog {
+            case .configuration: FlutterRunConfigurationEditor(controller: store.flutter)
+            case .breakpoints: FlutterBreakpointsEditor(controller: store.flutter)
+            }
+        }
         .ignoresSafeArea(.container, edges: .all)
     }
 
@@ -42,6 +48,28 @@ struct WorkbenchView: View {
         case .information: informationPanel
         case .openTabs: openTabsPanel
         case .workspace: workspacePanel
+        case .analysis:
+            VStack(spacing: 0) {
+                toolPanelHeader(.analysis)
+                WorkbenchSeparator()
+                DartAnalysisPanel(controller: store.dart)
+            }
+        case .problems:
+            VStack(spacing: 0) {
+                toolPanelHeader(.problems)
+                WorkbenchSeparator()
+                DartProblemsPanel(controller: store.dart, navigate: store.navigateSemantic)
+            }
+        case .structure:
+            VStack(spacing: 0) {
+                toolPanelHeader(.structure)
+                WorkbenchSeparator()
+                DartStructurePanel(controller: store.dart, document: store.activeDocument)
+            }
+        case .debug:
+            FlutterDebugPanel(controller: store.flutter, headerHeight: panelHeaderHeight(.debug)) {
+                store.docking.hide(.debug)
+            }
         default:
             VStack(spacing: 0) {
                 toolPanelHeader(tool)
@@ -317,9 +345,23 @@ struct WorkbenchView: View {
             if store.includeHidden { Text("包含隐藏文件").fixedSize() }
             WorkbenchSeparator(vertical: true).frame(height: 12)
             if let document = store.activeDocument {
+                if document.semantic != nil {
+                    let issues = store.dart.diagnostics[document.sourceURL.absoluteString] ?? []
+                    Button {
+                        if !store.docking.isVisible(.problems) { store.docking.toggle(.problems) }
+                    } label: {
+                        Label(
+                            "\(issues.count)",
+                            systemImage: issues.contains { $0.severity == 1 }
+                                ? "xmark.circle" : "exclamationmark.bubble")
+                    }.buttonStyle(WorkbenchButtonStyle()).help(store.dart.status)
+                }
                 Text(document.status).fixedSize()
                 Text(document.encoding == "utf8" ? "UTF-8" : "UTF-16")
                 Text(document.lineEnding)
+                if !document.syntaxLanguage.isEmpty {
+                    Text(document.syntaxLanguage).help(document.syntaxNotice ?? "语法高亮")
+                }
             } else {
                 Label("文本编辑", systemImage: "doc.text").fixedSize()
             }

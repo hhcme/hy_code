@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 23",
+  "mode": "headless syntax viewport scheduling and retained temporary colors",
+  "source_state": "uncommitted working tree based on 49313112f3b658f872c3bda9a9bdff4b6c9285f0",
+  "previous_evidence": "2026-10-21-build22-gutter-clipping.json",
+  "user_feedback": "User confirmed content rendering recovered in build 22, then reported delayed colors while scrolling. This is user feedback, not an automated GUI validation.",
+  "source_sha256": {
+    "app/macos/Resources/Info.plist": "40d33d390abf79750aab4ff03c56da4f00047e857b4e010df5315c51d6dc5120",
+    "app/macos/Sources/Editor/EditorPresentation.swift": "e73c60aea2dab098762889e1a00a2af2dd65e63dc25c8b0b9de56486b42fe09d",
+    "app/macos/Sources/Editor/EditorDocument.swift": "cd48c45f60aebed81562346d0720c570a4447aaa6e1b86fa2a6ba4106fd3a68d",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "dc4ae026c012f75b1225797b245748927a69ea9c862496956f20c5ec816318b4",
+    "packages/HyCodeWorkspace/Sources/SyntaxViewportState.swift": "93b89b17f2ed2739f5af362ab9b7440280125a18344603472ab658af9eb9cdd0",
+    "packages/HyCodeWorkspace/Sources/NativeTextDocument.swift": "e3f87b92b1bf2a185599ee99b692e7cf33987bdae96d347b0efab084b9fff027",
+    "packages/HyCodeWorkspace/Tests/SyntaxViewportStateTests.swift": "4d783f917c1e74c9bd339f1ea5a15c8485f0b58c817621b86a17f4825794276e",
+    "packages/HyCodeWorkspace/Tests/SyntaxHighlightTests.swift": "b151c11b2a581ec16503fe4bbb99fe14f9e2f92b8e24e4b0def1d02e629749c3"
+  },
+  "confirmed_source_issues": [
+    "Each scroll event cancelled and restarted the trailing delay and invalidated in-flight results.",
+    "Applying one viewport removed all previously painted viewport colors.",
+    "No nearby range prefetch or completed-coverage reuse."
+  ],
+  "changes": [
+    "One worker consumes the latest visible range; new scroll events do not cancel it.",
+    "Apply completed results for the same document revision even if the viewport advanced.",
+    "Prefetch both sides, reuse cached coverage and retain at most eight windows.",
+    "Eviction clears only parts not covered by any retained window.",
+    "Edits, theme/toggle changes and hidden/closed views invalidate the correct tickets.",
+    "Check Task cancellation again on entering the native document actor before FFI.",
+    "Read-ahead failure retries only visible content; any failure continues only if the final viewport changed and lacks colors."
+  ],
+  "bounds": {
+    "maximum_request_utf16": 65536,
+    "prefetch_margin_utf16_per_side": [
+      1024,
+      4096
+    ],
+    "cached_windows": 8,
+    "continuation_delay_ms": 16,
+    "edit_coalescing_ms": 70
+  },
+  "checks": {
+    "swift_tests": 85,
+    "swift_suites": 14,
+    "rust_tests": 15,
+    "new_swift_tests": 8,
+    "selected_swift_address_sanitizer_tests": 11,
+    "formatting": true,
+    "clippy": true,
+    "c11_cpp17_headers": true,
+    "shell_syntax": true,
+    "documentation_links_and_history_hashes": true,
+    "release_build": true
+  },
+  "cases": [
+    "240 consecutive scroll schedules preserve the same active ticket.",
+    "101 small viewport advances reuse prefetched windows and retain prior coverage.",
+    "LRU eviction subtracts overlapping retained ranges and respects cache hits.",
+    "Adjacent windows jointly cover a viewport; reset/cancel rejects old revision tickets.",
+    "Unicode read-ahead endpoints stay within the parser request budget.",
+    "Failed old viewports do not consume the final changed scroll event or spin in place.",
+    "Self-cancelled calls reject before invoking FFI.",
+    "Five distant generated Dart viewports return nonempty captures and saved content remains unchanged."
+  ],
+  "commands": [
+    "nice -n 10 bash scripts/check_native.sh",
+    "nice -n 10 swift test --jobs 2 --disable-xctest --sanitize address --filter 'SyntaxViewportStateTests|SyntaxHighlightTests'",
+    "nice -n 10 bash scripts/build_macos.sh release"
+  ],
+  "generated_dart_observation": {
+    "environment": {
+      "model": "Mac16,11",
+      "memory_bytes": 51539607552,
+      "macos": "27.0.1"
+    },
+    "fixture": "2000 numbered comment/declaration pairs, ASCII, 4000 newline-terminated lines",
+    "utf8_bytes": 90670,
+    "sha256": "6ad56876ccf608ec33e7700a4b86547f56dbd614661840576e89a833098f0a43",
+    "visible_utf16_length": 1000,
+    "visible_offsets": [
+      0,
+      20000,
+      60000,
+      10000,
+      80000
+    ],
+    "request_milliseconds": [
+      5.747084,
+      0.681042,
+      0.657459,
+      0.67075,
+      0.687917
+    ],
+    "configuration": "Swift Debug tests, Rust release static library; observed within full test run, shared grammar cache may already be warm.",
+    "limits": "Single generated fixture, not a UI/frame latency or A/B benchmark; does not include TextKit layout, native attribute drawing, or display."
+  },
+  "address_sanitizer": {
+    "swift_selected_tests": 11,
+    "passed": true,
+    "rust_and_c_static_libraries_instrumented": false
+  },
+  "review": {
+    "independent_read_only": true,
+    "fixed": [
+      "Error path consuming the final changed scroll viewport."
+    ],
+    "remaining_confirmed_p1_p2": false
+  },
+  "local_release": {
+    "architecture": "arm64",
+    "minimum_os": "14.0",
+    "bundle_bytes": 19005165,
+    "executable_sha256": "345d27fca50bc4962dd39f6495fde5a7cbb982e49bd5aa6aa23c75f67e92d2c9"
+  },
+  "gui_started": false,
+  "desktop_interaction": false,
+  "clipboard_accessed": false,
+  "distribution_signing": false,
+  "public_binary_release": false,
+  "not_verified": [
+    "Real scrolling color latency and frame rate in build 23.",
+    "Native temporary attribute retention/clearing under scrolling, theme changes and IME.",
+    "End-to-end UI, older macOS and signed distribution."
+  ]
+}

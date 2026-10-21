@@ -48,6 +48,15 @@ HyCodeTextResult hycode_text_open(const uint8_t *data, size_t len, HyCodeTextDoc
 HyCodeTextResult hycode_text_replace(HyCodeTextDocument *document, uint64_t expected,
                                    size_t start, size_t length, const uint8_t *data, size_t len);
 HyCodeTextResult hycode_text_bytes(const HyCodeTextDocument *document, uint64_t expected);
+/* Background-only versioned syntax. Borrow UTF-8 path (<=16 KiB); viewport start/end
+ * are UTF-16 scalar boundaries, max 65,536 units. No file access. JSON value:
+ * {language,status,start,length,spans:[{start,length,style}]}.
+ * Parser caches belong to document. <=1 MiB syntax budget; larger text stays editable.
+ * Parsing/query work cooperatively expires after 100ms; errors do not mutate text.
+ * Same serialization, panic, buffer ownership and freeing rules as the text API.
+ */
+HyCodeTextResult hycode_text_syntax(HyCodeTextDocument *document, uint64_t expected,
+                                  const uint8_t *path, size_t path_len, size_t start, size_t end);
 void hycode_text_free(HyCodeTextDocument *document);
 
 #ifdef __cplusplus

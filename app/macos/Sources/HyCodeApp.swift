@@ -57,12 +57,64 @@ struct HyCodeApplication: App {
                 Divider()
                 Toggle("显示隐藏文件", isOn: $store.includeHidden).keyboardShortcut(".", modifiers: [.command, .shift])
             }
+            CommandMenu("代码") {
+                Button("跳转定义") { store.activeDocument?.semantic?.definition() }.keyboardShortcut("b")
+                    .disabled(store.activeDocument?.semantic == nil)
+                Button("查找引用") { store.activeDocument?.semantic?.references() }.keyboardShortcut(
+                    "b", modifiers: [.command, .shift]
+                )
+                .disabled(store.activeDocument?.semantic == nil)
+                Button("代码补全") { store.activeDocument?.semantic?.complete() }.keyboardShortcut(
+                    .space, modifiers: .control
+                )
+                .disabled(store.activeDocument?.semantic == nil)
+                Button("格式化文档") { store.activeDocument?.semantic?.format() }.keyboardShortcut(
+                    "l", modifiers: [.command, .option]
+                )
+                .disabled(store.activeDocument?.semantic == nil)
+                Divider()
+                Button("Dart / Flutter 依赖管理") {
+                    if !store.docking.isVisible(.analysis) { store.docking.toggle(.analysis) }
+                }.disabled(store.rootURL == nil)
+                Button("显示问题") {
+                    if !store.docking.isVisible(.problems) { store.docking.toggle(.problems) }
+                }
+                Button("重启 Dart 分析器", action: store.dart.restart).disabled(store.rootURL == nil)
+            }
             CommandMenu("外观") {
                 Picker("主题", selection: $appearance) {
                     ForEach(WorkbenchAppearance.allCases) { item in
                         Text(item.title).tag(item)
                     }
                 }
+            }
+            CommandMenu("Flutter") {
+                Button("运行") { store.flutter.start(debug: false) }.keyboardShortcut("r", modifiers: [.control])
+                    .disabled(!store.flutter.canStart)
+                Button("调试") { store.flutter.start(debug: true) }.keyboardShortcut("d", modifiers: [.control])
+                    .disabled(!store.flutter.canStart || store.flutter.launch.mode != .debug)
+                Button("停止") { store.flutter.stop() }.keyboardShortcut(".", modifiers: [.control])
+                    .disabled(!store.flutter.active && !store.flutter.commandRunning)
+                Divider()
+                Button("热重载") { store.flutter.control("hotReload") }.keyboardShortcut("\\", modifiers: [.command])
+                    .disabled(!store.flutter.canReload)
+                Button("热重启") { store.flutter.control("hotRestart") }.keyboardShortcut(
+                    "\\", modifiers: [.command, .shift]
+                )
+                .disabled(!store.flutter.canReload)
+                Button("继续") { store.flutter.control("continue") }.disabled(store.flutter.state.phase != .paused)
+                Button("单步跳过") { store.flutter.control("next") }.disabled(store.flutter.state.phase != .paused)
+                Button("进入") { store.flutter.control("stepIn") }.disabled(store.flutter.state.phase != .paused)
+                Button("跳出") { store.flutter.control("stepOut") }.disabled(store.flutter.state.phase != .paused)
+                Divider()
+                Button("运行测试") { store.flutter.runCommand("test") }.disabled(!store.flutter.canStart)
+                Button("编辑运行配置…") { store.flutter.dialog = .configuration }
+                    .disabled(store.rootURL == nil || !store.flutter.canEditConfiguration)
+                Button("查看断点…") { store.flutter.dialog = .breakpoints }
+                    .disabled(store.rootURL == nil)
+                Button("显示调试面板") {
+                    if !store.docking.isVisible(.debug) { store.docking.toggle(.debug) }
+                }.disabled(store.rootURL == nil)
             }
             CommandGroup(replacing: .help) {
                 Text("HyCode · 文件浏览工作台")

@@ -7,6 +7,8 @@ public struct TextDocumentContent: Decodable, Sendable {
     public let hasBOM: Bool
     public let lineEnding: String
     public let byteCount: Int
+    public var lineIndex = TextLineIndex()
+    public var protocolLineIndex = TextLineIndex()
     enum CodingKeys: String, CodingKey {
         case text, encoding
         case hasBOM = "has_bom"
@@ -42,7 +44,9 @@ public actor NativeTextDocument {
         let data = try consume(result)
         guard let pointer else { throw WorkspaceFailure(code: "empty_document", message: "文本内核未创建文档") }
         let owner = Handle(pointer)
-        let content = try JSONDecoder().decode(TextDocumentContent.self, from: data)
+        var content = try JSONDecoder().decode(TextDocumentContent.self, from: data)
+        content.lineIndex = TextLineIndex(content.text)
+        content.protocolLineIndex = TextLineIndex(content.text, unicodeLineSeparators: false)
         handle = owner
         baseline = snapshot
         return content
@@ -61,6 +65,15 @@ public actor NativeTextDocument {
         let data = try consume(hycode_text_bytes(handle.pointer, revision))
         self.baseline = try TextFileIO.save(
             root: root, path: path, expected: baseline, bytes: data, cancellation: cancellation)
+    }
+    public func syntax(revision: UInt64, range: NSRange) throws -> SyntaxHighlight {
+        try Task.checkCancellation()
+        guard let handle else { throw WorkspaceFailure(code: "not_open", message: "文档尚未打开") }
+        let bytes = Array(path.utf8)
+        let result = bytes.withUnsafeBufferPointer {
+            hycode_text_syntax(handle.pointer, revision, $0.baseAddress, $0.count, range.location, NSMaxRange(range))
+        }
+        return try JSONDecoder().decode(SyntaxHighlight.self, from: consume(result))
     }
     private func consume(_ result: HyCodeTextResult) throws -> Data {
         defer {
