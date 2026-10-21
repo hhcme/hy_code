@@ -1,43 +1,56 @@
-# hc_file_viewer
+# HyCode
 
-一个正在需求讨论阶段的本地通用文件浏览、预览与压缩管理工具。
+A high-performance, native macOS code editor — built with Swift and Rust, fully open source.
 
-目标是让用户收到文件后，尽量在同一个应用中完成导入、查看、阅读、压缩包浏览、解压、重新打包和分享。HTML 应呈现网页效果，文档应按内容预览，不能仅把所有文件当作文本打开。
+HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **macOS（Apple Silicon）**，采用 **Swift 原生界面 + Rust 内核**，借鉴 IDEA 的工作台组织，追求快速启动、低输入延迟和可控的资源占用。
 
-当前只整理产品想法和可行性，没有开始实现。技术栈与目标平台已确定：Swift 配合 Rust 原生开发，覆盖 iOS 与 macOS（Mac 仅支持 Apple Silicon 机型），先开发 macOS；分发先只走应用商店，细节与发布日期未定。
+**当前处于需求与架构准备阶段，仅有文档和文档检查工具；尚无应用实现、构建入口或可下载版本。** 原文件浏览器实现已于 2026-10-21 清理，保留在 Git 历史中。
 
-## 文档入口
+- 源码：[hhcme/hy_code](https://github.com/hhcme/hy_code)
+- 许可证：[MIT](LICENSE)
+- 反馈与需求：[GitHub Issues](https://github.com/hhcme/hy_code/issues)
+- 参与贡献：[CONTRIBUTING.md](CONTRIBUTING.md)
+
+## 产品方向
+
+- **先做好代码编辑**：本地文件与项目目录、项目树、多标签、面包屑、可靠编辑与安全保存。
+- **macOS 原生体验**：Swift 开发，保留系统输入法、菜单、快捷键、窗口和无障碍行为；SwiftUI/AppKit 的具体组合通过原型确定。
+- **Rust 内核**：承载文档、编辑事务、搜索与后台任务；语法解析和语言服务按需接入，避免阻塞界面。
+- **实测性能**：启动、输入、滚动、文件加载、搜索、内存及取消恢复分别测量；尚未公布性能结果或承诺文件上限。
+- **复用开源生态**：允许采用官方和社区的开源组件，按职责、维护情况、性能和许可选择；不要求所有依赖均由 Rust 实现。
+- **完整开源**：原生界面、核心、桥接、构建和文档均纳入公开源码，不依赖私有编辑内核或必须登录的后台。
+
+高亮、补全、导航、Git、终端与任务逐阶段增加；首批语言和首个可交付版本的具体范围仍需评审。其他平台属于未来议题，不纳入首版计划。文件预览与归档作为后续配套能力。
+
+## 文档导航
+
+完整目录与阅读顺序见 [docs/README.md](docs/README.md)。
 
 | 文档 | 内容 |
 | --- | --- |
-| [产品需求与格式范围](docs/PRODUCT_REQUIREMENTS.md) | 用户明确表达的目标、候选格式、预览深度、使用流程、验收方向和待定事项 |
-| [技术、离线与上架可行性](docs/FEASIBILITY_AND_DISTRIBUTION.md) | 原生模块与下载资源包的区别、离线边界、个人开发者发布、国内合规问题、成本与竞争判断 |
-| [开发约定](docs/DEVELOPMENT.md) | 开发与测试过程中需要遵守的工作规则（如测试静默运行、不抢占前台焦点） |
-| [技术结构（工程骨架）](docs/TECH_DESIGN.md) | 目录结构、UniFFI 桥接链路、构建与测试命令 |
+| [方向与已定事项](docs/EDITOR_DIRECTION.md) | 已确认范围与尚未决定的事项 |
+| [产品需求](docs/PRODUCT_REQUIREMENTS.md) | 工作区、编辑、保存和工作台交互 |
+| [技术设计](docs/TECH_DESIGN.md) | Swift/Rust 分层、文档所有权和 FFI |
+| [开发约定](docs/DEVELOPMENT.md) | 开发入口、真实命令、验证与证据规则 |
+| [实施路线](docs/ROADMAP.md) | macOS 分阶段目标和验收条件 |
+| [性能设计与验收](docs/PERFORMANCE.md) | 测量口径、样本和待确定的预算 |
+| [编辑内核与语言服务](docs/CODE_INTELLIGENCE.md) | 文本、语法、语义的候选与边界 |
+| [依赖与来源](docs/DEPENDENCIES.md) | 已采用依赖与调研候选分别登记 |
+| [能力台账](docs/FORMAT_SUPPORT.md) | 当前零应用实现基线 |
+| [架构决策](docs/adr/README.md) | 已接受的技术方向及后续 ADR 规则 |
+| [开源与分发](docs/FEASIBILITY_AND_DISTRIBUTION.md) | MIT、公开源码及未来应用发布准备 |
+| [重写记录](docs/REWRITE_RECORD.md) | 原实现清理与文档基线整理 |
 
-后续开展设计或开发前，先阅读上述两份文档。文档中的“已明确”来自用户表达；“建议”和“待确认”均不能直接当作已批准的实施决定。
+## 现在如何参与
 
-## 当前方向
-
-- 覆盖广泛的日常文件类别，并持续扩充格式。
-- HTML、Markdown、办公文档、电子书等按适合内容的方式浏览。
-- 支持压缩包浏览、解压和创建压缩包。
-- 核心文件处理以本地完成、离线可用为方向。
-- Swift 配合 Rust 原生开发，iOS 与 macOS 双平台，先开发 macOS；Mac 仅支持 Apple Silicon 机型，格式能力尽量选用 Rust 库以便手机复用。
-- 首页为最近打开列表，另提供应用内文件保存区，方便用户整理和查找文件；打开的文件一律复制入库，支持多级目录和颜色标记整理。
-- 界面尽量使用 Apple 原生控件，少文字多图标，动效连贯，功能克制。
-- 希望以个人 Apple 开发者身份开展，尽量减少公司、服务器及额外资质的负担。
-
-记录日期：2026-10-19。政策、费用和平台能力的参考资料见可行性文档，正式实施与提交上架前应复核。
-
-## 工程骨架状态
-
-工程骨架已搭建并通过验证：Rust core（UniFFI）+ Swift 桥接包 + macOS SwiftUI 应用，能以“打开 ZIP → 复制入库 → Rust 列出条目 → 界面展示”跑通全链路（含中文文件名用例）。详见[技术结构](docs/TECH_DESIGN.md)。本地开发快速开始：
-
-```bash
-scripts/build-core.sh            # 构建 Rust core，生成 Swift 绑定与 xcframework
-cd App && xcodegen generate      # 生成 Xcode 工程
-open HcFileViewer.xcodeproj
+```sh
+git clone https://github.com/hhcme/hy_code.git
+cd hy_code
+python3 scripts/check_docs.py
 ```
 
-测试全部静默运行：`core` 下 `cargo test`，`packages/HcCoreSwift` 下 `swift test`。
+文档检查仅需 Python 3.9+ 标准库，检查本地链接与历史快照完整性，不构建或启动应用。欢迎通过 Issue 讨论使用场景、首版范围和性能样本，通过 Pull Request 改进文档。开始开发前请先读 [AGENTS.md](AGENTS.md) 和开发约定。
+
+## 许可证
+
+HyCode 自有代码与文档采用 [MIT License](LICENSE)。第三方组件保留其自身许可与版权通知；候选被列入文档不代表已接入、已验证或已获准随包分发。

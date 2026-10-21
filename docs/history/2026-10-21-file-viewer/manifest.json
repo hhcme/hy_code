@@ -1,0 +1,67 @@
+{
+  "snapshotDate": "2026-10-21",
+  "oldImplementationCommit": "97588e1336931ba92af6c15f091826327d46ee58",
+  "note": "Each archived Markdown adds a history banner before the exact original text. Original hashes refer to the text after that banner.",
+  "documents": [
+    {
+      "originalPath": "README.md",
+      "originalSHA256": "a0361e1bdb45efc7ae29f60eeb08dcee8389cc414cc68ab575fe5160d3c6d906",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/README.md",
+      "archivedSHA256": "8e7fb7b117524a97f6a224bf9797928fb7064a9d6e430ddc5704956311a82a14"
+    },
+    {
+      "originalPath": "docs/CODE_INTELLIGENCE.md",
+      "originalSHA256": "0e3558bd6e9cc8895ca1feed49328843141d0c748c8cc8325a3a0889ec37e957",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/CODE_INTELLIGENCE.md",
+      "archivedSHA256": "3c80ba0b68f18b1d5fecd505ac3538736215674d8ed5512805da2e04433417e8"
+    },
+    {
+      "originalPath": "docs/DEVELOPMENT.md",
+      "originalSHA256": "639fc8a3a67ecf2b3d49d39c4e3c3c2633dce6141b74b991d4f9dc9dad230df9",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/DEVELOPMENT.md",
+      "archivedSHA256": "11e7429ff661ecd93b2afb7f9a95558ba1a0d50eb5d15f1cfb7165e6d8efe1bb"
+    },
+    {
+      "originalPath": "docs/EDITOR_DIRECTION.md",
+      "originalSHA256": "bf773d2c614494af296d9706d503b84346be086a5e873d30bc76748cd8276865",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/EDITOR_DIRECTION.md",
+      "archivedSHA256": "b1bc9b44b6556f475e6c77848b53304c454199d0651876fd6157c1be62ea1b58"
+    },
+    {
+      "originalPath": "docs/FEASIBILITY_AND_DISTRIBUTION.md",
+      "originalSHA256": "60240190229c25f1a6bb3c5f0315619aefef0b0eed7c6b963d5bf4bf1a99a60e",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/FEASIBILITY_AND_DISTRIBUTION.md",
+      "archivedSHA256": "19aa5291d1ff95a1686bd5f66db34b76c58a2c32e5afba4dbb958b21d1caaec9"
+    },
+    {
+      "originalPath": "docs/FORMAT_SUPPORT.md",
+      "originalSHA256": "01ba981788d8d9ea7dac1de46c021aec0deda7f5152a5c7dd2c873d8f49a9a93",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/FORMAT_SUPPORT.md",
+      "archivedSHA256": "d4a29f73199f834aed1bea5a0a1f75adde55d5cafb0c628cd5a8a202e4a89bfa"
+    },
+    {
+      "originalPath": "docs/HYHUB_REUSE.md",
+      "originalSHA256": "460aec7b42031466190a834282c297349cbaee0acf942749b102b2101e6c6cae",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/HYHUB_REUSE.md",
+      "archivedSHA256": "f337eaa0605d9508c1b65bad71ce21826b5132b1471103a87f56ec4132a3ee19"
+    },
+    {
+      "originalPath": "docs/PRODUCT_REQUIREMENTS.md",
+      "originalSHA256": "e411275e9fad49c61e077e22d8bf2213228654f6e2e6ba21ffbad5c0abf47fd9",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/PRODUCT_REQUIREMENTS.md",
+      "archivedSHA256": "8d18ac2b26add3ae15807869e40f29a178e143344c8e5f40ba74d270d2e62012"
+    },
+    {
+      "originalPath": "docs/ROADMAP.md",
+      "originalSHA256": "951ba6208a091eb89b72f1e4089eb3e70bf85a8404867d811666ef92e1d6a00b",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/ROADMAP.md",
+      "archivedSHA256": "87b88a5b0aaa84f10e8d16b3d1d48d0dd736a9ba4e6d11871a16e3b2849fc627"
+    },
+    {
+      "originalPath": "docs/TECH_DESIGN.md",
+      "originalSHA256": "46f810ef361808c341f7f35dd70c5b5069fa34000ce6f7e7e765b2299ce70151",
+      "archivedPath": "docs/history/2026-10-21-file-viewer/docs/TECH_DESIGN.md",
+      "archivedSHA256": "c91a12cfa1524d76ab9a054493b12667fa9b47501b3ce117b93bfcc814740547"
+    }
+  ]
+}

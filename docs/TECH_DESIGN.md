@@ -1,34 +1,47 @@
-# 技术结构（工程骨架）
+# HyCode 重写技术设计
 
-记录日期：2026-10-19。本页记录工程骨架的实际结构与关键决策，对应需求和可行性文档中的方向，随开发演进更新。
+更新：2026-10-21。首版确定为 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。本文其余内容为架构建议，尚未创建应用工程；旧 ZIP 应用与 Rust/Swift 包已删除。这里的模块名、契约和框架不是已实现事实。已接受的边界见 [ADR 0001](adr/0001-macos-swift-rust.md)。
 
-## 目录结构
+## 分层与职责
 
-```
-core/                          Rust 核心 hc_core（UniFFI proc-macro 导出）
-  src/lib.rs                   当前能力：ZIP 目录读取（ZipReader::open / entry_count / entries）
-  src/uniffi-bindgen.rs        绑定生成器入口
-packages/HcCoreSwift/          Swift 桥接包（SPM，两个产品）
-  Sources/HcCore/              UniFFI 生成的 Swift 绑定（构建产物，不入库）
-  Sources/HcLibrary/           应用侧代码：RecentItem + LibraryStore（复制入库、最近记录 JSON 持久化）
-  Headers/ + hc_coreFFI.xcframework/   构建产物，不入库
-  Tests/HcCoreTests/           Swift 测试 + ZIP 样本（含中文文件名）
-App/                           macOS 应用（SwiftUI）
-  project.yml                  xcodegen 工程定义（源头）；.xcodeproj 是生成物，不要手改
-scripts/build-core.sh          构建链：cargo → uniffi-bindgen → xcodebuild -create-xcframework
-```
+| 层 | 建议职责 | 边界 |
+| --- | --- | --- |
+| Swift 原生宿主 | macOS 窗口、项目树、编辑视图、工具窗口、IME、菜单、无障碍 | 不承载重型扫描、解析或索引 |
+| macOS 系统适配 | 文件授权/监听、系统剪贴板、文件协调、进程与终端、原生预览 | 明确系统授权、文件身份和访问生命周期 |
+| Rust 内核 | 工作区、文档身份与事务、搜索/解析调度、后台任务、状态持久化 | 不创建窗口，不依赖某一 UI 框架 |
+| 引擎与服务 | 语法解析、LSP、Git、归档、调试适配 | 按需加载，可取消，可降级，独立记录许可与版本 |
 
-## 关键决策
+项目按能力逐步建模块；编辑、工作区、文件访问、后台任务和服务生命周期分别明确所有者，避免跨模块全局状态或 UI 直接调用解析器。
 
-- FFI 采用 UniFFI proc-macro 模式（uniffi 0.32），Swift 绑定由 `scripts/build-core.sh` 生成；Swift 侧 FFI 模块名为 `hc_coreFFI`，SPM binaryTarget 与之同名。
-- 骨架部署目标 macOS 14.0，属默认起步值；最终最低版本仍按需求文档待定。
-- Xcode 27 默认启用 debug dylib：主可执行文件是壳，实际代码在 `HcFileViewer.debug.dylib` 内，验证符号时应看后者。
-- 测试策略：`cargo test` + `swift test` 全部命令行静默运行（含 ZIP 中文文件名样本、入库复制与持久化用例），不启动 App 窗口。
-- iOS 复用路径：Rust 侧已具备 aarch64-apple-ios 构建目标；后续为 xcframework 追加 iOS 切片，App 侧另建 iOS target 即可，core 与 HcLibrary 不需要改动。
+## 文档、缓冲与撤销
 
-## 本地开发流程
+建议由 Rust 文档服务管理正式文本、修订号、编辑事务和历史，原生视图按版本应用增量并保留视图状态。此方案先以一个原生编辑器原型验证 IME、选择、撤销和长文档成本，再形成 ADR。
 
-1. `scripts/build-core.sh` —— 首次克隆后或改动 core 后必须执行，生成绑定与 xcframework。
-2. `cd App && xcodegen generate` —— 改动 project.yml 后重新生成工程。
-3. 构建 App：`xcodebuild -project HcFileViewer.xcodeproj -scheme HcFileViewer -destination 'platform=macOS' build`
-4. 测试：`cd packages/HcCoreSwift && swift test`；`cd core && cargo test`
+无论最终采用哪种存储适配，只允许一个正式缓冲与撤销历史的所有者；原生输入组合态可暂存在平台层，提交为可追溯事务，不能让平台 UndoManager 和 Rust 各自独立重放同一次编辑。Swift/Rust 传递按修订号定位的增量和所需片段，避免每次输入或光标移动都复制整篇文档；缓存不得成为第二个独立可写的正式缓冲。文件身份与显示路径分开，重命名、别名、工作区关闭与服务响应统一按会话身份处理。
+
+保存基于文档修订与磁盘版本检查，平台文件协调/临时写入/落位失败保留缓冲。外部修改不能静默覆盖。预览的截断文本不得作为完整保存输入；草稿、文件内容与工作区布局分别持久化，明确格式版本与恢复路径。
+
+## 后台任务和大文件
+
+任务具有 ID、代次、进度、取消、终态和清理责任；UI 只接收当前会话有效的结果。I/O、搜索、解析、索引和格式解码离开 UI 线程；使用 async 本身不能证明同步工作已离开主线程。
+
+按需读取、分页/分块和增量解析，不把整个工作区一次加载到内存。已知总量显示真实进度，否则显示阶段与转圈；取消后阻止旧响应和旧任务改写新会话。索引和缓存设资源预算、失效及回收策略，不复制外部项目的固定阈值作为本项目上限。Rope 等内存数据结构不自动提供超内存文件的编辑能力；大文件模式和边界单独设计。测量规则见[性能设计](PERFORMANCE.md)。
+
+## 平台与绑定建议
+
+| 首版目标 | 方案 | 状态 |
+| --- | --- | --- |
+| 界面实现语言 | Swift | 已确定，尚无工程 |
+| 工作台与编辑视图 | SwiftUI + AppKit，编辑视图按原生输入要求选择 | 候选组合 |
+| 编辑内核 | Rust，采用适合的开源组件 | 方向已定，具体依赖待原型 |
+| Swift/Rust 桥接 | UniFFI Swift 或窄 C ABI | 原型后以 ADR 固定 |
+
+首版只验证 macOS / Apple Silicon，不建立其他端宿主或兼容验收要求。系统 WebView 可用于后续内容预览，不用来承载整个编辑器。最低 macOS、Swift/Rust 工具链与绑定工具版本由新工程验证后记录。
+
+FFI 契约需说明对象、句柄和字符串的所有权，长度与位置编码，调用线程与并发模型，回调注销、取消、错误和释放责任。若采用 C ABI，使用不透明句柄及清晰的分配/释放配对，不暴露 Rust 内部布局；panic 不穿越 ABI。结果按文档会话与修订判断有效性，UI 回调切回主线程。生成绑定不手改；macOS 宿主验证 ABI、打包和生命周期。
+
+## 服务与工作区
+
+工作区保存用户授权、目录根、文档身份、工具链和范围。LSP 作为独立长生命周期服务，由管理器处理启动、协议、取消、崩溃、空闲回收和关闭；文档位置按协商编码转换，所有请求绑定修订。终端、Git、调试和任务采用独立适配，不让一次文件预览默认启动整套工具。
+
+新工程建立后建议把 Rust 内核、macOS 宿主、绑定、测试、工具和依赖通知分开组织。当前不提前创建空应用目录、占位 manifest 或“编译通过”入口，具体结构随第一个闭环提交设计记录。官方和社区组件按[依赖台账](DEPENDENCIES.md)管理，不预设所有内部引擎都必须由 Rust 编写。

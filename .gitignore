@@ -1,22 +1,23 @@
-# macOS
+# macOS / local tooling
 .DS_Store
-
-# 本会话工具生成
 .v2c/
 
-# Xcode
+# Build outputs and caches; exact new build layout is not defined yet
+build/
+dist/
+target/
+.build/
+.swiftpm/
 DerivedData/
 xcuserdata/
 *.xcuserstate
+__pycache__/
+*.py[cod]
 
-# Swift Package Manager
-.build/
-.swiftpm/
+# Generated bindings/frameworks
+*.xcframework/
 
-# Rust
-target/
-
-# scripts/build-core.sh 的生成产物（重新生成即可，不入库）
-packages/HcCoreSwift/hc_coreFFI.xcframework/
-packages/HcCoreSwift/Sources/HcCore/
-packages/HcCoreSwift/Headers/
+# Local configuration
+.env
+.env.*
+!.env.example

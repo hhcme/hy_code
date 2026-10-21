@@ -1,0 +1,36 @@
+name: Documentation
+
+on:
+  push:
+    paths:
+      - '**/*.md'
+      - 'LICENSE'
+      - 'docs/**'
+      - 'scripts/check_docs.py'
+      - '.github/**'
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'LICENSE'
+      - 'docs/**'
+      - 'scripts/check_docs.py'
+      - '.github/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: Check documentation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check local links and history integrity
+        run: python3 scripts/check_docs.py
+      - name: Check commit whitespace
+        run: git show --format= --check HEAD
