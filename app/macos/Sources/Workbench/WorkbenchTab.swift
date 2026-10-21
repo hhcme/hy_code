@@ -8,6 +8,7 @@ struct WorkbenchTab: View {
     let activate: () -> Void
     let pin: () -> Void
     let close: () -> Void
+    var dirty = false
     @State private var hovering = false
     @Environment(\.displayScale) private var displayScale
 
@@ -23,6 +24,9 @@ struct WorkbenchTab: View {
                     Text(tab.location.path.isEmpty ? projectName : tab.location.title)
                         .font(.system(size: 12).italicIf(tab.isPreview))
                         .lineLimit(1).frame(maxWidth: 190)
+                    if dirty {
+                        Circle().fill(WorkbenchColors.text).frame(width: 6, height: 6).accessibilityLabel("未保存")
+                    }
                 }
                 .padding(.leading, 13).padding(.trailing, 8)
                 .frame(height: 28)

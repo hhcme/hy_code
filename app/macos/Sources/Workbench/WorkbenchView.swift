@@ -24,6 +24,7 @@ struct WorkbenchView: View {
         .controlSize(.small)
         .background(WorkbenchColors.chrome)
         .background(WorkbenchWindowChrome())
+        .background(EditorWindowCloseGuard(store: store))
         .ignoresSafeArea(.container, edges: .all)
     }
 
@@ -151,7 +152,8 @@ struct WorkbenchView: View {
                         WorkbenchTab(
                             tab: tab, projectName: store.projectName, active: store.tabs.activeID == tab.id,
                             activate: { store.activateTab(tab.id) }, pin: { store.pinTab(tab.id) },
-                            close: { store.closeTab(tab.id) }
+                            close: { store.closeTab(tab.id) },
+                            dirty: store.editing.documents[tab.location.path]?.isDirty ?? false
                         )
                         .id(tab.id)
                     }
@@ -178,7 +180,9 @@ struct WorkbenchView: View {
         if store.rootURL == nil {
             welcome
         } else if let tab = store.tabs.active, case .file(let entry) = tab.location {
-            FileInformationView(entry: entry, rootURL: store.rootURL, prominent: true)
+            if let document = store.editing.documents[entry.relativePath] {
+                EditorPanel(document: document, reload: store.reloadActiveDocument)
+            }
         } else {
             Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity).background(WorkbenchColors.canvas)
         }
@@ -242,7 +246,7 @@ struct WorkbenchView: View {
                             Text("已读取 \(store.snapshots.count) 个目录")
                         }
                         .foregroundStyle(WorkbenchColors.secondary)
-                        Label("只读浏览", systemImage: "lock").foregroundStyle(WorkbenchColors.secondary)
+                        Label("文本编辑", systemImage: "doc.text").foregroundStyle(WorkbenchColors.secondary)
                     }
                     .font(.system(size: 12)).padding(14).frame(maxWidth: .infinity, alignment: .leading)
                     .background(WorkbenchScrollStyle())
@@ -312,7 +316,13 @@ struct WorkbenchView: View {
             }
             if store.includeHidden { Text("包含隐藏文件").fixedSize() }
             WorkbenchSeparator(vertical: true).frame(height: 12)
-            Label("只读浏览", systemImage: "lock").fixedSize()
+            if let document = store.activeDocument {
+                Text(document.status).fixedSize()
+                Text(document.encoding == "utf8" ? "UTF-8" : "UTF-16")
+                Text(document.lineEnding)
+            } else {
+                Label("文本编辑", systemImage: "doc.text").fixedSize()
+            }
         }
         .font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
         .padding(.horizontal, 12).frame(height: WorkbenchMetrics.statusHeight)

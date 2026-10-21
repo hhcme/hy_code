@@ -1,13 +1,13 @@
 # HyCode 依赖与来源
 
-更新：2026-10-21。自有代码与文档采用 [MIT](../LICENSE)。当前应用为基础文件浏览工作台，没有编辑器、语法解析器或语言服务依赖。
+更新：2026-10-21。自有代码与文档采用 [MIT](../LICENSE)。当前应用为文件工作台与基础文本编辑；使用系统 TextKit 1，无第三方编辑器、语法解析器或语言服务依赖。
 
 ## 已采用
 
 | 组件 | 固定方式 | 用途与来源 |
 | --- | --- | --- |
-| Rust | [rust-toolchain.toml](../rust-toolchain.toml)：1.96.0 | 标准库与静态目录内核；标准库通知纳入第三方清单 |
-| Swift / macOS SDK | 当前验证 Swift 6.4 / Xcode 27.1，声明部署目标 macOS 14 | SwiftUI、AppKit、Foundation、CoreText 后台文件名测量、CoreGraphics 几何、QuartzCore 显示刷新与分隔图层、CoreGraphics 离屏图像、os 性能区间、系统图标；平台依赖，不重新许可为本项目代码 |
+| Rust | [rust-toolchain.toml](../rust-toolchain.toml)：1.96.0 | 标准库与静态文本/目录内核；标准库通知纳入第三方清单 |
+| Swift / macOS SDK | 当前验证 Swift 6.4 / Xcode 27.1，声明部署目标 macOS 14 | SwiftUI、AppKit TextKit 1 / UndoManager、Foundation NSFileCoordinator、Darwin 文件系统接口、CoreText 后台文件名测量、CoreGraphics 几何、QuartzCore 显示刷新与分隔图层、CoreGraphics 离屏图像、os 性能区间、系统图标；平台依赖，不重新许可为本项目代码 |
 | serde / serde_core / serde_derive | 1.0.229；[Cargo.toml](../Cargo.toml) 与 [Cargo.lock](../Cargo.lock) | JSON 响应模型序列化；[上游](https://github.com/serde-rs/serde) |
 | serde_json | 1.0.154；同上 | ABI 结果编码；[上游](https://github.com/serde-rs/json) |
 | Swift Testing | 验证环境随 Xcode 提供，不下载外部 Swift 包 | 工作区与几何数据模型的无 GUI 测试 |
@@ -16,7 +16,7 @@
 
 Cargo 共 11 项直接/传递依赖，版本与源码校验值以 Cargo.lock 为准；运行时与构建时来源均记录在[第三方通知](../THIRD_PARTY_NOTICES.md)，并保留许可原文。双许可组件选择 MIT，Unicode 数据另保留 Unicode-3.0 通知。没有复制第三方编辑器源码或从私有安装包提取组件，没有新增外部 Swift 包。
 
-当前 Swift/Rust 桥接为仓库内窄 C ABI，未采用 UniFFI 或 cbindgen。只读文件内核通过单元测试与 Swift 桥接测试；系统 UI 的真实窗口、旧系统及应用分发仍未验证。
+当前 Swift/Rust 桥接为仓库内窄 C ABI，未采用 UniFFI 或 cbindgen。文本与目录内核通过单元测试及 Swift 桥接/保存测试；系统 UI 的真实窗口、旧系统及应用分发仍未验证。
 
 ## 品牌素材与构建工具
 

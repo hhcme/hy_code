@@ -2,7 +2,7 @@
 
 - 正式名称 HyCode，仓库为 `hhcme/hy_code`。目标是高性能原生开源代码编辑器；首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。
 - 开始前读 README.md、docs/EDITOR_DIRECTION.md、docs/PRODUCT_REQUIREMENTS.md、docs/TECH_DESIGN.md、docs/DEVELOPMENT.md，再按 docs/README.md 读任务专题。
-- 2026-10-21 清理旧实现后，现已重新建立 macOS 文件浏览工作台、Rust 只读目录内核及后台测试。当前范围见 docs/WORKBENCH.md；没有文本编辑器或分析器。旧源码和 docs/history/ 仅用于追溯，不据此恢复旧产品。
+- 2026-10-21 清理旧实现后，现已重新建立 macOS 文件工作台、原生基础编辑、Rust 文本/目录内核及后台测试。当前范围见 docs/WORKBENCH.md 和 docs/EDITING.md；分析器尚未接入。旧源码和 docs/history/ 仅用于追溯，不据此恢复旧产品。
 - 自有代码与文档采用根 MIT LICENSE；可以采用官方或社区开源组件，接入前记录版本、来源、许可、通知与验证。候选和已采用依赖在 docs/DEPENDENCIES.md 分开登记。
 - 规划、选型、已实现、后台验证、真实窗口验证、签名打包和应用发布分别记录。公开仓库或文档 CI 通过不表示应用存在或通过验收。
 - 测试只能静默执行，不得打断用户工作。只运行不会启动 GUI、弹窗或占用前台的后台构建、静态检查、单元测试和无界面集成测试；禁止启动应用/模拟器、操作真实窗口/键鼠/系统菜单、访问系统剪贴板、截取用户桌面，以及关闭或重启用户应用。

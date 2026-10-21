@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 20",
+  "mode": "headless native text editing and safe save",
+  "source_state": "uncommitted working tree based on 1eb0eb757bceecdaf06b57b3dfb81d6f30c50e40",
+  "source_sha256": {
+    "Cargo.lock": "4aca600fbe2c5ce1e7d72ce48cce208fee6c2e4f3a9abbc5764f308cad2256c3",
+    "Package.swift": "ab4a52a508fd0b154206ad222ee653c741f0bff158afcbe78ac7983feb2aa25d",
+    "app/macos/Resources/Info.plist": "ba79c2a407046ecf83c8a51a9a237384f8ebd6f2dd9ba9cb09e5d3dc613d265b",
+    "app/macos/Sources/Editor/EditorCloseGuard.swift": "a21f9fcbb75a8b847ff8964ac62a098a24e80c2bf561d932cd8f050451c2c810",
+    "app/macos/Sources/Editor/EditorDocument.swift": "a5a3c7ad67166527508049f8f14f6077f36e38769db01467f738bd302ac6bca4",
+    "app/macos/Sources/Editor/EditorPanel.swift": "4336ae355d6dc127a94c28793df7c8cac2372541e1f0bd4fdfeed70ab148f75d",
+    "app/macos/Sources/Editor/EditorWorkspace.swift": "b1d417bb7ecf6737cfdd9f95ea18a882f65655fb0e66e452fe1d22a28c3107e4",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "b4ea443fdb49f871a8e4f0ce3f14cb139a5e88747826bb0033ff2b8a9e744ae4",
+    "app/macos/Sources/HyCodeApp.swift": "a8d63cc9ef6f97e17fda7e9573bb68649c53f04ea5f8bcf99f7ade8f6133bdbd",
+    "app/macos/Sources/Workbench/WorkbenchHeader.swift": "f77a34fa0b2dffef635f9a9bf0789498ba584647308ce1a6791c3bd2885dc3bd",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "f9a8187cfbe7c36e2091bae70277b8a4dacd83ce5df8409a93105dfc81d742a6",
+    "app/macos/Sources/Workbench/WorkbenchTab.swift": "2296fcee9ec9111bc341d5421ccc94499da03b079fe90758edb44ce042a09fdd",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "673e8644ffba1fd32c8258eaef3150bb0319bc82e1a8ce4672edabc09945ce89",
+    "app/macos/Sources/Workbench/WorkspaceAccess.swift": "30a63efcecc1b0b04723b25100164989112288e4ea7ff397536c2f097471af6d",
+    "bindings/CHyCodeCore/include/hycode_core.h": "2b03a88978e5ead3663dd05ea0379385f5a23a55173ee7b4ac6b07ea1e6cd630",
+    "crates/hycode-core/src/document.rs": "33d5badb7751cff39b161da715015d682d55bfd4f44b07136b6e1500bdbd666f",
+    "crates/hycode-core/src/document_ffi.rs": "3e1656026e1f969b37b9473e48860993b84e47e3b87ea2d583178bf972a77f76",
+    "crates/hycode-core/src/lib.rs": "f0f66327b101daeacb94df2d3ac4dc1fd32a4958b002bca01c6196f81b1cbfab",
+    "packages/HyCodeWorkspace/Sources/DocumentEditState.swift": "fd269407207a0358a77f87037508c4f5c7228384cb82e07e7961581f90607c02",
+    "packages/HyCodeWorkspace/Sources/DocumentSaveCancellation.swift": "1b93cdc8260ee64e3400106c12368fca8115ca6f2db7e107967c7f069aceaa70",
+    "packages/HyCodeWorkspace/Sources/NativeTextDocument.swift": "34ad62bdce044be253839d05c28f62f349112538c774f2b61c8b19933d87eab9",
+    "packages/HyCodeWorkspace/Sources/TextFileIO.swift": "52e4060ba47283ee2b3980fab171cde572fed56a753b381419fc8017b1725af4",
+    "packages/HyCodeWorkspace/Tests/TextDocumentTests.swift": "78021acc74d7577dab7249a44b8f6f27e6146fe21e1f3960be13e4047c2a7321",
+    "scripts/build_macos.sh": "fc6953dba38be158794dc496d2b029e122252999763dd3cb5d503767a01d5288",
+    "scripts/check_native.sh": "79350d283d40ae8f0abba66cc73312031e9f78104b8f3f97b9f1adcdff3996b9"
+  },
+  "ownership": {
+    "text_and_revision": "Rust TextDocument",
+    "undo": "per-document native UndoManager only",
+    "handle_and_disk_baseline": "NativeTextDocument actor",
+    "ui_projection": "TextKit 1 NSTextStorage with exact UTF-16 deltas"
+  },
+  "features": [
+    "single-click text editing",
+    "preview pinned on first edit",
+    "default autosave after 800ms; persistent setting",
+    "Cmd-S and Option-Cmd-S",
+    "save/discard/cancel on tab, project, reload, window and quit",
+    "cancel and drain in-flight automatic saves before discard/reopen"
+  ],
+  "limits": {
+    "file_bytes": 8388608,
+    "decoded_utf8_bytes": 8388608,
+    "encoded_save_bytes": 8388608,
+    "encodings": [
+      "UTF-8 optional BOM",
+      "UTF-16 LE/BE with BOM"
+    ],
+    "hardlinks_and_symlinks_editable": false,
+    "syntax_highlighting": false,
+    "line_numbers": false,
+    "crash_recovery_drafts": false,
+    "file_watching": false
+  },
+  "checks": {
+    "swift_tests": 67,
+    "rust_tests": 10,
+    "swift_text_tests_with_address_sanitizer": 13,
+    "rust_instrumented_with_address_sanitizer": false,
+    "formatting": true,
+    "clippy": true,
+    "c11_cpp17_header_syntax": true,
+    "shell_syntax": true,
+    "documentation_local_links_and_archive_hashes": true,
+    "release_build": true
+  },
+  "save_cases": [
+    "UTF-16 positions and split-surrogate rejection",
+    "stale revisions",
+    "UTF-8/UTF-16 BOM and CRLF preservation",
+    "external file changes",
+    "separate document baselines",
+    "read-only mode",
+    "effective owner permission",
+    "ACL deny-write",
+    "metadata and extended attributes",
+    "cancel-before-commit",
+    "hardlink, symlink, FIFO and traversal rejection",
+    "older save acknowledgement leaves newer typing dirty"
+  ],
+  "independent_read_only_review": {
+    "core_io": "permission check, post-read version check and no post-commit false failure fixed; no remaining confirmed P1/P2",
+    "editor_workflow": "freeze all protected documents, cancel/drain saves, gate save/navigation during closing and refresh composition state; no remaining confirmed P1/P2"
+  },
+  "local_release": {
+    "architecture": "arm64",
+    "minimum_os": "14.0",
+    "executable_sha256": "057aab6448e0f4a3135750f16dc2103d7a54441cc819cbdfb8b3571c85cd263f",
+    "bundle_bytes": 6487964
+  },
+  "gui_started": false,
+  "desktop_interaction": false,
+  "user_clipboard_accessed": false,
+  "distribution_signing": false,
+  "public_binary_release": false,
+  "not_verified": [
+    "Real IME, native undo/redo, focus and input latency",
+    "Real single-click, settings, save and close/quit prompts",
+    "Window delegate forwarding at runtime",
+    "Existing resize, scroll, docking and startup UI behavior",
+    "Older macOS runtime",
+    "Power-loss durability, network filesystems and adversarial non-cooperating writers"
+  ]
+}

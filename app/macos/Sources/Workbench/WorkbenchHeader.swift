@@ -3,6 +3,7 @@ import SwiftUI
 struct WorkbenchHeader: View {
     @Bindable var store: WorkbenchStore
     @Binding var appearance: WorkbenchAppearance
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         HStack(spacing: 8) {
@@ -24,7 +25,12 @@ struct WorkbenchHeader: View {
             WorkbenchIconButton(title: "刷新目录 ⌘R", symbol: "arrow.clockwise", action: store.refresh)
                 .disabled(store.rootURL == nil)
             WorkbenchIconButton(title: "打开项目目录 ⌘O", symbol: "folder.badge.plus", action: store.chooseProject)
-            WorkbenchMenuButton(title: "切换界面外观", items: WorkbenchAppearance.menuItems(selection: $appearance)) {
+            WorkbenchMenuButton(
+                title: "设置与外观",
+                items: WorkbenchAppearance.menuItems(selection: $appearance) + [
+                    .separator, WorkbenchMenuItem(title: "编辑设置…") { openSettings() },
+                ]
+            ) {
                 Image(systemName: "gearshape").font(.system(size: 17)).frame(width: 26, height: 26)
             }
         }

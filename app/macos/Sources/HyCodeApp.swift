@@ -4,6 +4,7 @@ import SwiftUI
 
 @main
 struct HyCodeApplication: App {
+    @NSApplicationDelegateAdaptor(EditorApplicationDelegate.self) private var appDelegate
     @State private var store = WorkbenchStore()
     @AppStorage("workbench.appearance") private var appearance = WorkbenchAppearance.dark
 
@@ -13,7 +14,10 @@ struct HyCodeApplication: App {
                 .frame(minWidth: 860, minHeight: 540)
                 .tint(WorkbenchColors.accent)
                 .preferredColorScheme(appearance.colorScheme)
-                .task { store.restorePreviousProjectIfNeeded() }
+                .task {
+                    appDelegate.store = store
+                    store.restorePreviousProjectIfNeeded()
+                }
         }
         .defaultSize(width: 1440, height: 900)
         .windowStyle(.hiddenTitleBar)
@@ -21,6 +25,10 @@ struct HyCodeApplication: App {
             CommandGroup(replacing: .newItem) {
                 Button("打开项目目录…", action: store.chooseProject).keyboardShortcut("o")
                 Button("关闭项目", action: store.closeProject).disabled(store.rootURL == nil)
+                Divider()
+                Button("保存", action: store.saveActiveDocument).keyboardShortcut("s")
+                    .disabled(store.activeDocument == nil)
+                Button("全部保存", action: store.saveAllDocuments).keyboardShortcut("s", modifiers: [.command, .option])
             }
             CommandMenu("浏览") {
                 Button("后退", action: store.goBack).keyboardShortcut("[", modifiers: .command).disabled(
@@ -60,5 +68,6 @@ struct HyCodeApplication: App {
                 Text("HyCode · 文件浏览工作台")
             }
         }
+        Settings { EditorSettingsView(store: store) }
     }
 }

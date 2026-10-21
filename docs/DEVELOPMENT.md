@@ -1,6 +1,6 @@
 # HyCode 开发约定
 
-更新：2026-10-21。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件浏览工作台、Rust 目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)。
+更新：2026-10-21。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件工作台、原生基础编辑、Rust 文本/目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)和[编辑说明](EDITING.md)。
 
 ## 开始工作
 
@@ -24,7 +24,7 @@ git diff --check
 nice -n 10 swift run --jobs 2 HyCodeDirectoryProbe
 ```
 
-原生脚本最多使用两个构建任务；日常可用 `nice -n 10 bash scripts/check_native.sh` 降低优先级。`swift test --disable-xctest` 运行工作区、工具停靠/分隔交互状态及最近项目记录、CoreGraphics 几何/离屏像素合成、CoreText 后台文件名测量的 Swift Testing 命令行入口，不链接应用 target 为测试宿主，不启动 `NSApplication` 或创建窗口。AppKit/SwiftUI 只参与编译，没有 UI 自动化测试。
+原生脚本最多使用两个构建任务；日常可用 `nice -n 10 bash scripts/check_native.sh` 降低优先级。`swift test --disable-xctest` 运行文本增量/编码/保存冲突/权限/取消、工作区、工具停靠/分隔交互状态及最近项目记录、CoreGraphics 几何/离屏像素合成、CoreText 后台文件名测量的 Swift Testing 命令行入口，不链接应用 target 为测试宿主，不启动 `NSApplication` 或创建窗口。AppKit/SwiftUI 只参与编译，没有 UI 自动化测试。
 
 脚本只读取文档，检查 UTF-8、本地链接目标及历史 manifest 哈希，不请求网络、不构建应用、不启动窗口。GitHub Actions 的 `Documentation` 工作流运行同一检查；它不是 macOS 应用构建或验收。
 
@@ -39,16 +39,16 @@ nice -n 10 swift run --jobs 2 HyCodeDirectoryProbe
 | `docs/history/` | 原文快照及完整性清单 |
 | `.github/` | Issue/PR 模板和文档检查流程 |
 | `scripts/check_docs.py` | 可在本地与 CI 执行的文档检查 |
-| `Cargo.toml`、`crates/hycode-core/` | Rust 工作区及只读目录内核 |
+| `Cargo.toml`、`crates/hycode-core/` | Rust 文本/修订/编码与只读目录内核 |
 | `Package.swift`、`packages/HyCodeWorkspace/` | Swift 包、FFI 包装及可独立测试的模型 |
 | `bindings/CHyCodeCore/` | ABI 1 头文件与模块声明 |
-| `app/macos/` | SwiftUI 工作台、AppKit 项目树、品牌源图及开发应用元数据 |
+| `app/macos/` | SwiftUI 工作台、AppKit 项目树/文本编辑、品牌源图及开发应用元数据 |
 | `scripts/build_core.sh`、`scripts/build_macos.sh`、`scripts/check_native.sh` | 真实构建和静默检查 |
 | `scripts/build_icons.sh` | 源 PNG → 十尺寸 iconset → ICNS，纯后台，不操作 Dock/Finder |
 | `tools/DirectoryProbe/` | 无 AppKit/应用宿主的单层读取探针，默认使用临时样本 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `19`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `20`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 ## 静默测试规则
 

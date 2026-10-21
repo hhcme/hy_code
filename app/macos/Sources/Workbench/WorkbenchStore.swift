@@ -2,17 +2,6 @@ import AppKit
 import HyCodeWorkspace
 import Observation
 
-/// Keeps the selected URL's access alive until every in-flight request releases it.
-private final class WorkspaceAccess: @unchecked Sendable {
-    let url: URL
-    let scoped: Bool
-    init(url: URL) {
-        self.url = url
-        scoped = url.startAccessingSecurityScopedResource()
-    }
-    deinit { if scoped { url.stopAccessingSecurityScopedResource() } }
-}
-
 @MainActor @Observable
 final class WorkbenchStore {
     private(set) var rootURL: URL?
@@ -34,6 +23,12 @@ final class WorkbenchStore {
     }()
     var selectedEntry: WorkspaceEntry?
     var docking = WorkbenchDocking()
+    let editing = EditorWorkspace()
+    var autoSave: Bool {
+        get { editing.autoSave }
+        set { editing.autoSave = newValue }
+    }
+    var activeDocument: EditorDocument? { tabs.active.flatMap { editing.documents[$0.location.path] } }
     @ObservationIgnored let dockingSession = UUID()
     var includeHidden = false { didSet { if oldValue != includeHidden { refresh() } } }
     @ObservationIgnored private var access: WorkspaceAccess?
@@ -63,6 +58,7 @@ final class WorkbenchStore {
 
     /// Only invoked by explicit user actions, never startup or background tests.
     func chooseProject() {
+        guard !editing.isClosing else { return }
         startupAttempted = true
         projectIntent = UUID()
         let panel = NSOpenPanel()
@@ -81,7 +77,17 @@ final class WorkbenchStore {
     }
 
     func openProject(_ url: URL) {
+        guard !editing.isClosing else { return }
         startupAttempted = true
+        let intent = UUID()
+        projectIntent = intent
+        editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
+            guard let self, allowed, self.projectIntent == intent else { return }
+            self.installProject(url)
+        }
+    }
+
+    private func installProject(_ url: URL) {
         resetProject()
         access = WorkspaceAccess(url: url)
         rootURL = url
@@ -104,6 +110,7 @@ final class WorkbenchStore {
     }
 
     func switchProject(_ project: RecentProject) {
+        guard !editing.isClosing else { return }
         startupAttempted = true
         guard rootURL?.standardizedFileURL.path != project.path else { return }
         let intent = UUID()
@@ -144,12 +151,18 @@ final class WorkbenchStore {
 
     func closeProject() {
         startupAttempted = true
-        recentProjects.closeWorkspace()
-        saveRecentProjects()
-        resetProject()
+        let intent = UUID()
+        projectIntent = intent
+        editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
+            guard let self, allowed, self.projectIntent == intent else { return }
+            self.recentProjects.closeWorkspace()
+            self.saveRecentProjects()
+            self.resetProject()
+        }
     }
 
     private func resetProject() {
+        editing.reset()
         projectIntent = UUID()
         sessionID = UUID()
         for request in requests.values { request.cancel() }
@@ -170,11 +183,21 @@ final class WorkbenchStore {
     }
 
     func navigate(_ location: BrowserLocation, preview: Bool, recordHistory: Bool = true) {
-        guard rootURL != nil else { return }
+        guard rootURL != nil, !editing.isClosing else { return }
         let currentEntries = snapshots[location.parentDirectory ?? ""]?.entries ?? []
         let resolved = location.resolvingFile(in: currentEntries)
         browsingLocation = resolved
         tabs.open(resolved, preview: preview)
+        if case .file(let entry) = resolved, let access {
+            let session = sessionID
+            editing.open(path: entry.relativePath, access: access) { [weak self] in
+                guard let self, self.sessionID == session,
+                    let tab = self.tabs.tabs.first(where: { $0.location.path == entry.relativePath })
+                else { return }
+                self.tabs.pin(tab.id)
+            }
+        }
+        editing.prune(keeping: Set(tabs.tabs.map { $0.location.path }))
         if recordHistory { history.visit(resolved) }
         if case .file(let entry) = resolved {
             selectedEntry = entry
@@ -193,6 +216,7 @@ final class WorkbenchStore {
     }
 
     func activateTab(_ id: UUID) {
+        guard !editing.isClosing else { return }
         tabs.activate(id)
         guard let active = tabs.active else { return }
         browsingLocation = active.location
@@ -202,6 +226,16 @@ final class WorkbenchStore {
     }
     func pinTab(_ id: UUID) { tabs.pin(id) }
     func closeTab(_ id: UUID) {
+        guard let tab = tabs.tabs.first(where: { $0.id == id }) else { return }
+        let documents = editing.documents[tab.location.path].map { [$0] } ?? []
+        let session = sessionID
+        editing.confirmClosing(documents) { [weak self] allowed in
+            guard let self, allowed, self.sessionID == session else { return }
+            self.removeTab(id, path: tab.location.path)
+        }
+    }
+    private func removeTab(_ id: UUID, path: String) {
+        editing.remove(path)
         tabs.close(id)
         selectedEntry = nil
         browsingLocation = tabs.active?.location ?? .directory(currentDirectory)
@@ -210,8 +244,46 @@ final class WorkbenchStore {
             requestDirectory(currentDirectory)
         }
     }
-    func goBack() { if let destination = history.back() { navigate(destination, preview: true, recordHistory: false) } }
+    func saveActiveDocument() {
+        guard !editing.isClosing else { return }
+        if let document = activeDocument { Task { await document.save() } }
+    }
+    func saveAllDocuments() {
+        guard !editing.isClosing else { return }
+        Task { _ = await editing.saveAll() }
+    }
+    func reloadActiveDocument() {
+        guard let document = activeDocument, let access else { return }
+        let session = sessionID
+        editing.confirmClosing([document]) { [weak self] allowed in
+            guard let self, allowed, self.sessionID == session else { return }
+            self.editing.remove(document.path)
+            self.editing.open(path: document.path, access: access) { [weak self] in
+                guard let self, self.sessionID == session,
+                    let tab = self.tabs.tabs.first(where: { $0.location.path == document.path })
+                else { return }
+                self.tabs.pin(tab.id)
+            }
+        }
+    }
+    func prepareToCloseWindow(completion: @escaping (Bool) -> Void) {
+        projectIntent = UUID()
+        editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
+            if allowed, let self {
+                self.editing.reset()
+                self.tabs = BrowserTabs()
+                self.history = NavigationHistory()
+                self.browsingLocation = self.rootURL == nil ? nil : .directory("")
+            }
+            completion(allowed)
+        }
+    }
+    func goBack() {
+        guard !editing.isClosing else { return }
+        if let destination = history.back() { navigate(destination, preview: true, recordHistory: false) }
+    }
     func goForward() {
+        guard !editing.isClosing else { return }
         if let destination = history.forward() { navigate(destination, preview: true, recordHistory: false) }
     }
     func goToParent() {
