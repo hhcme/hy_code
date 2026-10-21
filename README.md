@@ -1,10 +1,12 @@
 # HyCode
 
+<img src="app/macos/Resources/brand/icon.png" width="96" height="96" alt="HyCode 应用图标">
+
 A high-performance, native macOS code editor — built with Swift and Rust, fully open source.
 
 HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **macOS（Apple Silicon）**，采用 **Swift 原生界面 + Rust 内核**，借鉴 IDEA 的工作台组织，追求快速启动、低输入延迟和可控的资源占用。
 
-**当前处于需求与架构准备阶段，仅有文档和文档检查工具；尚无应用实现、构建入口或可下载版本。** 原文件浏览器实现已于 2026-10-21 清理，保留在 Git 历史中。
+**当前已建立 macOS 基础文件浏览工作台。** 启动时恢复上次打开的项目；未打开项目时中央显示最近项目，可选择和切换项目、展开项目树、使用文件标签和面包屑导航、查看文件信息；目录仅在项目树浏览，不生成中央列表或标签；当前只读，尚无文本编辑或代码分析器。静默构建与后台测试已通过，真实窗口及性能尚未验证。旧文件浏览器实现保留在 Git 历史中；本次为新工程，尚无正式应用发布。
 
 - 源码：[hhcme/hy_code](https://github.com/hhcme/hy_code)
 - 许可证：[MIT](LICENSE)
@@ -32,11 +34,13 @@ HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **m
 | [产品需求](docs/PRODUCT_REQUIREMENTS.md) | 工作区、编辑、保存和工作台交互 |
 | [技术设计](docs/TECH_DESIGN.md) | Swift/Rust 分层、文档所有权和 FFI |
 | [开发约定](docs/DEVELOPMENT.md) | 开发入口、真实命令、验证与证据规则 |
+| [品牌与应用图标](docs/BRANDING.md) | 同系列设计、资源、提示词与打包 |
+| [当前文件工作台](docs/WORKBENCH.md) | 布局、交互、源码地图、构建及验证边界 |
 | [实施路线](docs/ROADMAP.md) | macOS 分阶段目标和验收条件 |
 | [性能设计与验收](docs/PERFORMANCE.md) | 测量口径、样本和待确定的预算 |
 | [编辑内核与语言服务](docs/CODE_INTELLIGENCE.md) | 文本、语法、语义的候选与边界 |
 | [依赖与来源](docs/DEPENDENCIES.md) | 已采用依赖与调研候选分别登记 |
-| [能力台账](docs/FORMAT_SUPPORT.md) | 当前零应用实现基线 |
+| [能力台账](docs/FORMAT_SUPPORT.md) | 当前实现、后台证据及未验证项 |
 | [架构决策](docs/adr/README.md) | 已接受的技术方向及后续 ADR 规则 |
 | [开源与分发](docs/FEASIBILITY_AND_DISTRIBUTION.md) | MIT、公开源码及未来应用发布准备 |
 | [重写记录](docs/REWRITE_RECORD.md) | 原实现清理与文档基线整理 |
@@ -49,10 +53,19 @@ cd hy_code
 python3 scripts/check_docs.py
 ```
 
-文档检查仅需 Python 3.9+ 标准库，检查本地链接与历史快照完整性，不构建或启动应用。欢迎通过 Issue 讨论使用场景、首版范围和性能样本，通过 Pull Request 改进文档。开始开发前请先读 [AGENTS.md](AGENTS.md) 和开发约定。
+文档检查仅需 Python 3.9+ 标准库。开始开发前先读 [AGENTS.md](AGENTS.md) 和开发约定。
+
+macOS / Apple Silicon 的本地构建（当前验证环境：Xcode 27.1 / Swift 6.4、Rust 1.96.0）：
+
+```sh
+bash scripts/build_macos.sh debug
+bash scripts/check_native.sh
+```
+
+构建产物为 `build/HyCode.app`，脚本不会启动、安装应用或操作窗口。声明的最低系统为 macOS 14，尚未进行真实窗口或旧系统运行验证。完整结构与操作见[工作台说明](docs/WORKBENCH.md)。
 
 **测试只能静默执行，不得打断用户工作。** 不启动应用或模拟器，不操作用户桌面、焦点、键鼠与剪贴板；需要真实窗口的项目保留为未验证。详细约束见[开发约定](docs/DEVELOPMENT.md)。
 
 ## 许可证
 
-HyCode 自有代码与文档采用 [MIT License](LICENSE)。第三方组件保留其自身许可与版权通知；候选被列入文档不代表已接入、已验证或已获准随包分发。
+HyCode 自有代码与文档采用 [MIT License](LICENSE)。实际采用组件的来源、版本和许可见[依赖台账](docs/DEPENDENCIES.md)与[第三方通知](THIRD_PARTY_NOTICES.md)；调研候选与已接入依赖分别登记。

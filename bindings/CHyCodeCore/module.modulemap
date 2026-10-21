@@ -1,0 +1,5 @@
+module CHyCodeCore {
+    header "include/hycode_core.h"
+    link "hycode_core"
+    export *
+}

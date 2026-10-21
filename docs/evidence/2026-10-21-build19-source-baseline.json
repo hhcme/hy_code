@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 19",
+  "mode": "source organization and submission verification",
+  "source_state": "pre-commit candidate",
+  "organization": "Tree coordinator/nodes, viewport/clip observation and row/cell drawing are separate files; no behavior changes from build18",
+  "previous_tree_source_sha256": "a1d2199cf425cdc3b98e37b656f96a7aff7085a7879188faef820b4b24f4991f",
+  "previous_source_reconstruction_matches_recorded_hash": true,
+  "source_sha256": {
+    "app/macos/Sources/ProjectTree/NativeProjectTree.swift": "67e213b5e9c68f62aefa762c4db20b6a822a202f232332ddd34037f23682705a",
+    "app/macos/Sources/ProjectTree/ProjectTreeOutline.swift": "3ba3099efc3f48957043f8744a879be9b29c995f21adc788de4119fad0723099",
+    "app/macos/Sources/ProjectTree/ProjectTreeRowView.swift": "0287b3954578f6a014cc54470d5c9c0898b2f2c207c6cbaeee8430c944d1768c",
+    "app/macos/Sources/ProjectTree/ProjectTreeScrollContainer.swift": "a13ac6a36b7c577ebc52667e69577134ceb6043d574ab4a56aae075937364373",
+    "packages/HyCodeWorkspace/Sources/NativeDirectoryReader.swift": "e4898aef5bfcb71053cee582ca7ac4d11101ad1ff866da46ca35524bce98b97e",
+    "crates/hycode-core/src/ffi.rs": "7a320cef8e38a320c002c673be99b0d890b1eb06e65c838ae45f82ef183fcd37",
+    "Cargo.lock": "4aca600fbe2c5ce1e7d72ce48cce208fee6c2e4f3a9abbc5764f308cad2256c3",
+    "Package.swift": "ab4a52a508fd0b154206ad222ee653c741f0bff158afcbe78ac7983feb2aa25d",
+    "scripts/build_macos.sh": "fc6953dba38be158794dc496d2b029e122252999763dd3cb5d503767a01d5288",
+    "scripts/check_native.sh": "79350d283d40ae8f0abba66cc73312031e9f78104b8f3f97b9f1adcdff3996b9"
+  },
+  "swift_tests": 54,
+  "rust_tests": 5,
+  "checks": [
+    "Formatting and static analysis",
+    "C11/C++17 ABI header syntax",
+    "Shell syntax",
+    "Documentation links and historical manifest hashes",
+    "Staged whitespace check",
+    "Locked crate and Rust toolchain license notice byte comparison",
+    "Independent read-only review; no confirmed P1/P2"
+  ],
+  "clean_source_export": {
+    "staged_source_tree": "216168f3bd7570ffb57c8b26698451fdee1f3819",
+    "swift_tests": 54,
+    "rust_tests": 5,
+    "release_build": true,
+    "architecture": "arm64",
+    "build": "19",
+    "executable_sha256": "18ea89564c2d86328e3d60be40bb0fa0fbe6439ad852481f1040e783fa007a95",
+    "application_launched": false
+  },
+  "clean_export_note": "The export predates this evidence and final documentation additions; compiled source is unchanged.",
+  "local_release": {
+    "architecture": "arm64",
+    "minimum_os": "14.0",
+    "executable_sha256": "55e8801cd1bb25dc6e7448349eedc98424824f66c69351527055bdc7d7c42f3d",
+    "bundle_bytes": 5987708
+  },
+  "gui_started": false,
+  "desktop_interaction": false,
+  "distribution_signing": false,
+  "public_binary_release": false,
+  "not_verified": [
+    "Real window and startup restoration",
+    "IME and editor behavior; editor not implemented",
+    "Runtime animation, scrolling and FPS",
+    "Older macOS runtime and signed distribution"
+  ],
+  "submission_scope": "Native UI/core/bridge, tests/build tooling, own icon sources, current documentation and upstream notices; build caches and development app excluded"
+}

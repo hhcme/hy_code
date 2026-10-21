@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 16",
+  "mode": "headless checks, generated fixture probe and static review",
+  "source_state": "uncommitted working tree",
+  "environment": {
+    "architecture": "arm64",
+    "macos": "27.0.1",
+    "model": "Mac16,11"
+  },
+  "source_sha256": {
+    "app/macos/Sources/Workbench/WorkbenchScrollStyle.swift": "acbdc33c017d7c5f64ea1d58c5b96dd41d5df1d49da9e06b5d4914222f800104",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "31b370d7c07d84f213032d61b5bd70a9114dbbcd338ca88ff141f5594f40dd01",
+    "app/macos/Sources/ProjectTree/NativeProjectTree.swift": "91c89c10bf25e6ecf2dd8c743bd8e4de54e6639c0908068a650c1e3b2e71fd7d",
+    "packages/HyCodeWorkspace/Sources/ProjectTreeText.swift": "657e5642f1342a9edcc0ce80855b4a0fb765b359727be77d369f5c1b541c7de7",
+    "packages/HyCodeWorkspace/Tests/ProjectTreeTextTests.swift": "9b127aed0469ff92bfdabd93dd6717ab0498b95e371fa7777bf8d85820e84379",
+    "tools/DirectoryProbe/main.swift": "2ca30167144390f1c595e4186143cee369944154d553a2b99650a9167ebcb9d5"
+  },
+  "swift_tests": 45,
+  "rust_tests": 5,
+  "new_coretext_tests": 4,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Release arm64 build without launching",
+    "Independent read-only code review"
+  ],
+  "fixture": {
+    "files": 64,
+    "directories": 8,
+    "file_bytes": 5,
+    "recursive": false,
+    "samples": 7,
+    "user_files_accessed": false
+  },
+  "previous_probe_read_only": {
+    "does_not_measure": "tree UI, storage cold start, scrolling or screen presentation",
+    "entries": 72,
+    "includes": "queue + Rust enumerate/metadata/sort + JSON + Swift decode",
+    "maximum_ms": 0.851917,
+    "median_ms": 0.265333,
+    "mode": "temporary-fixture",
+    "samples_ms": [
+      0.851917,
+      0.283167,
+      0.294709,
+      0.265333,
+      0.254666,
+      0.253583,
+      0.254083
+    ]
+  },
+  "current_probe_split_stages": {
+    "does_not_measure": "tree UI, storage cold start, scrolling or screen presentation",
+    "entries": 72,
+    "includes": "queue + Rust enumerate/metadata/sort + JSON + Swift decode",
+    "maximum_ms": 1.397958,
+    "median_ms": 0.38475,
+    "mode": "temporary-fixture",
+    "samples_ms": [
+      1.397958,
+      0.517417,
+      0.431917,
+      0.38475,
+      0.346542,
+      0.336667,
+      0.343209
+    ],
+    "text_preparation_includes": "background actor + CoreText system font and name widths, no AppKit",
+    "text_preparation_samples_ms": [
+      9.638334,
+      0.938,
+      0.919459,
+      0.879167,
+      0.809917,
+      0.832959,
+      0.937584
+    ]
+  },
+  "executable_sha256": "9b9b307c09e893f7bb4e108fe382d36aa7accc10e34de6cdf731d8b4ab702f60",
+  "not_measured": [
+    "Actual scrollbar transparency and junction rendering",
+    "AppKit and CoreText complete text layout equivalence",
+    "First expansion main-thread cost or click-to-presentation latency",
+    "User project filesystem latency, cold OS startup, FPS, GPU or display time"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false
+}

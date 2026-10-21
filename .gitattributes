@@ -1,0 +1,3 @@
+# Preserve archived evidence and upstream license notices byte-for-byte.
+docs/history/** -text
+third_party/licenses/** -text -whitespace

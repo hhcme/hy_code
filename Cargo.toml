@@ -1,0 +1,19 @@
+[workspace]
+members = ["crates/hycode-core"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT"
+repository = "https://github.com/hhcme/hy_code"
+
+[workspace.dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+
+# rust-lang/rust#157750: stripping host proc-macros can misalign Mach-O
+# LINKEDIT on macOS 27. Keep their symbols; this does not change core optimization.
+[profile.release.build-override]
+strip = "none"

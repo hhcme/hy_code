@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 18",
+  "mode": "headless checks, release packaging and static review",
+  "source_state": "uncommitted working tree",
+  "environment": {
+    "architecture": "arm64",
+    "macos": "27.0.1",
+    "minimum_os": "14.0"
+  },
+  "source_sha256": {
+    "app/macos/Sources/ProjectTree/NativeProjectTree.swift": "a1d2199cf425cdc3b98e37b656f96a7aff7085a7879188faef820b4b24f4991f",
+    "app/macos/Sources/ProjectTree/ProjectTreeScrollContainer.swift": "a13ac6a36b7c577ebc52667e69577134ceb6043d574ab4a56aae075937364373",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "a44f226429c4449bd15cefeee15548ee4cc3e93d18e3eebca8819d069b6f84ea",
+    "app/macos/Sources/HyCodeApp.swift": "12704f5b4a4fb5eda666258df2d4e0961d2923359533853ca40d12258db8c588",
+    "packages/HyCodeWorkspace/Sources/RecentProjects.swift": "64a185a21a995f4fced707e4b3c7933c251020d5e299f7ba2bfe91bad9921f40",
+    "packages/HyCodeWorkspace/Sources/ProjectTreeScrollAxis.swift": "ed288dddd6cdce9f541ae7987862603ff47a7762fd9d07a23c1ac097cd935fc0",
+    "packages/HyCodeWorkspace/Tests/RecentProjectTests.swift": "13b6764d07fa9713ce59fae286d16a85f68f1cbdb9078f8a8489604d2637f065",
+    "packages/HyCodeWorkspace/Tests/ProjectTreeScrollAxisTests.swift": "8158535a8b7f6f81ada4ff606d321294c74ea8f5a085dac75708d3748dad7887"
+  },
+  "swift_tests": 54,
+  "rust_tests": 5,
+  "new_restoration_tests": 4,
+  "new_scroll_axis_tests": 3,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Release arm64 build without launching",
+    "Independent read-only review; no remaining confirmed P1/P2"
+  ],
+  "restoration_cases": [
+    "Last opened project and bookmark round-trip",
+    "Legacy MRU-only schema migration",
+    "Explicit close retains history and null startup target despite a late bookmark",
+    "Unknown startup target never falls back to another project"
+  ],
+  "scroll_axis_cases": [
+    "Normalized thumb/document mapping",
+    "No scroll range after content shrinks below viewport",
+    "Invalid and overshooting values are clamped"
+  ],
+  "native_source_review": [
+    "Content NSScrollView owns neither system scroller; sibling NSScroller controls reserve fixed lanes",
+    "Clip reflection synchronizes thumbs; native tracking actions constrain clip offsets",
+    "Ancestor wheel forwarding removed to avoid event fallback reentry",
+    "Startup is consumed once; user actions invalidate older restore intents",
+    "Bookmark resolution off main actor with withoutUI and withoutMounting"
+  ],
+  "executable_sha256": "d75e4f0cb955c1f3a7e7e47e68a51bea226bb50852295d7a59cec016e900a035",
+  "bundle_bytes": 5988620,
+  "not_verified": [
+    "Actual scrollbar junction pixels and rounded edges",
+    "Native scrollbar tracking and wheel/trackpad/keyboard/accessibility scrolling",
+    "Real application restart and bookmark permission restoration",
+    "FPS or startup click-to-presentation latency"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false,
+  "clipboard_accessed": false,
+  "user_defaults_accessed_by_tests": false,
+  "distribution_signing": false,
+  "public_release": false
+}

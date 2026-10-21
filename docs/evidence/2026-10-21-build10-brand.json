@@ -1,0 +1,70 @@
+{
+  "source_sha256": "5ea867535f2a97ceffda8a59dc099d301cca190496908dc2bbf53e3cd7557244",
+  "icns_sha256": "3d892cc6b52ffac2f2ca3cceb964cc468cb08c857f0405dbd2c83b8aeb23acdf",
+  "frames": [
+    {
+      "file": "icon_16x16.png",
+      "pixels": 16,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_16x16@2x.png",
+      "pixels": 32,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_32x32.png",
+      "pixels": 32,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_32x32@2x.png",
+      "pixels": 64,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_128x128.png",
+      "pixels": 128,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_128x128@2x.png",
+      "pixels": 256,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_256x256.png",
+      "pixels": 256,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_256x256@2x.png",
+      "pixels": 512,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_512x512.png",
+      "pixels": 512,
+      "corners_alpha": 0
+    },
+    {
+      "file": "icon_512x512@2x.png",
+      "pixels": 1024,
+      "corners_alpha": 0
+    }
+  ],
+  "master_frame_pixels_identical": true,
+  "mode": "headless file/pixel checks; no GUI or system cache interaction",
+  "date": "2026-10-21",
+  "inspection_tool": "Pillow 11.3.0 for local pixel inspection only; not required by the application or build scripts",
+  "bundle": {
+    "build": "10",
+    "version": "0.1.0",
+    "identifier": "io.github.hhcme.hycode",
+    "icon_file": "HyCode.icns",
+    "png_matches_source": true,
+    "icns_matches_generated": true,
+    "executable_sha256": "abb80005f0dc8ee8151cdaddc94ef804793f847a160cf510e3149965352fb21f"
+  },
+  "packaged_icns_sha256": "3d892cc6b52ffac2f2ca3cceb964cc468cb08c857f0405dbd2c83b8aeb23acdf"
+}

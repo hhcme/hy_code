@@ -1,0 +1,304 @@
+import AppKit
+import HyCodeWorkspace
+import Observation
+
+/// Keeps the selected URL's access alive until every in-flight request releases it.
+private final class WorkspaceAccess: @unchecked Sendable {
+    let url: URL
+    let scoped: Bool
+    init(url: URL) {
+        self.url = url
+        scoped = url.startAccessingSecurityScopedResource()
+    }
+    deinit { if scoped { url.stopAccessingSecurityScopedResource() } }
+}
+
+@MainActor @Observable
+final class WorkbenchStore {
+    private(set) var rootURL: URL?
+    private(set) var sessionID = UUID()
+    private(set) var tabs = BrowserTabs()
+    private(set) var history = NavigationHistory()
+    private(set) var snapshots: [String: DirectorySnapshot] = [:]
+    @ObservationIgnored private(set) var treeNameWidths: [String: [String: Double]] = [:]
+    private(set) var errors: [String: String] = [:]
+    private(set) var loadingPaths: Set<String> = []
+    private(set) var treeRevision = 0
+    private(set) var treeCollapseRevision = 0
+    private(set) var treeResetRevision = 0
+    private(set) var directoryRevisions: [String: Int] = [:]
+    private(set) var browsingLocation: BrowserLocation?
+    private(set) var recentProjects: RecentProjects = {
+        guard let data = UserDefaults.standard.data(forKey: "workbench.recentProjects") else { return RecentProjects() }
+        return (try? JSONDecoder().decode(RecentProjects.self, from: data)) ?? RecentProjects()
+    }()
+    var selectedEntry: WorkspaceEntry?
+    var docking = WorkbenchDocking()
+    @ObservationIgnored let dockingSession = UUID()
+    var includeHidden = false { didSet { if oldValue != includeHidden { refresh() } } }
+    @ObservationIgnored private var access: WorkspaceAccess?
+    @ObservationIgnored private var requests: [String: Task<Void, Never>] = [:]
+    @ObservationIgnored private var projectIntent = UUID()
+    @ObservationIgnored private var startupAttempted = false
+    @ObservationIgnored private var requestIDs: [String: UUID] = [:]
+
+    /// The header, switcher and tree derive identity from the active directory,
+    /// never from the most recent history entry.
+    var currentProject: RecentProject? { rootURL.map { RecentProject(path: $0.path) } }
+    var projectName: String { currentProject?.name ?? "HyCode" }
+    var location: BrowserLocation? { browsingLocation }
+    var currentDirectory: String {
+        guard let location else { return "" }
+        if case .directory(let path) = location { return path }
+        return location.path.split(separator: "/").dropLast().joined(separator: "/")
+    }
+    var currentSnapshot: DirectorySnapshot? { snapshots[currentDirectory] }
+    var isLoading: Bool { !loadingPaths.isEmpty }
+    var informationEntry: WorkspaceEntry? {
+        if let selectedEntry { return selectedEntry }
+        if case .file(let entry) = location { return entry }
+        guard rootURL != nil else { return nil }
+        return WorkspaceEntry(name: location?.title ?? projectName, relativePath: currentDirectory, kind: .directory)
+    }
+
+    /// Only invoked by explicit user actions, never startup or background tests.
+    func chooseProject() {
+        startupAttempted = true
+        projectIntent = UUID()
+        let panel = NSOpenPanel()
+        panel.title = "打开项目目录"
+        panel.prompt = "打开项目"
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.canCreateDirectories = false
+        if let rootURL { panel.directoryURL = rootURL }
+        guard let window = NSApp.mainWindow ?? NSApp.keyWindow else { return }
+        panel.beginSheetModal(for: window) { [weak self] response in
+            guard response == .OK, let url = panel.url else { return }
+            self?.openProject(url)
+        }
+    }
+
+    func openProject(_ url: URL) {
+        startupAttempted = true
+        resetProject()
+        access = WorkspaceAccess(url: url)
+        rootURL = url
+        navigate(.directory(""), preview: false)
+        requestDirectory("")
+        recentProjects.remember(RecentProject(path: url.path))
+        saveRecentProjects()
+        if let access {
+            Task { [weak self, access] in
+                let data = await Task.detached(priority: .utility) {
+                    defer { withExtendedLifetime(access) {} }
+                    return try? access.url.bookmarkData(
+                        options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+                }.value
+                guard let self, let data else { return }
+                self.recentProjects.updateBookmark(data, path: url.standardizedFileURL.path)
+                self.saveRecentProjects()
+            }
+        }
+    }
+
+    func switchProject(_ project: RecentProject) {
+        startupAttempted = true
+        guard rootURL?.standardizedFileURL.path != project.path else { return }
+        let intent = UUID()
+        projectIntent = intent
+        Task { [weak self] in
+            let url = await Task.detached(priority: .userInitiated) {
+                if let bookmark = project.bookmark {
+                    var stale = false
+                    if let url = try? URL(
+                        resolvingBookmarkData: bookmark, options: [.withSecurityScope, .withoutUI, .withoutMounting],
+                        relativeTo: nil,
+                        bookmarkDataIsStale: &stale)
+                    {
+                        return url
+                    }
+                }
+                return URL(fileURLWithPath: project.path, isDirectory: true)
+            }.value
+            guard let self, self.projectIntent == intent else { return }
+            self.openProject(url)
+        }
+    }
+
+    private func saveRecentProjects() {
+        if let data = try? JSONEncoder().encode(recentProjects) {
+            UserDefaults.standard.set(data, forKey: "workbench.recentProjects")
+        }
+    }
+
+    /// The first scene appearance may reopen the last workspace. Any explicit
+    /// project action consumes startup so a delayed task cannot override it.
+    func restorePreviousProjectIfNeeded() {
+        guard !startupAttempted else { return }
+        startupAttempted = true
+        guard rootURL == nil, let project = recentProjects.startupProject else { return }
+        switchProject(project)
+    }
+
+    func closeProject() {
+        startupAttempted = true
+        recentProjects.closeWorkspace()
+        saveRecentProjects()
+        resetProject()
+    }
+
+    private func resetProject() {
+        projectIntent = UUID()
+        sessionID = UUID()
+        for request in requests.values { request.cancel() }
+        requests.removeAll()
+        requestIDs.removeAll()
+        loadingPaths.removeAll()
+        snapshots.removeAll()
+        treeNameWidths.removeAll()
+        errors.removeAll()
+        rootURL = nil
+        access = nil
+        selectedEntry = nil
+        tabs = BrowserTabs()
+        history = NavigationHistory()
+        browsingLocation = nil
+        directoryRevisions.removeAll()
+        treeRevision += 1
+    }
+
+    func navigate(_ location: BrowserLocation, preview: Bool, recordHistory: Bool = true) {
+        guard rootURL != nil else { return }
+        let currentEntries = snapshots[location.parentDirectory ?? ""]?.entries ?? []
+        let resolved = location.resolvingFile(in: currentEntries)
+        browsingLocation = resolved
+        tabs.open(resolved, preview: preview)
+        if recordHistory { history.visit(resolved) }
+        if case .file(let entry) = resolved {
+            selectedEntry = entry
+        } else {
+            selectedEntry = WorkspaceEntry(
+                name: resolved.path.isEmpty ? projectName : resolved.title, relativePath: resolved.path,
+                kind: .directory)
+        }
+        // A directory selection does not enumerate it or create a document tab.
+        // Explicit outline expansion owns directory reads.
+        if !resolved.isDirectory { requestDirectory(currentDirectory) }
+    }
+
+    func open(_ entry: WorkspaceEntry, preview: Bool) {
+        navigate(entry.isDirectory ? .directory(entry.relativePath) : .file(entry), preview: preview)
+    }
+
+    func activateTab(_ id: UUID) {
+        tabs.activate(id)
+        guard let active = tabs.active else { return }
+        browsingLocation = active.location
+        history.visit(active.location)
+        if case .file(let entry) = active.location { selectedEntry = entry }
+        requestDirectory(currentDirectory)
+    }
+    func pinTab(_ id: UUID) { tabs.pin(id) }
+    func closeTab(_ id: UUID) {
+        tabs.close(id)
+        selectedEntry = nil
+        browsingLocation = tabs.active?.location ?? .directory(currentDirectory)
+        if let location {
+            history.visit(location)
+            requestDirectory(currentDirectory)
+        }
+    }
+    func goBack() { if let destination = history.back() { navigate(destination, preview: true, recordHistory: false) } }
+    func goForward() {
+        if let destination = history.forward() { navigate(destination, preview: true, recordHistory: false) }
+    }
+    func goToParent() {
+        guard let parent = location?.parentDirectory else { return }
+        navigate(.directory(parent), preview: true)
+    }
+    func openSelected() { if let selectedEntry { open(selectedEntry, preview: false) } }
+
+    func collapseDirectories() {
+        treeCollapseRevision += 1
+        treeRevision += 1
+    }
+
+    func requestDirectory(_ path: String, force: Bool = false) {
+        guard let access else { return }
+        if !force, snapshots[path] != nil || requests[path] != nil || errors[path] != nil { return }
+        requests[path]?.cancel()
+        let requestID = UUID()
+        let session = sessionID
+        let hidden = includeHidden
+        let reader = NativeDirectoryReader(rootPath: access.url.path)
+        requestIDs[path] = requestID
+        errors[path] = nil
+        loadingPaths.insert(path)
+        markDirectoryChanged(path)
+        requests[path] = Task { [weak self, access] in
+            defer { withExtendedLifetime(access) {} }
+            do {
+                let snapshot = try await reader.list(relativePath: path, includeHidden: hidden)
+                let widths = try await ProjectTreeText.nameWidths(for: snapshot.entries)
+                guard let self, self.sessionID == session, self.requestIDs[path] == requestID, !Task.isCancelled else {
+                    return
+                }
+                self.treeNameWidths[path] = widths
+                self.snapshots[path] = snapshot
+                self.tabs.updateFileMetadata(from: snapshot.entries)
+                if let selected = self.selectedEntry,
+                    let updated = snapshot.entries.first(where: { $0.relativePath == selected.relativePath })
+                {
+                    self.selectedEntry = updated
+                }
+                self.completeRequest(path)
+            } catch {
+                guard let self, self.sessionID == session, self.requestIDs[path] == requestID else { return }
+                self.errors[path] = error is CancellationError ? "目录读取已取消" : error.localizedDescription
+                self.completeRequest(path)
+            }
+        }
+    }
+
+    func refresh() {
+        guard rootURL != nil else { return }
+        for request in requests.values { request.cancel() }
+        requests.removeAll()
+        requestIDs.removeAll()
+        loadingPaths.removeAll()
+        snapshots.removeAll()
+        treeNameWidths.removeAll()
+        errors.removeAll()
+        selectedEntry = nil
+        treeResetRevision += 1
+        directoryRevisions.removeAll()
+        treeRevision += 1
+        requestDirectory("")
+        if !currentDirectory.isEmpty { requestDirectory(currentDirectory) }
+    }
+
+    func cancelReading() {
+        for (path, request) in requests {
+            request.cancel()
+            errors[path] = "目录读取已取消"
+            markDirectoryChanged(path)
+        }
+        requests.removeAll()
+        requestIDs.removeAll()
+        loadingPaths.removeAll()
+        treeRevision += 1
+    }
+
+    private func completeRequest(_ path: String) {
+        requests[path] = nil
+        requestIDs[path] = nil
+        loadingPaths.remove(path)
+        markDirectoryChanged(path)
+    }
+    private func markDirectoryChanged(_ path: String) {
+        treeRevision += 1
+        directoryRevisions[path] = treeRevision
+    }
+}

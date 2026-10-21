@@ -1,6 +1,6 @@
 # HyCode 开发约定
 
-更新：2026-10-21。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。目前只有文档和文档检查工具，没有应用构建或测试入口。
+更新：2026-10-21。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件浏览工作台、Rust 目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)。
 
 ## 开始工作
 
@@ -10,12 +10,21 @@
 
 ## 当前真实命令
 
-在仓库根目录运行，需 Python 3.9+，无额外 Python 包：
+在仓库根目录运行。当前验证环境为 Apple Silicon、macOS 27.0.1、Xcode 27.1 / Swift 6.4、Rust 1.96.0；Rust 由 `rust-toolchain.toml` 固定，Cargo 版本由锁文件固定依赖。Swift 包声明 macOS 14 部署目标，旧系统运行仍未验证。
 
 ```sh
+# 仅构建开发应用，不启动
+bash scripts/build_macos.sh debug
+# 格式、Clippy、Rust 测试、原生桥接构建、Swift Testing、文档检查
+bash scripts/check_native.sh
+# 只检查文档，需 Python 3.9+ 标准库
 python3 scripts/check_docs.py
 git diff --check
+# 受控的无 GUI 目录读取探针：默认只创建/删除 72 项临时样本
+nice -n 10 swift run --jobs 2 HyCodeDirectoryProbe
 ```
+
+原生脚本最多使用两个构建任务；日常可用 `nice -n 10 bash scripts/check_native.sh` 降低优先级。`swift test --disable-xctest` 运行工作区、工具停靠/分隔交互状态及最近项目记录、CoreGraphics 几何/离屏像素合成、CoreText 后台文件名测量的 Swift Testing 命令行入口，不链接应用 target 为测试宿主，不启动 `NSApplication` 或创建窗口。AppKit/SwiftUI 只参与编译，没有 UI 自动化测试。
 
 脚本只读取文档，检查 UTF-8、本地链接目标及历史 manifest 哈希，不请求网络、不构建应用、不启动窗口。GitHub Actions 的 `Documentation` 工作流运行同一检查；它不是 macOS 应用构建或验收。
 
@@ -30,8 +39,16 @@ git diff --check
 | `docs/history/` | 原文快照及完整性清单 |
 | `.github/` | Issue/PR 模板和文档检查流程 |
 | `scripts/check_docs.py` | 可在本地与 CI 执行的文档检查 |
+| `Cargo.toml`、`crates/hycode-core/` | Rust 工作区及只读目录内核 |
+| `Package.swift`、`packages/HyCodeWorkspace/` | Swift 包、FFI 包装及可独立测试的模型 |
+| `bindings/CHyCodeCore/` | ABI 1 头文件与模块声明 |
+| `app/macos/` | SwiftUI 工作台、AppKit 项目树、品牌源图及开发应用元数据 |
+| `scripts/build_core.sh`、`scripts/build_macos.sh`、`scripts/check_native.sh` | 真实构建和静默检查 |
+| `scripts/build_icons.sh` | 源 PNG → 十尺寸 iconset → ICNS，纯后台，不操作 Dock/Finder |
+| `tools/DirectoryProbe/` | 无 AppKit/应用宿主的单层读取探针，默认使用临时样本 |
+| `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-尚不创建空应用目录、占位包或示例构建。首个编辑原型建立时再确定真实源码结构、Bundle ID、工具链、绑定和构建命令。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `19`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 ## 静默测试规则
 
@@ -46,6 +63,8 @@ git diff --check
 - 无法确认静默的入口不执行；需要 GUI、焦点、真实输入、系统剪贴板或桌面截图的测试保留断言并标为未验证，不绕过限制补测。
 
 真实交互与后台证据仍分开命名和报告。保留真实窗口、IME、焦点与键盘等验收目标，不通过删除断言或用后台替身结果宣称真实交互已通过；本规则下不能执行的部分记录为验证缺口。历史文档中的交互测试许可不覆盖当前静默约束。
+
+2026-10-21 本轮用户明确授权操作 WebStorm 记录布局行为；该例外仅用于指定参考应用的工具窗口切换，已结束并恢复原展开状态。未由此授权启动 HyCode 或其他 GUI 测试。操作与证据边界见[工作台记录](WORKBENCH.md)。后续默认仍按上述静默规则执行。
 
 ## 架构与数据
 
@@ -67,5 +86,7 @@ git diff --check
 自有代码与文档使用 [MIT](../LICENSE)，贡献说明见 [CONTRIBUTING.md](../CONTRIBUTING.md)。引入外部组件前更新[依赖台账](DEPENDENCIES.md)，记录来源、版本、许可与分发方式。Apple 系统框架属于平台依赖，不称为本项目开源组件。
 
 当前文档使用相对路径，不要求维护者的本机目录或私有仓库。不要提交凭据、私人数据或缓存；历史快照保留原文及哈希，其旧路径不是运行前提。
+
+`.gitattributes` 保留历史快照与上游许可的原始字节；上游许可不参与本项目的空白格式改写，避免为通过检查修改通知原文。
 
 保留无关改动；只有用户授权时才提交、推送或发布。默认分支为 `main`，新自动化工作分支使用 `codex/` 前缀。新应用 target、crate、CLI、Bundle ID 和数据目录围绕 HyCode 定义，不沿用旧产品标识。应用打包和发布另行授权，不由文档推送自动触发。

@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 11",
+  "mode": "headless checks and static review",
+  "source_state": "uncommitted working tree",
+  "source_sha256": {
+    "app/macos/Sources/Workbench/WorkbenchCanvas.swift": "35979031fe7fe7fae55df77eeeeb31c0519729e212fdeef9134807b3d98ca3ad",
+    "app/macos/Sources/Workbench/WorkbenchResizeHandle.swift": "8803731b2a914b1f4f1baf7180cc469362cafbb8f3d73b1dee9c29f0b749d337",
+    "packages/HyCodeWorkspace/Sources/WorkbenchResizeInteraction.swift": "98f6345abc1882a0c8cdc4bd1c396216bfc487e6a8340c1d73a9870c31c3bdb9",
+    "packages/HyCodeWorkspace/Tests/WorkbenchResizeInteractionTests.swift": "e64d7566bfe31238a4bd870ccbb784310bc1d4e13f90fbeca3e92d9c7a05b5ae"
+  },
+  "swift_tests": 41,
+  "rust_tests": 5,
+  "resize_state_tests": 9,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Pure resize event sequences and indicator geometry",
+    "Release arm64 build without launching",
+    "Independent read-only code review"
+  ],
+  "executable_sha256": "895d569ebe5bec66fc248962515487825389bd3dd951fe746dbf4798d9adb351",
+  "not_measured": [
+    "AppKit event delivery, cursor or real focus behavior",
+    "Actual CALayer disappearance on screen",
+    "NSHostingView layout cost, FPS, GPU or display presentation time"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false
+}

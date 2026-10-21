@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 14",
+  "mode": "headless checks and static review",
+  "source_state": "uncommitted working tree",
+  "scope": "Project tree hover and selection share complete row bounds; content indentation and horizontal column sizing unchanged; weaker tree-specific hover color",
+  "source_sha256": {
+    "app/macos/Sources/ProjectTree/NativeProjectTree.swift": "4c5d2e0d84f1d12ab76d076eed0f76d4f7333a6ceb1362349a29b256a87b631b",
+    "app/macos/Sources/Workbench/WorkbenchTheme.swift": "02da50f996c6ceadea214bac25493a5103235c4913942ac3964a8c68790d78c0"
+  },
+  "swift_tests": 41,
+  "rust_tests": 5,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Existing workspace, recent history, geometry, docking and bitmap tests",
+    "Release arm64 build without launching",
+    "Independent read-only review against build13 source snapshots"
+  ],
+  "executable_sha256": "af0293b97b91e97f0760d1764f6b0f56603682ad70b100367f096dea6d3650e3",
+  "not_measured": [
+    "Actual full-row background edges at different nesting depths",
+    "Horizontal scrolling, clipping and scrollbar rendering on screen",
+    "Native hover exit, row reuse and window focus transitions",
+    "FPS or display presentation time"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false
+}

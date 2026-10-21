@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 13",
+  "mode": "headless checks and static review",
+  "source_state": "uncommitted working tree",
+  "scope": "No-project dropdown content and grouping, explicit empty header, shared active directory identity; not a reproduced stale-project-title bug",
+  "source_sha256": {
+    "app/macos/Sources/Workbench/WorkbenchProjectSwitcher.swift": "013782a840568a8690910fd9de8ed228024e0902921013626af1b47738804c4a",
+    "app/macos/Sources/Workbench/WorkbenchProjectRow.swift": "a096450393d61014f960e40c29740c51382067fefaed0aa1a8df982a3cbcea68",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "f6909d6d2a5c9a3b674f42394139dd7701f66bde4ea30c0a9f268dff8ddb6616",
+    "packages/HyCodeWorkspace/Sources/RecentProjects.swift": "91dc24a3217d9c603c6eb257762309ea8648cea09b6d4baee68a1679dd68d103"
+  },
+  "swift_tests": 41,
+  "rust_tests": 5,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Existing workspace, recent history, geometry, docking and bitmap unit tests",
+    "Release arm64 build without launching",
+    "Independent read-only review of project identity, list geometry and disabled actions"
+  ],
+  "executable_sha256": "1eb13625502d744b671ffb2edc67713155740f98e9ba9fb8c980e2495a1785ee",
+  "not_measured": [
+    "Actual title, badge and popover rendering in a real window",
+    "Tooltip, hover, menu dismissal, keyboard and accessibility behavior",
+    "Native scroll area size and physical pixel alignment",
+    "FPS or display presentation time"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false
+}

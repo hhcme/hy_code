@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 17",
+  "mode": "headless checks, release packaging and static review",
+  "source_state": "uncommitted working tree",
+  "environment": {
+    "architecture": "arm64",
+    "macos": "27.0.1",
+    "minimum_os": "14.0"
+  },
+  "source_sha256": {
+    "app/macos/Sources/ProjectTree/NativeProjectTree.swift": "6be863d487fc41f91c781dce40e8e560fd59e126193e8db97640acfca10ed8d0",
+    "app/macos/Sources/ProjectTree/ProjectTreeContextMenu.swift": "b4035da5ce9758ac3b7d13e252b6acea5a2df276e3ce34665d969e7ebfb51b93",
+    "app/macos/Sources/Workbench/FileInformationView.swift": "b7b3e662020355b07accbe9561c4ca311f2fe67d52649ddeb1749e8e230c32f0",
+    "packages/HyCodeWorkspace/Sources/WorkspaceEntry.swift": "19ca781deafaeb283db6568bb68f87bfdd61e431a3899a37f7e17737ccd9f432",
+    "packages/HyCodeWorkspace/Tests/WorkspaceEntryPathTests.swift": "18f64762e4bffcc7fc96559e01b9a3bc18fa191b815aa1d6a1632dbe7d792d02"
+  },
+  "swift_tests": 47,
+  "rust_tests": 5,
+  "new_path_tests": 2,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Release arm64 build without launching",
+    "Independent read-only review; implicit URL metadata probe fixed and re-reviewed"
+  ],
+  "path_cases": [
+    "Root URL and dot relative path",
+    "Unicode, spaces and literal percent signs",
+    "Explicit file/directory hint; no filesystem metadata inference"
+  ],
+  "menu_source_review": [
+    "Clicked row identity instead of current editor selection",
+    "Native menu and submenu target ownership",
+    "Weak coordinator capture and workspace-session guard"
+  ],
+  "corner_source_review": "Headerless table corner cleared; same-panel inert cover limited to public scroller crossing geometry; empty geometry guarded",
+  "executable_sha256": "2eebe4a9fd483b976eb446872b6e8fd2ca325f557bd4a2f52a99f39ad23cd7e1",
+  "bundle_bytes": 5953244,
+  "not_verified": [
+    "Real tooltip area or timing",
+    "Right-click menu targeting, tracking and actions in a real window",
+    "Clipboard and Finder actions",
+    "Scrollbar junction pixels, rounded edges, focus, scrolling or FPS"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false,
+  "clipboard_accessed": false,
+  "finder_actions_executed": false,
+  "distribution_signing": false,
+  "public_release": false
+}

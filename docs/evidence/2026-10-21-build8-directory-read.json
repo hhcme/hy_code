@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-21",
+  "category": "headless controlled directory read",
+  "source": {
+    "base_commit": "19b03ae",
+    "state": "uncommitted build 8 workspace",
+    "sha256": {
+      "tools/DirectoryProbe/main.swift": "61c839d6398326199c341f4238218c9a19cb141b19b9334840705a6a45982b68",
+      "packages/HyCodeWorkspace/Sources/NativeDirectoryReader.swift": "e4898aef5bfcb71053cee582ca7ac4d11101ad1ff866da46ca35524bce98b97e",
+      "crates/hycode-core/src/directory.rs": "c5d93c95d4fa5bcdaa9b88e2b1a321a23efc4b5b2e2c8086af52157a9b4e7225"
+    }
+  },
+  "environment": {
+    "hardware_model": "Mac16,11",
+    "memory_bytes": 51539607552,
+    "os": "macOS 27.0.1 (26A434)",
+    "toolchain": "Xcode 27.1 / Swift 6.4; Rust 1.96.0",
+    "configuration": "Swift Debug; Rust release static library",
+    "process_priority": "nice 10",
+    "build_jobs": 2
+  },
+  "command": "nice -n 10 swift run --jobs 2 --skip-build HyCodeDirectoryProbe",
+  "fixture": {
+    "files": 64,
+    "directories": 8,
+    "file_contents_utf8": "sample",
+    "manifest_format": "lexically sorted LF-terminated records: d dir-N or f file-N.txt sample",
+    "manifest_sha256": "d27b3421c7d49a9c4144a088abd010b29d880b7470a027f40b4dc0dc7a00d5d6"
+  },
+  "result": {
+    "does_not_measure": "tree UI, storage cold start, scrolling or screen presentation",
+    "entries": 72,
+    "includes": "queue + Rust enumerate/metadata/sort + JSON + Swift decode",
+    "maximum_ms": 1.026958,
+    "median_ms": 0.393791,
+    "mode": "temporary-fixture",
+    "samples_ms": [
+      1.026958,
+      0.424291,
+      0.430125,
+      0.393791,
+      0.363208,
+      0.388583,
+      0.364667
+    ]
+  },
+  "limitations": [
+    "Seven serial hot filesystem-cache reads only; not a parallelism benchmark.",
+    "No GUI, tree layout, scrolling, cold storage or user project measured.",
+    "No prior equivalent-input baseline; no application speedup or FPS conclusion."
+  ]
+}

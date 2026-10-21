@@ -2,7 +2,7 @@
 .DS_Store
 .v2c/
 
-# Build outputs and caches; exact new build layout is not defined yet
+# Native build outputs, generated icons and local caches
 build/
 dist/
 target/

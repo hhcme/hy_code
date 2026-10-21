@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 15",
+  "mode": "headless checks and static review",
+  "source_state": "uncommitted working tree",
+  "scope": "Symmetric project-tree gutters, in-panel reserved scrollbar lanes, solid scroll/clip background and viewport-anchored rounded row highlights",
+  "source_sha256": {
+    "app/macos/Sources/ProjectTree/NativeProjectTree.swift": "85638a08b3eb5a0ca0bbecafce1abad9eb375d0f5b1c8182142fb855643b6908",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "5043f47ed23055fccad00282d70df7256a863e4cda10cc12f5e4120630d31439",
+    "app/macos/Sources/Workbench/WorkbenchScrollStyle.swift": "aa0c7cb02277549639fcfe82c307f64d03a610dca349834caedc091204424d82",
+    "app/macos/Sources/Workbench/WorkbenchTheme.swift": "8ee1262579b47b6031ccc08b5e799afeb8ba7fe218b7a8067b5c4bc86eb375dc"
+  },
+  "swift_tests": 41,
+  "rust_tests": 5,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Existing workspace, recent history, geometry, docking and bitmap tests",
+    "Release arm64 build without launching",
+    "Independent read-only review against build14 source snapshots"
+  ],
+  "executable_sha256": "d6992cccbd682b3283aaa14822774fc6407ff4b6030b915abcd961ed95c2cdcd",
+  "not_measured": [
+    "Actual scrollbar slot and corner rendering",
+    "Native clip-view notification delivery and horizontal-scroll repaint",
+    "Visible rounded row corners after scrolling/resizing at different nesting depths",
+    "Focus, hover and pointer behavior in a real window",
+    "FPS or display presentation time"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false
+}

@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-21",
+  "build": "0.1.0 / 12",
+  "mode": "headless checks and static review",
+  "source_state": "uncommitted working tree",
+  "source_sha256": {
+    "app/macos/Sources/Workbench/WorkbenchTheme.swift": "0fd9e0ebe3b0f0071e364bed37520026ee2cbc0f1e82287cb0ea77f2efc9114a",
+    "app/macos/Sources/Workbench/WorkbenchPointerRegion.swift": "cade55c368b9e1add43abcadba49d3942a9dd52c20b3043ccba7854fc8f177ee",
+    "app/macos/Sources/Workbench/WorkbenchMenuButton.swift": "f29a19a61647ed7628b031b2587dd3ba3af09e988225cf533e750d3753b1ff64",
+    "app/macos/Sources/Workbench/WorkbenchProjectRow.swift": "15919d7cb738550fc92b7249126a810092ece70374ef85545a5588cca7c6102a",
+    "app/macos/Sources/Workbench/WorkbenchProjectSwitcher.swift": "a65dad5aeebd6c3a098c05d7dfeee0625da279928955b708436c52dbcb5df8e2",
+    "app/macos/Sources/Workbench/WorkbenchWelcomeView.swift": "ea491131176fe4cf8e496c058f9dc8dfc5e94f7a2eed01c658fb2c4dc72dba69",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "68d5f1341f34b584c1a1ebc126c135ad7403f7114ed43fc22e3f66b8a6a4cee9",
+    "app/macos/Sources/Workbench/WorkbenchTab.swift": "b54d51fabf130408471aed4669bd589c9b21b577dc628afb1db0847ef218d5ef",
+    "app/macos/Sources/Workbench/WorkbenchToolArtwork.swift": "748477c148c2502b9586a2d0114ccbeb93f6b54d82aa8cefe7ad436d4654ac9a",
+    "app/macos/Sources/Workbench/WorkbenchToolRail.swift": "c8e5e3ac788dacb14f1e6268337c1b9712146484223e5cad0ecba6427ce1a2e2",
+    "app/macos/Sources/ProjectTree/NativeProjectTree.swift": "e860302434d1ef2789bf102c8c353f032682275975d61c5495ac2a9996731901"
+  },
+  "swift_tests": 41,
+  "rust_tests": 5,
+  "checks": [
+    "Swift/Rust formatting and static checks",
+    "C11/C++17 ABI header syntax",
+    "Shell script syntax",
+    "Existing pure workspace, recent history, docking, geometry and bitmap tests",
+    "Release arm64 build without launching",
+    "Independent read-only code review; menu drag-out pressed-state issue fixed and re-reviewed"
+  ],
+  "executable_sha256": "5cd51ae6420295df33e5bf2160763633270894aed8cb8c188b3686eb578687ca",
+  "not_measured": [
+    "Actual hover, pressed, cursor, disabled and keyboard focus behavior",
+    "NSMenu drag-out/re-entry tracking and on-screen feedback",
+    "Welcome-page and popover geometry, scroll and real click targets",
+    "FPS, GPU or display presentation time"
+  ],
+  "gui_started": false,
+  "desktop_interaction": false
+}
