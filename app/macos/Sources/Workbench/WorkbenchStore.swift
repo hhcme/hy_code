@@ -26,6 +26,10 @@ final class WorkbenchStore {
     let editing = EditorWorkspace()
     let dart = DartWorkspaceController()
     let flutter = FlutterWorkspaceController()
+    let web = WebWorkspaceController()
+    let problems = WorkspaceProblemsController()
+    var analysisLanguage = "dart"
+    var languageController: any EditorLanguageController { analysisLanguage == "web" ? web : dart }
     var autoSave: Bool {
         get { editing.autoSave }
         set { editing.autoSave = newValue }
@@ -97,17 +101,45 @@ final class WorkbenchStore {
         resetProject()
         access = WorkspaceAccess(url: url)
         rootURL = url
+        problems.configure(root: url)
+        dart.onDiagnosticsChanged = { [weak self] values, limited in
+            self?.problems.update("dart", values: values, limited: limited)
+        }
+        web.onDiagnosticsChanged = { [weak self] values, limited in
+            self?.problems.update("web", values: values, limited: limited)
+        }
+        web.projectAnalysis.onDartProject = { [weak self] in self?.dart.startProjectAnalysis() }
         editing.language = dart
+        editing.web = web
+        editing.isDocumentVisible = { [weak self] path in self?.tabs.tabs.contains { $0.location.path == path } == true
+        }
+        editing.onLanguageFilesApplied = { [weak self] paths in
+            guard let self else { return }
+            let active = self.tabs.activeID
+            for path in paths {
+                self.tabs.open(
+                    .file(
+                        WorkspaceEntry(
+                            name: URL(fileURLWithPath: path).lastPathComponent,
+                            relativePath: path, kind: .file)), preview: false)
+            }
+            if let active { self.tabs.activate(active) }
+        }
+        web.onEditPreview = { [weak self] edit, feature, revision, title in
+            self?.editing.previewLanguageEdit(edit, feature: feature, revision: revision, title: title)
+        }
+        web.configure(access: access)
         dart.flutter = flutter
         dart.configure(access: access)
         flutter.configure(access: access)
         flutter.onNavigate = { [weak self] in self?.navigateSemantic($0) }
         flutter.executionAllowed = { [weak self] in
             guard let self else { return false }
-            return !self.dart.toolRunning && !self.editing.isClosing
+            return !self.dart.toolRunning && !self.web.toolRunning && !self.editing.isClosing
+                && !self.editing.preparingLanguageEdit && self.editing.editPreview == nil
         }
         flutter.prepareRun = { [weak self] in
-            guard let self, !self.dart.toolRunning, !self.editing.isClosing else { return false }
+            guard let self, !self.dart.toolRunning, !self.web.toolRunning, !self.editing.isClosing else { return false }
             return await self.editing.saveAll()
         }
         flutter.onReveal = { [weak self] in
@@ -122,8 +154,31 @@ final class WorkbenchStore {
         dart.onNavigate = { [weak self] in self?.navigateSemantic($0) }
         let session = sessionID
         dart.prepareTool = { [weak self] root in
-            guard let self, self.sessionID == session else { return false }
+            guard let self, self.sessionID == session, !self.web.toolRunning else { return false }
             return await self.editing.preparePackageTool(root)
+        }
+        web.executionAllowed = { [weak self] in
+            guard let self else { return false }
+            return !self.dart.toolRunning && !self.flutter.active && !self.flutter.commandRunning
+                && !self.editing.isClosing
+                && !self.editing.preparingLanguageEdit && self.editing.editPreview == nil
+        }
+        web.prepareTool = { [weak self] root in
+            guard let self, self.sessionID == session, !self.dart.toolRunning, !self.editing.isClosing else {
+                return false
+            }
+            guard await self.editing.saveAll() else { return false }
+            return await self.editing.preparePackageTool(root)
+        }
+        web.finishedTool = { [weak self] root in
+            guard let self, self.sessionID == session else { return }
+            self.editing.finishPackageTool(root)
+        }
+        web.onNavigate = { [weak self] in self?.navigateSemantic($0) }
+        web.onShowResults = { [weak self] in
+            guard let self else { return }
+            self.analysisLanguage = "web"
+            if !self.docking.isVisible(.problems) { self.docking.toggle(.problems) }
         }
         dart.finishedTool = { [weak self] root in
             guard let self, self.sessionID == session else { return }
@@ -131,6 +186,7 @@ final class WorkbenchStore {
         }
         dart.onShowResults = { [weak self] in
             guard let self else { return }
+            self.analysisLanguage = "dart"
             if !self.docking.isVisible(.problems) { self.docking.toggle(.problems) }
         }
         navigate(.directory(""), preview: false)
@@ -194,8 +250,10 @@ final class WorkbenchStore {
     private func stopProjectTools() async {
         let analysis = dart.stop()
         let runtime = flutter.stop()
+        let web = web.stop()
         await analysis.value
         await runtime.value
+        await web.value
     }
 
     func closeProject() {
@@ -213,8 +271,10 @@ final class WorkbenchStore {
     }
 
     private func resetProject() {
+        problems.configure(root: nil)
         editing.reset()
         dart.configure(access: nil)
+        web.configure(access: nil)
         flutter.configure(access: nil)
         projectIntent = UUID()
         sessionID = UUID()
@@ -239,7 +299,11 @@ final class WorkbenchStore {
         guard rootURL != nil, !editing.isClosing else { return }
         let currentEntries = snapshots[location.parentDirectory ?? ""]?.entries ?? []
         let resolved = location.resolvingFile(in: currentEntries)
-        if case .file(let entry) = resolved { dart.refreshProject(path: entry.relativePath) }
+        if case .file(let entry) = resolved {
+            dart.refreshProject(path: entry.relativePath)
+            web.refreshProject(path: entry.relativePath)
+            analysisLanguage = WebLanguage.detect(entry.relativePath) != nil ? "web" : "dart"
+        }
         browsingLocation = resolved
         tabs.open(resolved, preview: preview)
         if case .file(let entry) = resolved, let access {
@@ -274,6 +338,8 @@ final class WorkbenchStore {
         tabs.activate(id)
         guard let active = tabs.active else { return }
         dart.refreshProject(path: active.location.path)
+        web.refreshProject(path: active.location.path)
+        analysisLanguage = WebLanguage.detect(active.location.path) != nil ? "web" : "dart"
         browsingLocation = active.location
         history.visit(active.location)
         if case .file(let entry) = active.location { selectedEntry = entry }
@@ -295,6 +361,7 @@ final class WorkbenchStore {
         selectedEntry = nil
         browsingLocation = tabs.active?.location ?? .directory(currentDirectory)
         dart.refreshProject(path: browsingLocation?.path ?? "")
+        web.refreshProject(path: browsingLocation?.path ?? "")
         if let location {
             history.visit(location)
             requestDirectory(currentDirectory)
@@ -339,6 +406,10 @@ final class WorkbenchStore {
     func goBack() {
         guard !editing.isClosing else { return }
         if let destination = history.back() { navigate(destination, preview: true, recordHistory: false) }
+    }
+    func showProblems(_ category: ProblemCategory? = nil) {
+        problems.category = category
+        if !docking.isVisible(.problems) { docking.toggle(.problems) }
     }
     func navigateSemantic(_ target: LSPLocation) {
         guard let rootURL, let url = URL(string: target.uri), url.isFileURL, url.host == nil || url.host == "localhost"

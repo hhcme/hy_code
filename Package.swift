@@ -13,6 +13,7 @@ let package = Package(
         .executable(name: "HyCodeDirectoryProbe", targets: ["HyCodeDirectoryProbe"]),
         .executable(name: "HyCodeDartProbe", targets: ["HyCodeDartProbe"]),
         .executable(name: "HyCodeDebugProbe", targets: ["HyCodeDebugProbe"]),
+        .executable(name: "HyCodeWebProbe", targets: ["HyCodeWebProbe"]),
     ],
     targets: [
         .systemLibrary(name: "CHyCodeCore", path: "bindings/CHyCodeCore"),
@@ -33,5 +34,6 @@ let package = Package(
         ),
         .executableTarget(name: "HyCodeDartProbe", dependencies: ["HyCodeWorkspace"], path: "tools/DartProbe"),
         .executableTarget(name: "HyCodeDebugProbe", dependencies: ["HyCodeWorkspace"], path: "tools/DebugProbe"),
+        .executableTarget(name: "HyCodeWebProbe", dependencies: ["HyCodeWorkspace"], path: "tools/WebProbe"),
     ]
 )

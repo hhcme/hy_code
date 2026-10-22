@@ -1,6 +1,6 @@
 # HyCode 编辑内核与语言服务
 
-更新：2026-10-21。首版仅 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。目前已接入基础文本编辑，见[编辑说明](EDITING.md)；行号与 Tree-sitter 着色已接入，见[高亮说明](SYNTAX.md)；Dart/Flutter 首批 SDK 语义与 Pub 工具已接入，见 [Dart/Flutter 工具](DART_FLUTTER.md)；其他语言服务及运行/调试未接入。
+更新：2026-10-22。首版仅 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。目前已接入[基础编辑](EDITING.md)、[行号与着色](SYNTAX.md)、[Dart/Flutter 工具](DART_FLUTTER.md)及首批 [Web 服务与修改预览](WEB_TOOLS.md)。Flutter 已有首批 SDK DAP/工具，Rust/C/C++ 语义和 Web 调试仍未接入。
 
 ## 能力分层
 
@@ -9,8 +9,8 @@
 | 原生编辑视图 | 输入、选择、IME、绘制、滚动与无障碍 | AppKit TextKit 1；原生 IME 与真实交互待窗口验证 |
 | 文档内核 | 文本缓冲、修订、事务、撤销与安全保存协调 | Rust 文本/修订，NativeTextDocument actor 串行写入，原生 UndoManager 独占历史；见 [ADR 0003](adr/0003-text-editing.md) |
 | 语法与结构 | 增量高亮、括号、折叠与符号结构 | Tree-sitter 首批语法已接入基础着色，括号/折叠/结构后续实现 |
-| 语义服务 | 补全、诊断、悬停、定义/引用与重命名 | Dart SDK LSP 已接入首批能力；跨文件重构与其他语言待实现 |
-| 调试与工具 | Git、终端、任务、构建与调试 | 独立生命周期，后续阶段设计 |
+| 语义服务 | 补全、诊断、悬停、定义/引用与重命名 | Dart SDK 与 Web 固定 LSP 已接入；Web 文本重构预览已接入，高级重构与其余语言待实现 |
+| 调试与工具 | Git、终端、任务、构建与调试 | Flutter 首批 DAP/工具和 Web 显式 package scripts 已接入；Git/终端及 Web 调试仍待实现 |
 
 文本数据结构不是完整编辑器，语法解析不自动提供跨文件类型推断，LSP 是协议而非语言分析器。Rust 内核可组合 C/Swift 等实现的开源组件，无需把所有分析器重写为 Rust。
 
@@ -42,3 +42,5 @@
 选择一个有真实带依赖项目的语言，验证未保存缓冲、补全、诊断、定义/引用、导航返回、位置转换、取消、缺 SDK、离线、崩溃和工作区关闭。记录服务固定版本、工具链、平台、样本及命令。
 
 只运行能够确认静默的后台协议和事务检查，不启动带界面的宿主或操作用户桌面。真实候选菜单、焦点和键盘验收目标保留为未验证，不能用协议测试代替；完整限制见[静默测试规则](DEVELOPMENT.md)。其他平台不在首版验证范围；外部项目已有高亮或编辑功能不能计作 HyCode 完成。
+
+项目级诊断已独立于活动文档：Dart SDK 根目录分析、Web 后台源文件注册和反向依赖增量、统一可跳转问题快照见[项目后台诊断](PROJECT_ANALYSIS.md)。服务处理类型关系，UI 只接收有界快照；并行进程不是多线程编译器或帧率验证。

@@ -1,0 +1,248 @@
+{
+  "date": "2026-10-22",
+  "build": 28,
+  "base_commit": "a2218cf646b238b1c66c6c2543c5e955087a2cdf",
+  "scope": "Native Web editor language services and explicit project/package tools. Remaining full Web scope is itemized in docs/WEB_TOOLS.md.",
+  "working_tree": "Uncommitted build28 changes; no staging, commit, push, app launch, installation or publication.",
+  "implementation": [
+    "Shared native editor interaction with independent Dart and Web workspace owners; no second formal buffer or undo history",
+    "Lazy fixed JS/TS/JSX/TSX, Vue, HTML, CSS/SCSS/LESS and JSON/JSONC services on external Node",
+    "Incremental diagnostics, hover, definition/type/implementation, references, structure, explicit completion/resolve/auto-import, basic snippets, parameter information and formatting where the service provides them",
+    "Text-only rename/code-action multi-file preview, canonical paths, bounded ranges and native revision/permission checks; per-file undo and ordinary auto-save",
+    "All native edits invalidate old workspace replies; dirty targets must be synchronized to the service generating the edit",
+    "Vue nested TS notification bridge, feature routing, per-service completion/action resolution and preserved diagnostic provider data",
+    "Explicit per-workspace trust before Vue project plugins; default untrusted TS/Vue plugin canary checked",
+    "Nearest package discovery, dependency/workspace/script display, explicit npm/pnpm/Yarn1/4+ commands, manifest/lock protection, bounded output and cancellation",
+    "106 locked public npm packages and retained notices; primary registry metadata/integrities checked; no external Node executable or IDE resources copied"
+  ],
+  "verification": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 143,
+      "swift_suites": 24,
+      "rust_tests": 15,
+      "rust_test_threads": 1,
+      "includes": [
+        "Rust fmt/clippy",
+        "Swift strict format",
+        "C11/C++17 header syntax",
+        "headless model and stdio/DAP process fixtures",
+        "Web project, snippet and edit safety checks",
+        "documentation/history checks",
+        "git diff --check"
+      ]
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --sanitize address --disable-xctest --filter WebProjectTests|LSPWorkspaceEditTests|LSPSnippetTests|LanguageProtocolTests|LanguageProcessTests|FlutterDAPProcessTests",
+      "result": "pass",
+      "tests": 32,
+      "suites": 6,
+      "limits": "Headless Swift model/process tests; Rust/C static library not instrumented; native AppKit workflows not executed"
+    },
+    {
+      "command": "HyCodeWebProbe <external-node> tools/web-language-services",
+      "result": "pass",
+      "node": "22.22.3",
+      "checks": [
+        "Inferred JS type check without jsconfig",
+        "Untrusted TS/Vue plugin canary not executed",
+        "TS diagnostics and unsaved correction",
+        "Hover/definitions/references/completion/symbols",
+        "Resolved auto-import and simultaneous insertion/replacement caret",
+        "Real multi-file rename applied to immutable declaration/caller snapshots",
+        "HTML formatting, SCSS/JSON diagnostics and formatting",
+        "Vue template hover, nested TS bridge 1/1",
+        "Vue CSS provider diagnostic metadata round-trip and quick fix",
+        "Fixture disk unchanged by services"
+      ]
+    },
+    {
+      "command": "HyCodeDartProbe <external-installed-sdk>",
+      "result": "pass",
+      "dart": "3.11.5",
+      "checks": [
+        "diagnostics",
+        "unsaved fix",
+        "hover and SDK definition",
+        "references",
+        "completion",
+        "symbols",
+        "formatting",
+        "unchanged disk"
+      ],
+      "limits": "Generated fixture only; no Pub or Flutter runtime/devices"
+    },
+    {
+      "command": "HyCodeWebProbe with invalid arguments",
+      "result": "expected exit 1 caught without unhandled Swift failure"
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "application_launched": false
+    },
+    {
+      "command": "Final strict Swift format, documentation and diff checks",
+      "result": "pass",
+      "markdown_files": 56,
+      "local_links": 476,
+      "immutable_history_pairs": 10
+    },
+    {
+      "command": "HyCodeWebProbe <external-node> build/HyCode.app/Contents/Resources/web-language-services",
+      "result": "pass",
+      "limits": "Executes packaged JavaScript services from a headless fixture; does not launch HyCode.app"
+    },
+    {
+      "command": "Final release rebuild after bounding raw diagnostic tagging to 1000 entries",
+      "result": "pass",
+      "limits": "UI owner compiled only; no native window or input test"
+    }
+  ],
+  "review": {
+    "method": "Independent read-only source review via requesting-code-review skill, followed by narrow fix reviews",
+    "resolved": [
+      "Implicit Vue project plugin execution",
+      "Missing completion resolve",
+      "Vue overflow request left unanswered",
+      "Old unversioned edit applied to changed buffers",
+      "Dirty buffers above semantic limit or sent only to a different service",
+      "Stripped Vue diagnostic data",
+      "Incorrect inferred-JS configuration key"
+    ],
+    "limits": "Native preview/undo/revision paths reviewed in source, not exercised in a real window"
+  },
+  "dependencies": {
+    "npm_packages": 106,
+    "inventory": "tools/web-language-services/third-party.json",
+    "supplements": "tools/web-language-services/license-supplements.json",
+    "upstream_gap": "@johnsoncodehk/pug-beautify 0.2.2 declares MIT but archive and inspected upstream lack a standalone license; original declaration/README retained without invented copyright",
+    "registry": "All 106 locked versions and integrity metadata checked against primary npm registry; lock resolved URLs use primary tarballs"
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "configuration": "release",
+    "bundle_id": "io.github.hhcme.hycode",
+    "version": "0.1.0",
+    "build": "28",
+    "architecture": "arm64",
+    "minimum_macos": "14.0",
+    "bytes": 145962453,
+    "executable_sha256": "6f72061b5d53cbeb75c5c98b477c8318330eb73cebcd9db3bb9e450c97743b7d",
+    "release_binary_source_plist_notices_and_runtime_manifests_match": true,
+    "status": "Local development app; linker ad-hoc signature, no sealed resources/distribution signing, notarization, installation, upload or publication",
+    "service_entrypoints_match_source": true
+  },
+  "not_verified": [
+    "Real HyCode menus/windows, focus, hover, typing/IME/undo, preview apply/cancel and FPS",
+    "Actual user scripts or dependency installations; pnpm/Yarn parameters have model checks only",
+    "Complete Vue/React dependency projects or project plugins",
+    "Web Node/browser debugging, source maps, test tree/coverage, dedicated ESLint/Prettier and other framework adapters",
+    "macOS14 runtime and public binary distribution"
+  ],
+  "prior_limitations": [
+    "Earlier generated probes failed on Vue envelope/routing, completion edit fallback and a multi-file fixture; logs retained and final probes passed",
+    "Multi-file fixture now renames an exported declaration in an explicit bundler-resolution project",
+    "Initial symlink tests fixed by canonicalizing nearest existing ancestors; assertions retained",
+    "Historical console Dart DAP failure on installed SDK fork remains unresolved, not retried"
+  ],
+  "silent_execution": {
+    "application_launch": false,
+    "gui_automation": false,
+    "desktop_capture": false,
+    "clipboard": false,
+    "user_project_execution": false,
+    "generated_fixture_language_processes": true,
+    "dependency_setup_network": "Public registry/upstream license sources only",
+    "priority": "nice 10",
+    "swift_jobs": 2,
+    "rust_build_jobs": 2,
+    "rust_test_threads": 1
+  },
+  "source_sha256": {
+    ".gitignore": "f400d57a56cc0051d42757a9532017d2b4223e1741032ae9c673c4b70c7dac8a",
+    "AGENTS.md": "cb9c0206461278f905cb746698c5ff2eb0f9c1b067344ef2e1e08bcec70088a1",
+    "Package.swift": "6f3264178b1b06b4bfed14cd2407566c2d0bbdf847e29fdcfebe065c4b2a9a80",
+    "README.md": "8dd5994cbcc194298c75b66ee21dcf0e15db3650d1b77d4f5107c415ec01c72c",
+    "THIRD_PARTY_NOTICES.md": "51d062001608d515fe3019ca9b7e26f7d1d0e5b3b10a6959b7cdb4ad3df8768a",
+    "app/macos/Resources/Info.plist": "ae4deed926c9a118a685b4b2e43ba64258b46c2bd76f351bb9598a3905756812",
+    "app/macos/Sources/Editor/EditorDocument.swift": "074a0f417e70008309ff853dc9d94e975490b4432343d4eda0799d323d55cecd",
+    "app/macos/Sources/Editor/EditorLineRuler.swift": "ac4c3dc967dab8dc675ad31157927d83227608146048bd8792b88817e292be75",
+    "app/macos/Sources/Editor/EditorPanel.swift": "9ee335110bf7fd75e3e6092fdb1e8a3532a95590911ca3c75404e4efcaa2133c",
+    "app/macos/Sources/Editor/EditorWorkspace.swift": "526ff0e3f379b9b9d155a49ceacc5b2a269472d8b79cd8b34c34121cea2a1a8a",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "ef87e3dc41f9bd95a548ef7de52cc3bae7aecbc7da6cbfdeb090c0d468a74442",
+    "app/macos/Sources/HyCodeApp.swift": "bef1b0da3cd1bb7fb3b8257a490a65b20c8ae2b510aa7cef5a7084684bef7785",
+    "app/macos/Sources/Language/DartHoverController.swift": "42522632aecbb2ae899a0aea7ecc58204c69d63e9287331cc1bc3817fe6175da",
+    "app/macos/Sources/Language/DartToolPanels.swift": "b35f70d15c7f345882a060df324c71b4fac32849b39b65963462267a7375f37a",
+    "app/macos/Sources/Language/DartWorkspaceController.swift": "9bb1c28869807b318bfbe4d64b8c4d30da8639dcf54395396363cd6389f69e67",
+    "app/macos/Sources/Language/EditorLanguageController.swift": "a5a602ca769a41a833d59270f96d305555dd9768b88e974d46d06867e87d452e",
+    "app/macos/Sources/Language/EditorLanguageFeatures.swift": "bf867372331f83b29267574869894e772bf0487cdcb3ba58020180fd5cc61fe8",
+    "app/macos/Sources/Language/EditorWebActions.swift": "2b350aa044e6abd44150b0d765bf353daacea9eeb7a9ce2782f2c28fc1a6c8aa",
+    "app/macos/Sources/Language/LanguageEditPreview.swift": "8f071a24777f86a537370ad2d399acca488c4e496fae0e461fe7734ffa1a24f3",
+    "app/macos/Sources/Language/WebToolPanels.swift": "dc60db01f8a9acff346a594ed2e7e45ff38e043b9fdde0f3cbc3fec5d187c1fb",
+    "app/macos/Sources/Language/WebWorkspaceController.swift": "f97fc911e2b22d0f200a09bc5e740781cab71c14b626a14f4d245091b053cc26",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "15439f80efd91665ac88cf91e597c231b1637e2bdeda35d5e6cb8405cc96ffb4",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "9ffca50aa20591eab9f08612a06eee4e75321cd5e7788610200228db8cb444ef",
+    "docs/CODE_INTELLIGENCE.md": "7c5abc2e26ff3b4005ef18f02e67ce4dd7feacc5062c659a7e1cc6fa30ef63e6",
+    "docs/DART_FLUTTER.md": "8254723c3460f24adec95f87466bac25ca1f00978dfbc81c611b2500707146a7",
+    "docs/DEPENDENCIES.md": "f81d9076fc7337629e2e1965aa73f308796d790a84233da83c18e5240990da3e",
+    "docs/DEVELOPMENT.md": "04939fb5bce99fb6dc296058b245bddf47872de3fd29bb2fbca1bff76f9dc71a",
+    "docs/EDITOR_DIRECTION.md": "776629b973a3ea9166361dea29e2c2fe1403c2edce549c45007d70124f951eb8",
+    "docs/FORMAT_SUPPORT.md": "0b9978ef0f47f2b16889841738c739d5bdc0dbf489ced22e4adf95ae7b05f832",
+    "docs/PRODUCT_REQUIREMENTS.md": "832ed03bf1e324542ae3c3d986d0908bfb20a56a30e1344a855ecb468ff7a090",
+    "docs/README.md": "e1893e7cb5a7fed2bdd29cdda0104c08e4701bf8b806170d2fe86c877e78fa87",
+    "docs/ROADMAP.md": "e6c606638a4655a026534da18e1ea1b5e7afcc53dd2bb040bd28c4007c073e81",
+    "docs/SYNTAX.md": "9f282ec13058208df52ec06aa323e00a98dc9b86f26d161d5ebadd61f6def084",
+    "docs/TECH_DESIGN.md": "f9546527a419ed39511a9efceb0d0b7257aa45ff2ffeba0976ea695e3343d1ac",
+    "docs/WEB_TOOLS.md": "36b2e3a35711c5f006d6b7d3416482c60d6c4f982b26dbff7ce15e7c5c777b63",
+    "docs/WORKBENCH.md": "80dc74efa3ecf847ca50be2bd05693ba978191c7e54364d25aabc33652e80151",
+    "docs/adr/0007-web-tooling.md": "299c08329bf191cb74c1c5287ae080672a37ba17cf245324ba95b7d291d02dba",
+    "docs/adr/README.md": "0632509fc38c0c9880a85109e056f34f00b8b4a4501c7dada5cec92cfbcecb2a",
+    "packages/HyCodeWorkspace/Sources/Language/DeveloperToolTask.swift": "50e37e37367cf36dc19588b646c989061ba2fc41116a40ea242a5c4f18b21b6c",
+    "packages/HyCodeWorkspace/Sources/Language/LSPSnippet.swift": "8c04e03d991826486e216c7872c0374878b613fe5a7ae0dc928137c1d9e1839f",
+    "packages/HyCodeWorkspace/Sources/Language/LSPTextEdits.swift": "0de6d4fc2215a37bfde54dbf4bde049ad072e228c06821310d28a365e7499eec",
+    "packages/HyCodeWorkspace/Sources/Language/LSPWorkspaceEdits.swift": "337930b71c4b51e0ca84873166b9cf6cb644e9f89c59d9752a288c2a594bac31",
+    "packages/HyCodeWorkspace/Sources/Language/LanguageModels.swift": "b48584f63496eaff0027ee904835bf550e61383f9b277ddc4eedd548c399258f",
+    "packages/HyCodeWorkspace/Sources/Language/LanguageServerConnection.swift": "3b876bdf1c497b27ddcd8558e4ee8f3d02806db0954c34828591a6e80ac942df",
+    "packages/HyCodeWorkspace/Sources/Language/ToolBlockingIO.swift": "f74418adab5129c92486bb9bce2cfc5265a9de6f561d43b5c22a07c3c4922789",
+    "packages/HyCodeWorkspace/Sources/Language/WebLanguageServer.swift": "bd72beffcf508d728983dd15995ada71ecbd9eab761553f365d7217791f938f4",
+    "packages/HyCodeWorkspace/Sources/Language/WebProject.swift": "c5dc6ec8909f2c8eafdda67695ff9fc74134401d565d86ea53d5849d0f3a19e3",
+    "packages/HyCodeWorkspace/Sources/Language/WebToolchain.swift": "e9bdea3ef984d90624dff01dcc20b58f96846e66091dd000139b2c078d20652b",
+    "packages/HyCodeWorkspace/Sources/Language/WorkspaceCanonicalPath.swift": "1e0e92f48b1cebd06ebd4fc1978f3c6243eb5837b76aebbb0a441dca769daac2",
+    "packages/HyCodeWorkspace/Tests/LSPSnippetTests.swift": "65e908ad42394f7e455bde0b87843f6efd8e99eb019e529a1aa976579205c5ff",
+    "packages/HyCodeWorkspace/Tests/LSPWorkspaceEditTests.swift": "ef42c16c9096261a44290e37c5f27f1e4c04f3be4ec263cf4969e7c35c7c170e",
+    "packages/HyCodeWorkspace/Tests/LanguageProtocolTests.swift": "bded4cff34d83a754fcf2d9fe00a2df7e31f501cb1287eac1e06920432930011",
+    "packages/HyCodeWorkspace/Tests/WebProjectTests.swift": "ef0ad8729932da740ea3bcb8b3281e504326ffa46b1fb4c74b80dbc19e3551c8",
+    "scripts/build_macos.sh": "705c4184c3570909bf763a3b5f84c01e20adfb14ee9d5552560236118496e062",
+    "scripts/check_docs.py": "32c32007eee2dc80d244bdd68edb2dbd59e523c8caf6afcf5fc30f87f0007293",
+    "scripts/check_native.sh": "dcd9719de890279667c06b46fdbff0dffc7fc0dae8ed2a3053623b0fb4459baa",
+    "scripts/setup_web_tools.sh": "126c7273a1deb86c528cc8cd1a46cc9a2007eee342fa02dd661993603d8f5b34",
+    "scripts/web_tools.mjs": "9f1e8ce8335a3fb47aac494e81980e72f84c192b9a621072c7d95f70ac51b864",
+    "tools/WebProbe/main.swift": "989f615b36c664b8357eaa821dd41275faa7be07b182cfa7049273feb956622d",
+    "tools/web-language-services/license-supplements.json": "9dcc345a866d5fbbd5d93ee454fb04b82e6ed88bc61335035c4bfd198bc6aa3b",
+    "tools/web-language-services/package-lock.json": "7d115f832233d7f19fe3dd427d1d2ba79223fdbb6dd9401756c9996552e40441",
+    "tools/web-language-services/package.json": "b9fba445dcd4d7ffece9cb9f8dca0b924f6734a960730c63e5d1d908c43105da",
+    "tools/web-language-services/third-party.json": "80fe7f33c72c27a1f637438580c3a8538d0f05fa380cc9462c351a6a16650207"
+  },
+  "log_sha256": {
+    ".build/build28-asan.log": "08583871faaae4bd097aff0dc671496a42ae1654b6b971a36662cea9d93f896c",
+    ".build/build28-bundled-web-probe.log": "b1a540404c200cedb2e00655e16a25a2633840dfad9e36503d24864fd161caed",
+    ".build/build28-check-native.log": "2e5b7fb81f1f22b36f566db06d5b8dc181d3c4ca849afc2d9d36c6b21232d576",
+    ".build/build28-compile.log": "b884fb51fff10e0651dc6f1c9fc22a442026ce5ea5f13f718afd41b7de1a8b0f",
+    ".build/build28-dart-regression.log": "32ecc3abfb99efc4966b4f737fbe300d15a4a85d45459f9396078a4d9e10e8bc",
+    ".build/build28-docs.log": "227a1d3fdbcba9db01cdaa56c43e98a83ce90debdd14fbb21a3323f3bc04beed",
+    ".build/build28-final-format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".build/build28-focused-tests.log": "a95926c02a474ceb41d7c47b06cf91b6262ae2833a74718142f6b95014c16b81",
+    ".build/build28-probe-compile.log": "c2800851beff791a9a7eefaef18f81270d98d931b3f7c04b7e97b3b33f6a4cba",
+    ".build/build28-probe-invalid-arguments.log": "d5e8f43e756cd34a47cb0f9faad99108c36a73fc849327474beb301f5f19d627",
+    ".build/build28-release.log": "cee53bdcba37cd748da0839d84930aefadcad37d11458546f2023c0e896d96a4",
+    ".build/build28-web-probe-auto-import-failure.log": "dd03d17dcd6734e30f4bb262e07a13882a92360f98b5001e7f740b8ce4aac69d",
+    ".build/build28-web-probe-import-alias-rename-failure.log": "3f916040305f809073aef3a364bdbd9d8db186513455a8b4080451366a904214",
+    ".build/build28-web-probe-vue-envelope-failure.log": "50abe0a35ae31b3b11e0999adb469fd2727d9c4a93a5774835d51e05d751871d",
+    ".build/build28-web-probe-vue-failure.log": "a74c2ed3770c21b8ecd471da54d9bff51f2d250175cf3c81dcdfc85b9c9e8788",
+    ".build/build28-web-probe-vue-format-failure.log": "2e42c496ffc6ada0f1e43b4cf76dfc80abeff5360d76339bef5013aa0f471eb1",
+    ".build/build28-web-probe-vue-routing-failure.log": "59b5a3f4aa2f98888ca10d23b267d2da7840dc37ea98690bab287021df207eb2",
+    ".build/build28-web-probe.log": "31fea70b7e63277c5fe02c49ad2994939ad501b21202b93330f103f37cbc4d4b"
+  }
+}

@@ -4,6 +4,16 @@ import Testing
 @testable import HyCodeWorkspace
 
 struct LanguageProtocolTests {
+    @Test func diagnosticRetainsProviderDataForCodeActionRoundTrip() throws {
+        let raw = JSONValue([
+            "range": ["start": ["line": 0, "character": 0], "end": ["line": 0, "character": 2]],
+            "message": "unknown property", "source": "vue", "severity": 1,
+            "data": ["pluginIndex": 2, "version": 7, "original": ["code": 123]], "hycodeService": "vue",
+        ])
+        let diagnostic = try raw.decode(LSPDiagnostic.self)
+        #expect(diagnostic.raw == raw)
+        #expect(diagnostic.raw["data"]["pluginIndex"].int == 2)
+    }
     @Test func nativeCRLFEdgeEditsRemainExactlyEquivalentInTheProtocol() throws {
         let text = "中😀\r\nnext\r\nend" as NSString
         let index = TextLineIndex(text as String, unicodeLineSeparators: false)
@@ -37,6 +47,18 @@ struct LanguageProtocolTests {
         #expect((result as NSString).substring(to: caret).hasSuffix("print('中')"))
         #expect(throws: (any Error).self) { try LSPTextEdits.apply([completion, completion], to: text) }
         #expect(text == "void main() { pri; }\n")
+    }
+    @Test func autoImportAtCompletionStartKeepsReplacementAndCaretCorrect() throws {
+        let start = LSPPosition(line: 0, character: 0)
+        let main = LSPTextEdit(range: LSPRange(start: start, end: .init(line: 0, character: 3)), newText: "greet")
+        let added = LSPTextEdit(
+            range: LSPRange(start: start, end: start), newText: "import { greet } from './helper';\n")
+        let result = try LSPTextEdits.apply([added, main], to: "gre")
+        #expect(result == "import { greet } from './helper';\ngreet")
+        #expect(try LSPTextEdits.apply([main, added], to: "gre") == result)
+        #expect(
+            try LSPTextEdits.completionOffset(primary: main, additional: [added], text: "gre") == result.utf16.count)
+        #expect(throws: LanguageServiceFailure.self) { try LSPTextEdits.apply([main, main, added], to: "gre") }
     }
     @Test func framingSurvivesEveryByteBoundaryAndMultipleMessages() throws {
         let a = JSONValue(["jsonrpc": "2.0", "id": 1, "result": ["text": "中文😀"]])

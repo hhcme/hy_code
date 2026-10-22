@@ -7,13 +7,14 @@
 | 组件 | 固定方式 | 用途与来源 |
 | --- | --- | --- |
 | Rust | [rust-toolchain.toml](../rust-toolchain.toml)：1.96.0 | 标准库与静态文本/目录内核；标准库通知纳入第三方清单 |
-| Swift / macOS SDK | 当前验证 Swift 6.4 / Xcode 27.1，声明部署目标 macOS 14 | SwiftUI、AppKit TextKit 1 / UndoManager、Foundation NSFileCoordinator、Darwin 文件系统接口、CoreText 后台文件名测量、CoreGraphics 几何、QuartzCore 显示刷新与分隔图层、CoreGraphics 离屏图像、os 性能区间、系统图标；平台依赖，不重新许可为本项目代码 |
+| Swift / macOS SDK | 当前验证 Swift 6.4 / Xcode 27.1，声明部署目标 macOS 14 | SwiftUI、AppKit TextKit 1 / UndoManager、Foundation NSFileCoordinator、Darwin 文件系统接口、CoreServices FSEvents 递归后台监听、CoreText 后台文件名测量、CoreGraphics 几何、QuartzCore 显示刷新与分隔图层、CoreGraphics 离屏图像、os 性能区间、系统图标；平台依赖，不重新许可为本项目代码 |
 | serde / serde_core / serde_derive | 1.0.229；[Cargo.toml](../Cargo.toml) 与 [Cargo.lock](../Cargo.lock) | JSON 响应模型序列化；[上游](https://github.com/serde-rs/serde) |
 | serde_json | 1.0.154；同上 | ABI 结果编码；[上游](https://github.com/serde-rs/json) |
 | Swift Testing | 验证环境随 Xcode 提供，不下载外部 Swift 包 | 工作区与几何数据模型的无 GUI 测试 |
 | Tree-sitter 与语法包 | 主库 0.27.1，12 个语法 crate 由 Cargo.toml/Cargo.lock 固定 | 增量树、可见范围高亮；Dart/Vue 为社区语法，版本/来源/许可见第三方通知及[高亮说明](SYNTAX.md) |
 | Dart Analysis Server / Dart Pub / Flutter CLI / SDK DAP | 外部 SDK，不在构建锁文件或应用内；语言 LSP 验证 Dart 3.11.5；DAP fixture 通过，当前 fork 真实控制台调试未通过；Flutter 安装元数据 3.41.10-ohos-0.0.2-beta | 官方 [Dart SDK](https://github.com/dart-lang/sdk/tree/3.11.5) / [Flutter](https://github.com/flutter/flutter)，上游均 BSD-3-Clause；仅调用已安装命令，未复制 SDK 或 IDE 插件；[Dart 许可](https://github.com/dart-lang/sdk/blob/3.11.5/LICENSE)、[Flutter 许可](https://github.com/flutter/flutter/blob/3.41.5/LICENSE)。此 fork 与其他版本兼容未完整验证，细节见 [Dart/Flutter 工具](DART_FLUTTER.md) |
 | Python 标准库 | Python 3.9+ | 本地文档检查，无第三方 Python 包 |
+| Web 语言服务 | TypeScript 6.0.3、typescript-language-server 6.0.2、@vue/language-server 3.3.13、vscode-langservers-extracted 4.10.0 | npm 固定锁文件与 106 项传递依赖，来源/许可/校验见 [Web 工具](WEB_TOOLS.md) 和[第三方通知](../THIRD_PARTY_NOTICES.md)；外部 Node 22.22.2+ 不分发 |
 | GitHub Actions checkout | SHA 固定在[工作流](../.github/workflows/docs.yml) | 现有 CI 只检查文档，不进入应用分发 |
 
 Cargo 共 37 项直接/传递依赖，版本与源码校验值以 Cargo.lock 为准；运行时与构建时来源均记录在[第三方通知](../THIRD_PARTY_NOTICES.md)，并保留许可原文。双许可组件选择 MIT，foldhash 采用 Zlib，Unicode 数据和嵌入子组件另保留通知。没有复制第三方编辑器源码或从私有安装包提取组件，没有新增外部 Swift 包。

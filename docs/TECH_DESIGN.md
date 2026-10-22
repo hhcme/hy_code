@@ -1,8 +1,12 @@
 # HyCode 重写技术设计
 
-更新：2026-10-21。首版确定为 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。当前已有文件工作台和基础文本编辑，真实入口见[工作台说明](WORKBENCH.md)、[编辑说明](EDITING.md)及 [ADR 0003](adr/0003-text-editing.md)。行号与后台 Tree-sitter 增量着色已接入，见[高亮说明](SYNTAX.md)；Dart/Flutter 外部 SDK 服务与依赖工具已接入，见 [ADR 0005](adr/0005-dart-tooling.md)；其他语言语义、跨文件事务和大文件方案仍为后续设计。
+更新：2026-10-22。首版确定为 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。当前已有文件工作台、基础编辑、行号与后台增量着色，见[工作台](WORKBENCH.md)、[编辑](EDITING.md)、[高亮](SYNTAX.md)。Dart/Flutter 外部 SDK 服务与依赖工具见 [ADR 0005](adr/0005-dart-tooling.md)，Web 多服务与文本修改预览见 [ADR 0007](adr/0007-web-tooling.md)。其余语言语义、统一跨文件撤销和大文件模式仍待实现。
 
 ## 分层与职责
+
+build 28 已增加 [Web 多服务与修改预览](WEB_TOOLS.md)，决策见 [ADR 0007](adr/0007-web-tooling.md)。`EditorLanguageController` 统一原生交互，`WebWorkspaceController` 拥有同步、诊断和包任务；`WebLanguageServer` actor 惰性拥有五类服务。阻塞 pipe/read/wait 在独立 utility 队列执行，写入使用串行队列，不占用 Swift cooperative executor 等待管道。
+
+Web 编辑请求绑定工作区编辑代次。`LSPWorkspaceEdits` 在后台校验本地路径、UTF-16 范围和预算；`EditorWorkspace` 持有预览文档，拒绝未同步脏目标，应用前再次检查 UUID/修订/权限。修改走原生 insertText 与各文档撤销，不新建正式缓冲，不声称跨文件磁盘原子提交或统一撤销。
 
 | 层 | 建议职责 | 边界 |
 | --- | --- | --- |
@@ -53,3 +57,5 @@ FFI 契约需说明对象、句柄和字符串的所有权，长度与位置编�
 同一记录保存可空的启动项目路径：打开更新，显式关闭清空；旧数据缺少字段时迁移历史首项，显式空值不会重新迁移。场景首次出现只尝试恢复一次，用户主动打开/关闭/切换会消费恢复机会；后台解析结果仍按项目意图校验，不能覆盖较新的操作。不新增第二个工作区或文件访问所有者。
 
 当前已把 Rust 内核、macOS 宿主、C 头文件、Swift 包、测试和工具分开组织，源码地图见[工作台说明](WORKBENCH.md)。基础编辑、保存与语法着色已接入，Dart LSP、依赖、问题和结构面板已接入；Flutter 运行/调试、测试/构建和基础 Inspector 首批工具采用独立运行所有者和 SDK DAP，见 [ADR 0006](adr/0006-flutter-runtime.md)；Git、终端仍为空入口，不代表对应功能已实现。实际依赖与候选按[依赖台账](DEPENDENCIES.md)分别管理。
+
+项目后台诊断的单所有者、后台扫描/监听、原生覆盖与服务缓存交接、依赖范围和 UI 快照预算见[项目后台诊断](PROJECT_ANALYSIS.md)。工作区原生缓冲不因分析器的文件监听自动重载。

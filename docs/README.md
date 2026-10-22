@@ -21,6 +21,8 @@
 | 着色与行号 | [行号与语法高亮](SYNTAX.md) | 首批语言、解析所有权、预算和验证 |
 | Dart / Flutter | [开发工具](DART_FLUTTER.md) | SDK、诊断/悬浮/引用、包依赖与任务生命周期 |
 | Flutter 全量范围 | [完整能力清单](FLUTTER_PLAN.md) | 已确认的九类必做能力、当前缺口、依赖与验收 |
+| 项目检查 | [项目后台诊断](PROJECT_ANALYSIS.md) | 项目打开检查、关联增量、左下角计数与可跳转问题列表 |
+| Web | [开发工具与完整范围](WEB_TOOLS.md) | JS/TS/Vue/HTML/CSS/JSON 服务、修改预览、依赖/脚本与剩余能力 |
 | 规划 | [实施路线](ROADMAP.md) | macOS 阶段及验收，不表示交付日期 |
 | 性能 | [性能设计与验收](PERFORMANCE.md) | 样本、测量口径和预算决策 |
 | 编辑与语言 | [编辑内核与语言服务](CODE_INTELLIGENCE.md) | 缓冲、语法与语义分层 |

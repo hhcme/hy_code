@@ -2,14 +2,16 @@ import Foundation
 import HyCodeWorkspace
 
 actor DiagnosticsInbox {
-    var values: [Int: [LSPDiagnostic]] = [:]
-    var sequence = 0
+    var values: [String: [LSPDiagnostic]] = [:]
     func receive(_ value: JSONValue) throws {
-        guard value["method"].string == "textDocument/publishDiagnostics" else { return }
-        values[sequence] = try value["params"]["diagnostics"].decode([LSPDiagnostic].self)
-        sequence += 1
+        guard value["method"].string == "textDocument/publishDiagnostics",
+            let uri = value["params"]["uri"].string
+        else { return }
+        values[uri] = try value["params"]["diagnostics"].decode([LSPDiagnostic].self)
     }
-    func get(_ version: Int) -> [LSPDiagnostic]? { values[version] }
+    func get(_ uri: String) -> [LSPDiagnostic]? { values[uri] }
+    func clear(_ uri: String) { values[uri] = nil }
+
 }
 
 @main struct DartProbe {
@@ -35,6 +37,13 @@ actor DiagnosticsInbox {
         let text =
             "/// Example value.\nint answer = 42;\nvoid main(){\n  print(answer);\n  String bad = 1;\n}\nfinal buffer = StringBuffer();\n"
         try Data(text.utf8).write(to: file)
+        let model = root.appendingPathComponent("model.dart")
+        let consumer = root.appendingPathComponent("consumer.dart")
+        let unopened = root.appendingPathComponent("unopened.dart")
+        try Data("int value = 1;\n".utf8).write(to: model)
+        try Data("import 'model.dart';\nint amount = value;\n".utf8).write(to: consumer)
+        try Data("int wrong = 'text';\n".utf8).write(to: unopened)
+        let imports = try DartImportProbe(root: root)
         let server = DartLanguageServer()
         let inbox = DiagnosticsInbox()
         let listener = Task {
@@ -48,9 +57,11 @@ actor DiagnosticsInbox {
         do {
             print("Initializing Dart analyzer")
             try await server.initialize(root: root, toolchain: sdk, cache: root.appendingPathComponent("cache"))
-            print("Initialized; opening fixture")
+            _ = try await diagnostics(inbox, uri: unopened.absoluteString) { $0.contains { $0.severity == 1 } }
+            let errors = try await diagnostics(inbox, uri: file.absoluteString) { $0.contains { $0.severity == 1 } }
+            print("PASS: root analysis publishes unopened Dart diagnostics before didOpen")
+            try await imports.run(server: server, inbox: inbox)
             try await server.open(uri: file.absoluteString, text: text, version: 0)
-            let errors = try await diagnostics(inbox, version: 0)
             try require(
                 errors.contains { $0.severity == 1 && $0.range.start.line == 4 }, "Missing type diagnostic")
             let hover = try await server.request(
@@ -109,16 +120,30 @@ actor DiagnosticsInbox {
             try require(
                 symbols.array.contains { $0["name"].string == "main" && $0["selectionRange"] != .null },
                 "Missing hierarchical document symbols")
-            let nextDiagnostic = await inbox.sequence
+            await inbox.clear(file.absoluteString)
             try await server.change(
                 uri: file.absoluteString,
                 range: LSPRange(start: LSPPosition(line: 4, character: 15), end: LSPPosition(line: 4, character: 16)),
                 text: "'ok'", version: 1)
-            let fixed = try await diagnostics(inbox, version: nextDiagnostic)
+            let fixed = try await diagnostics(inbox, uri: file.absoluteString) { !$0.contains { $0.severity == 1 } }
             try require(!fixed.contains { $0.severity == 1 }, "Unsaved incremental fix not analyzed")
             let edits = try await server.request("textDocument/formatting", uri: file.absoluteString)
             try require(edits != .null, "Formatting request failed")
             try require(try Data(contentsOf: file) == Data(text.utf8), "Analysis modified disk text")
+            try await server.open(uri: model.absoluteString, text: "int value = 1;\n", version: 0)
+            await inbox.clear(consumer.absoluteString)
+            try await server.change(
+                uri: model.absoluteString,
+                range: LSPRange(start: .init(line: 0, character: 0), end: .init(line: 1, character: 0)),
+                text: "String value = 'changed';\n", version: 1)
+            _ = try await diagnostics(inbox, uri: consumer.absoluteString) { $0.contains { $0.severity == 1 } }
+            try require(
+                try String(contentsOf: model, encoding: .utf8) == "int value = 1;\n",
+                "Reverse dependency analysis wrote disk")
+            await inbox.clear(consumer.absoluteString)
+            await server.close(uri: model.absoluteString)
+            _ = try await diagnostics(inbox, uri: consumer.absoluteString) { !$0.contains { $0.severity == 1 } }
+            print("PASS: unsaved Dart dependency change checks unopened importer, close restores disk analysis")
             await server.close(uri: file.absoluteString)
             await server.stop()
             listener.cancel()
@@ -131,11 +156,13 @@ actor DiagnosticsInbox {
             throw error
         }
     }
-    static func diagnostics(_ inbox: DiagnosticsInbox, version: Int) async throws -> [LSPDiagnostic] {
+    static func diagnostics(_ inbox: DiagnosticsInbox, uri: String, predicate: @Sendable ([LSPDiagnostic]) -> Bool)
+        async throws -> [LSPDiagnostic]
+    {
         for _ in 0..<300 {
-            if let result = await inbox.get(version) { return result }
+            if let result = await inbox.get(uri), predicate(result) { return result }
             try await Task.sleep(for: .milliseconds(50))
         }
-        throw LanguageServiceFailure("Diagnostics timed out at \(version)")
+        throw LanguageServiceFailure("Diagnostics timed out at " + (URL(string: uri)?.lastPathComponent ?? uri))
     }
 }

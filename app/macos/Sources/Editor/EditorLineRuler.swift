@@ -2,7 +2,7 @@ import AppKit
 import HyCodeWorkspace
 
 @MainActor final class EditorLineRuler: NSRulerView {
-    weak var semantic: DartEditorFeatures?
+    weak var semantic: EditorLanguageFeatures?
     var lines: TextLineIndex
     private weak var editor: NSTextView?
     private let numberFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular)
@@ -19,7 +19,9 @@ import HyCodeWorkspace
     required init(coder: NSCoder) { fatalError("init(coder:) is not supported") }
     override func resetCursorRects() {
         super.resetCursorRects()
-        if semantic?.document?.readOnly == false { addCursorRect(bounds, cursor: .pointingHand) }
+        if semantic?.document?.readOnly == false, semantic?.controller?.flutter != nil {
+            addCursorRect(bounds, cursor: .pointingHand)
+        }
     }
     override func mouseDown(with event: NSEvent) {
         guard let semantic, semantic.document?.readOnly == false,

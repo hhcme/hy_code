@@ -39,6 +39,7 @@ struct EditorSettingsView: View {
     @AppStorage("editor.syntaxHighlight") private var syntaxHighlight = true
     var body: some View {
         @Bindable var dart = store.dart
+        @Bindable var web = store.web
         Form {
             Toggle("自动保存", isOn: $store.autoSave)
             Text("停止输入约 800 毫秒后保存到原文件；输入法组合期间暂停保存。关闭后使用 ⌘S 保存。")
@@ -51,6 +52,11 @@ struct EditorSettingsView: View {
             TextField("SDK 根目录（留空自动发现）", text: $dart.sdkPath)
             Button("应用并重启分析器", action: store.dart.restart)
             Text(store.dart.status).font(.callout).foregroundStyle(.secondary)
+            Divider()
+            Text("Web / Node.js").font(.headline)
+            TextField("Node 可执行文件（留空自动发现）", text: $web.nodePath)
+            Button("应用并重启 Web 分析器", action: store.web.restart)
+            Text(store.web.status).font(.callout).foregroundStyle(.secondary)
         }
         .padding(24).frame(width: 440).navigationTitle("编辑设置")
     }

@@ -41,7 +41,7 @@ public actor DartLanguageServer {
                         ],
                     ],
                     "initializationOptions": [
-                        "onlyAnalyzeProjectsWithOpenFiles": true, "suggestFromUnimportedLibraries": false,
+                        "onlyAnalyzeProjectsWithOpenFiles": false, "suggestFromUnimportedLibraries": false,
                     ],
                 ]), timeout: 45)
             if let encoding = response["capabilities"]["positionEncoding"].string, encoding != "utf-16" {

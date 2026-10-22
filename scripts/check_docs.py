@@ -17,7 +17,7 @@ from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
-IGNORED_PARTS = {".git", ".v2c", "__pycache__", "build", "target", ".build"}
+IGNORED_PARTS = {".git", ".v2c", "__pycache__", "build", "target", ".build", "node_modules"}
 LINK = re.compile(r"!?\[[^\]\n]*\]\(\s*(?:<([^>\n]+)>|([^\s)\n]+))(?:\s+[\"'][^\n]*?[\"'])?\s*\)")
 INLINE_CODE = re.compile(r"(`+).*?\1")
 FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")

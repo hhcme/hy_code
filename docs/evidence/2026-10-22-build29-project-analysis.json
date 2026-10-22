@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "date": "2026-10-22",
+  "build": 29,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "a2218cf646b238b1c66c6c2543c5e955087a2cdf",
+  "working_tree": "Includes uncommitted build28 Web tooling and build29 project diagnostics; no staging, commit or push.",
+  "environment": {
+    "architecture": "arm64",
+    "os": "macOS 27.0.1 (26A434)",
+    "swift": "6.4",
+    "rust": "1.96.0",
+    "node": "22.22.3",
+    "dart": "3.11.5"
+  },
+  "implementation": [
+    "Start project discovery on opening workspace and Dart root analysis before didOpen.",
+    "Reuse workspace language processes; bounded TS background registration avoids TLS interactive-buffer fan-out.",
+    "Debounced changed-module reverse references with conservative full fallback for global/config/JSON/deletion changes.",
+    "One recursive utility FSEvents stream; bounded off-main source I/O and problem snapshot preparation.",
+    "Ordered disk/native overlay handoff; native JSON overlays work before discovery; close returns to disk.",
+    "Bottom-left errors/warnings/suggestions and grouped, filtered problem rows with exact UTF-16 navigation targets.",
+    "Partial scope markers for caps, unreadable files, untrusted Vue and unavailable file events.",
+    "Successful registration tracking supports retry; individual unsupported file does not stop other analysis.",
+    "TS wire requests split below 8 MiB after worst-case JSON escaping."
+  ],
+  "checks": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 151,
+      "rust_tests": 15,
+      "checks": [
+        "format",
+        "Rust Clippy",
+        "C/C++ headers",
+        "locked dependency notices",
+        "Swift/Rust headless tests",
+        "docs",
+        "diff whitespace"
+      ]
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --disable-xctest --sanitize address --filter 'ProjectAnalysisTests|WorkspaceSourceWatcherTests|LSPDocumentQueueTests|LanguageProcessTests'",
+      "result": "pass",
+      "swift_tests": 14,
+      "rust_asan": false,
+      "scope": "8 new source/catalog/problem/queue/FSEvents tests plus 6 process lifecycle cases; app UI and real language processes are not sanitizer claims"
+    },
+    {
+      "command": "nice -n 10 .build/out/Products/Release/HyCodeWebProbe <external-node> build/HyCode.app/Contents/Resources/web-language-services",
+      "result": "pass",
+      "fixture_only": true,
+      "checks": [
+        "Unopened project TS and SCSS diagnostics without native editor documents",
+        "Untrusted Vue and binary CSS mark partial scope while valid sources continue",
+        "Unsaved module checks own file and importer, excludes unrelated file",
+        "Close restores disk; external disk changes replace TS snapshots",
+        "JSON opened before project discovery keeps unsaved overlay in TS; disk and unsaved JSON changes recheck importer",
+        "Deleted dependency yields missing-module diagnostic; deleting file and empty scope clear stale results",
+        "Eight 250000-control-character comments exercise registration wire-splitting without exceeding LSP framing cap",
+        "Prior Web regression: JS checking, plugin canary, TS navigation/completion/import/rename, HTML/SCSS/JSON and Vue bridge/quick fix"
+      ]
+    },
+    {
+      "command": "HyCodeDartProbe <external-installed-sdk>",
+      "result": "pass",
+      "fixture_only": true,
+      "checks": [
+        "Root diagnostics arrive for unopened file before any didOpen",
+        "Unsaved Dart dependency edit checks unopened importer; close restores disk analysis",
+        "Existing diagnostics, unsaved fix, hover, SDK definition, references, completion, symbols and formatting",
+        "Source disk text unchanged; no Pub, GUI or user project"
+      ]
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "launched": false
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only-source-review",
+    "fixed": [
+      "stale background TS disk snapshots",
+      "deleted importer scope and JSON dependencies",
+      "empty project diagnostic cleanup",
+      "old known-set scan writeback after workspace switch"
+    ],
+    "remaining_confirmed_p1_p2": 0,
+    "not_gui_validation": true
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "version": "0.1.0",
+    "build": "29",
+    "bundle_id": "io.github.hhcme.hycode",
+    "minimum_system": "14.0",
+    "architecture": "arm64",
+    "binary_sha256": "ee4f1bda863b1642bbe0e51fef0caebb95426787cd5857fdf23fbbe0f0a111db",
+    "bundle_bytes": 146437797,
+    "distribution_signed": false,
+    "installed": false,
+    "launched": false,
+    "published": false
+  },
+  "limits": {
+    "web_catalog_files": 5000,
+    "web_catalog_bytes": 67108864,
+    "catalog_entries": 50000,
+    "source_file_bytes": 1048576,
+    "registration_files_per_batch": 8,
+    "diagnostic_files_per_batch": 32,
+    "reverse_query_fallback_after": 256,
+    "per_language_problem_uris": 500,
+    "per_uri_diagnostics": 1000,
+    "per_language_diagnostics": 5000,
+    "workspace_problem_rows": 5000,
+    "edit_debounce_ms": 500,
+    "problem_refresh_ms": 100,
+    "node_old_space_mib_per_process": 512
+  },
+  "not_verified": [
+    "Real HyCode windows, pointer and click navigation, focus, IME and rendered performance/FPS",
+    "Real user project scale, initial indexing time, aggregate RSS or multi-language load",
+    "Dart plugins or full Flutter projects/devices; SDK analyzer controls its own project scope",
+    "All WebStorm inspections, dedicated ESLint/Prettier/framework diagnostics, Rust/C/C++ semantics",
+    "Strict current-revision proof for versionless diagnostics; display may be briefly stale",
+    "Old macOS runtime, distribution signing, notarization, installation or release",
+    "Prior Flutter DAP fork incompatibility and existing Web/Flutter backlog remain unchanged"
+  ],
+  "source_sha256": {
+    "app/macos/Resources/Info.plist": "0f3bd54e47f3e8af415b128938b10117736c75ca83894eede21b025d716b6c52",
+    "app/macos/Sources/Language/ProjectAnalysisController.swift": "55c531f6ca066ef9b172dbace7ccbd9f54bd50f555075edf9f613a2cb2bf805a",
+    "app/macos/Sources/Language/WorkspaceProblemsController.swift": "be22c66e3801fca49651564f2b65809b71f8d1d708d84e4a62bce1226bf2f110",
+    "app/macos/Sources/Language/WorkspaceProblemsPanel.swift": "bee788447cb4632cbbf0f29429cde68637423e4cfa59d35f8b750085106bf84d",
+    "app/macos/Sources/Language/WebWorkspaceController.swift": "af53384d3e8cf4daa659c92b2ac77d1daf9303d19ee3aa6be0fa68f3d0234f6a",
+    "app/macos/Sources/Language/DartWorkspaceController.swift": "682941ad805cf071392331aca47ce5c7f7a8cc016bc1e9ce348a97d9c76249bf",
+    "app/macos/Sources/Language/WebToolPanels.swift": "476ca59f718e0c1f05137332082a17b8d477b5d521f264f1f250580b6b8ff0d7",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "24e7569d70f6af309bb13cf37bf9a1d84b4cca0a8d1020024de5088d67225553",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "9d2207c7d28aeeef93a9fda8ca4e89c92351a0874ee3c341c2b89c5a04cf3b9f",
+    "packages/HyCodeWorkspace/Sources/Language/ProjectSourceCatalog.swift": "1406f7300edbf94a10a8da6dc953b26699dbadbf8cd145b4fb26ee5902bdc14d",
+    "packages/HyCodeWorkspace/Sources/Language/WorkspaceSourceWatcher.swift": "1380f8d4162603807cdeae3e58560bfd87a711d2a7aecae7104ff1e0ec2f828d",
+    "packages/HyCodeWorkspace/Sources/Language/LSPDocumentQueue.swift": "60a59ad4913460a0810db40694baa58a7f61aa8e374a6d4695e175cb26977dac",
+    "packages/HyCodeWorkspace/Sources/Language/WebProjectDiagnostics.swift": "4d90cd9d6572d9d14631dddb0c9fdd058aa30464092106e9ff2593ec89824323",
+    "packages/HyCodeWorkspace/Sources/Language/WebLanguageServer.swift": "0e3354790cd4f1ca2716ef231d0c55484abe20af71bd27a512f1f30e8f78fded",
+    "packages/HyCodeWorkspace/Sources/Language/WorkspaceProblems.swift": "347cc0e26c8aeea0135e2c3662e0f7a5bb16bf2a67e0d884195eb2923bca7ad4",
+    "packages/HyCodeWorkspace/Sources/Language/DartLanguageServer.swift": "6bccd6d0ab38bd670dea124adda4405f399a95a24b361e5bb28a86f35a84e664",
+    "packages/HyCodeWorkspace/Tests/ProjectAnalysisTests.swift": "d369576d6857f41139662899a33e61d8ad98f4bc905e3648b03b6a9cacfad817",
+    "tools/WebProbe/ProjectDiagnosticsProbe.swift": "cfde926a4a6fbaa631a0d90a2f5ef55a9678218bfb2f535191362c8baf9eaebb",
+    "tools/DartProbe/main.swift": "b7fd3ab1d0c8c054888345a87e2b574df09227aa212408e009f9b603f1a9e709"
+  },
+  "log_sha256": {
+    ".build/build29-check-native.log": "70d58c25293ae5934cb296e64fc4f8b264a8ce3e1348a5aa4ac9a4428bee29ef",
+    ".build/build29-asan.log": "f868d2e1215b3a0162efce43c9fa3dadf6d2ef3104db795cac03c2a29817892c",
+    ".build/build29-release.log": "0e01b4af1c482449de3a8b7c703d8047dffe04d74e1a72dc7825a9174acfa402",
+    ".build/build29-probe-compile.log": "1e06c9b93db65dd46c73b450d911fde878ba27f5b40a1df9f33852c2bf8437b2",
+    ".build/build29-bundled-web-probe.log": "8b5145a0acfb239f0bddf065f810973a641125df580300d7bb68d079947718b0",
+    ".build/build29-dart-probe.log": "0b8db823860638d32d125ad8efe00e710cdea20b3a4219797a71199922374a3c",
+    ".build/build29-docs.log": "7636651df06426eae4b8c58342bc3e610a71a4f39ca0386b3146c3d74230ce6e"
+  }
+}

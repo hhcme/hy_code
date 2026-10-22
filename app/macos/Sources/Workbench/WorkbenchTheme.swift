@@ -1,4 +1,5 @@
 import AppKit
+import HyCodeWorkspace
 import SwiftUI
 
 enum WorkbenchAppearance: String, CaseIterable, Identifiable {
@@ -47,6 +48,9 @@ enum WorkbenchColors {
     static let nativeChrome = adaptive(light: 0xE9EAEE, dark: 0x26282C)
     static let nativeBorder = adaptive(light: 0xE9EAEE, dark: 0x26282C)
     static let nativeText = adaptive(light: 0x27282E, dark: 0xD1D3D9)
+    static let nativeCaret = adaptive(light: EditorFeedbackPalette.light.caret, dark: EditorFeedbackPalette.dark.caret)
+    static let nativeEditorLine = adaptive(
+        light: EditorFeedbackPalette.light.currentLine, dark: EditorFeedbackPalette.dark.currentLine)
     static let nativeSecondary = adaptive(light: 0x5F6269, dark: 0x9FA2A8)
     static let nativeControlHover = adaptive(light: 0xDADDE4, dark: 0x363940)
     static let nativeControlPressed = adaptive(light: 0xC6CBD5, dark: 0x474B55)

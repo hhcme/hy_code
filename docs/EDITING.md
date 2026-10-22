@@ -1,6 +1,6 @@
 # 基础文本浏览与编辑
 
-更新：2026-10-21，build 23。用户已明确进入文件浏览与编辑阶段；文件列表单击即可编辑，自动保存作为可关闭设置。以下是代码实现和后台证据范围，原生窗口、输入法与键鼠尚未执行验收。
+更新：2026-10-22，build 31。用户已明确进入文件浏览与编辑阶段；文件列表单击即可编辑，自动保存作为可关闭设置。以下是代码实现和后台证据范围，原生窗口、输入法与键鼠尚未执行验收。
 
 ## 使用行为
 
@@ -12,7 +12,19 @@
 
 当前支持有效 UTF-8、UTF-8 BOM、带 BOM 的 UTF-16 LE/BE；原有 BOM 和换行保留，普通 Return 沿原文件换行风格插入。粘贴保留输入片段本身的内容，可能形成混合换行；不是全文件自动转换。读取及编码后保存均限制为 8 MiB，超限、无效编码、二进制、特殊文件和硬链接拒绝编辑，不使用截断或有损解码保存。
 
-编辑视图使用原生等宽文本、软换行、选择与原生撤销；每个打开文件保留自己的编辑视图、选择、滚动和 UndoManager。当前已接入行号及后台 Tree-sitter 基础高亮，见[高亮说明](SYNTAX.md)；Dart SDK LSP 和 Pub 首批工具见 [Dart/Flutter 工具](DART_FLUTTER.md)。尚无多光标、正式项目搜索、跨文件重构、崩溃恢复草稿与文件监听。支持范围不代表大文件性能或所有编码已验收。
+编辑视图使用原生等宽文本、软换行、选择与原生撤销；每个打开文件保留自己的编辑视图、选择、滚动和 UndoManager。当前已接入行号及后台 Tree-sitter 基础高亮，见[高亮说明](SYNTAX.md)；Dart SDK LSP 和 Pub 首批工具见 [Dart/Flutter 工具](DART_FLUTTER.md)，Web 文本重构和修改预览见 [Web 工具](WEB_TOOLS.md)。尚无多光标、正式项目搜索与崩溃恢复草稿；[分析文件监听](PROJECT_ANALYSIS.md)不自动重载原生缓冲。支持范围不代表大文件性能或所有编码已验收。
+
+## 编辑反馈与右键菜单
+
+build 30 的原生文本区显式接收点击焦点，空白区域也注册 I-beam 指针；⌘点击/中键导航与确认定义后的手形继续保留。插入点使用独立的深浅主题高对比色，并在当前外观中解析；原生绘制回调将细插入点扩至像素对齐的 2 pt，同时扩大原生闪烁的失效区域，避免扩大部分被裁剪或残留。仍由 AppKit 管理插入点的出现与闪烁，不创建全局光标或额外常驻刷新计时器。窗口失焦/编辑器离焦时切为非活动选区，清除当前行色带；活动编辑器在无选区时用轻微色带指示当前视觉行，只查询该处原生布局，不扫描全文。
+
+编辑区右键、Control 点击、Shift-F10 与无障碍“显示菜单”使用工作台纯色圆角菜单：统一颜色、字体、图标、快捷键列、分隔、悬停/按下反馈。保留撤销/重做、剪切/复制/纯文本粘贴、全选，以及已支持语言的定义/引用、格式化；Web 再提供类型/实现、重命名、修复/重构、整理导入与参数入口。只读/冻结/组合态禁用写操作，执行编辑命令前再次核对可编辑状态；构造菜单不读取系统剪贴板。项目树、系统菜单栏和其他原生菜单暂沿用各自实现，本批不声称全部弹出菜单已经统一。
+
+build 31 将编辑菜单按实际标题和快捷键测量宽度，最小宽度 220 pt，较长标题可扩至 360 pt，并受当前屏幕边界限制。分区使用与底色区分的细线，编辑历史、剪贴板/选择、导航、重构/导入和格式化各组留出间隔；只展示已有功能。
+
+菜单以不取得 key 的子面板展示，文本编辑器继续拥有输入法与 first responder。方向键、Home/End、Enter 和 Escape 用于选择/执行/关闭；其他输入先关闭菜单，再交回原有接收者继续处理。键盘选择跳过禁用项与分隔，较短屏幕下可滚动到所选项；菜单按鼠标所在屏幕避开四边。外部点击不被吞掉；滚动、窗口失焦/移动/缩放、编辑器分离或离焦时移除菜单和仅在展开期间存在的本地事件监听。
+
+这些是实现与后台模型断言。没有运行真实光标闪烁、面板点击、VoiceOver、输入法或窗口测试，不能据编译和颜色/几何测试宣称真实视觉、输入与帧率已验收。
 
 ## 所有权与数据流
 
@@ -43,6 +55,9 @@ NSFileCoordinator 协调替换，并持有原件 advisory lock。保存比较磁
 | [DocumentEditState.swift](../packages/HyCodeWorkspace/Sources/DocumentEditState.swift) | 已编辑/已保存修订确认 |
 | [EditorDocument.swift](../app/macos/Sources/Editor/EditorDocument.swift) | UI 投影的任务顺序、自动保存、错误和关闭排空 |
 | [NativeTextEditor.swift](../app/macos/Sources/Editor/NativeTextEditor.swift) | TextKit 原语增量、原生输入、撤销、组合态与视图保留 |
+| [CodeTextView.swift](../app/macos/Sources/Editor/CodeTextView.swift) | 插入点/当前行、焦点、指针、语义导航与组合输入适配 |
+| [EditorContextCommands.swift](../app/macos/Sources/Editor/EditorContextCommands.swift)、[WorkbenchContextMenu.swift](../app/macos/Sources/Workbench/WorkbenchContextMenu.swift) | 编辑菜单动作与工作台主题弹层、键盘和事件生命周期 |
+| [EditorFeedback.swift](../packages/HyCodeWorkspace/Sources/EditorFeedback.swift)、[ContextMenuInteraction.swift](../packages/HyCodeWorkspace/Sources/ContextMenuInteraction.swift) | 颜色/局部重绘与菜单选择/定位模型 |
 | [EditorWorkspace.swift](../app/macos/Sources/Editor/EditorWorkspace.swift)、[EditorCloseGuard.swift](../app/macos/Sources/Editor/EditorCloseGuard.swift) | 打开文档、关闭/退出保护、窗口代理转发 |
 | [EditorPanel.swift](../app/macos/Sources/Editor/EditorPanel.swift) | 中央编辑区、失败重试/重载与设置开关 |
 | [TextDocumentTests.swift](../packages/HyCodeWorkspace/Tests/TextDocumentTests.swift) | 无 GUI 的桥接、文件保存与失败验证 |
@@ -52,3 +67,7 @@ NSFileCoordinator 协调替换，并持有原件 advisory lock。保存比较磁
 沿用[静默开发规则](DEVELOPMENT.md)。测试仅触及生成的临时文件，不打开用户项目、不访问真实偏好或系统剪贴板；ACL 测试只对自己的临时文件运行 chmod，不启动图形程序。格式、Clippy、C/C++ 头文件、Rust 单元测试、Swift 命令行测试与本地开发包构建分别记录在[工作台](WORKBENCH.md)。
 
 真实点击、窗口/退出提示、设置窗口、IME、Undo/Redo、原生滚动、焦点、布局和端到端自动保存仍待真实窗口验收；后台测试不代替这些断言。
+
+build 30 的开发包、源码哈希和静默检查记录见[编辑反馈证据](evidence/2026-10-22-build30-editor-feedback.json)。插入点与失效接口依据 Apple 的 [drawInsertionPoint](https://developer.apple.com/documentation/appkit/nstextview/drawinsertionpoint(in:color:turnedon:)) 和 [setNeedsDisplay](https://developer.apple.com/documentation/appkit/nstextview/setneedsdisplay(_:avoidadditionallayout:))；后台纯模型断言不能代替系统绘制回调的窗口验收。
+
+build 31 的 import 引用与菜单宽度/可见分区记录见[本轮证据](evidence/2026-10-22-build31-import-menu.json)；新增 8 项回归后全量 165 Swift / 15 Rust 静默检查通过，Dart SDK 临时样本协议探针通过。原生菜单宽度与分隔线、鼠标指针、链接下划线仍未执行真实窗口验收。

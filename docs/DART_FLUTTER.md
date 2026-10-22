@@ -1,6 +1,6 @@
 # Dart / Flutter 开发工具
 
-更新：2026-10-22，build 27。已接通 SDK Analysis Server、Pub、紧凑悬浮，以及 Flutter 运行/调试、测试/构建和基础 Inspector 的首批入口；完整能力均纳入[九类清单](FLUTTER_PLAN.md)，尚未全部实现。沿用 Rust 正式文本与原生编辑，不恢复历史编辑器实现。相关决策见 [ADR 0005](adr/0005-dart-tooling.md)与 [ADR 0006](adr/0006-flutter-runtime.md)。
+更新：2026-10-22，build 31。已接通 SDK Analysis Server、Pub、紧凑悬浮，以及 Flutter 运行/调试、测试/构建和基础 Inspector 的首批入口；完整能力均纳入[九类清单](FLUTTER_PLAN.md)，尚未全部实现。沿用 Rust 正式文本与原生编辑，不恢复历史编辑器实现。相关决策见 [ADR 0005](adr/0005-dart-tooling.md)与 [ADR 0006](adr/0006-flutter-runtime.md)。
 
 ## 入口与当前范围
 
@@ -54,8 +54,9 @@ Pub 可按 SDK 的正常行为访问包服务器、缓存和更新工作区清�
 - 每工作区一个 DartWorkspaceController，持有一个 DartLanguageServer、按序 didOpen/didChange/didClose 和有界请求。Rust 仍独占正式文本/修订，分析器的 overlay 只用于语言查询，不直接写正式缓冲。
 - LanguageServerConnection actor 负责 Content-Length/JSON-RPC、超时、取消和服务请求；同步读在 utility worker，写在独立 writer actor，阻塞 SDK 不会占住协议 actor。格式解码和诊断解码也不在 UI 线程。诊断单 worker 按 URI 合并，避免为每条事件新建并行工作队列。
 - 所有请求响应核对工作区代次、文档身份和修订；hover 另有完整符号范围/语义代次票据。格式化/补全只应用同文件编辑，拒绝重叠或越界范围；不接受服务端 `workspace/applyEdit`。
-- 悬浮只有一个工作任务槽，hover 与定义请求并行，先返回的结果先显示；符号内逐字符移动不重置停留或重发。每个文档最多缓存 16 个符号（含空结果），定义最多缓存 32 项，截断结果不冒充完整导航缓存。编辑、打开/关闭文档、服务重启和 Pub 收尾推进语义代次；Pub 重载清单后清空所有悬浮缓存。尚无磁盘文件监听，外部依赖直接修改后的及时失效仍有同样限制。
+- 悬浮只有一个工作任务槽，hover 与定义请求并行，先返回的结果先显示；符号内逐字符移动不重置停留或重发。每个文档最多缓存 16 个符号（含空结果），定义最多缓存 32 项，截断结果不冒充完整导航缓存。编辑、打开/关闭文档、服务重启和 Pub 收尾推进语义代次；Pub 重载清单后清空所有悬浮缓存。项目内磁盘变动由[后台分析监听](PROJECT_ANALYSIS.md)推进语义代次；项目外 SDK/包缓存的外部改动未纳入该监听。
 - 命中测试要求鼠标位于实际字形/标识符，不将行尾空白映射到最近文字。移出符号清除临时链接下划线，并给进入卡片留下 140 ms 宽限与空白桥接区；滚动、编辑、失焦、窗口缩放、关闭和外观变更清理卡片。下划线清理后恢复重叠诊断，不改原文字色或撤销历史。卡片按锚点所在屏幕限位，不请求键盘焦点；只解析有界行内 Markdown，移除链接动作，不执行 HTML。
+- build 31 将 Dart 的 import/export/part URI 作为完整悬浮目标，保留 `dart:`、`package:` 和相对路径中的分隔符；支持通常的多行及条件导入、同一行前置注释与多指令；跳过注释中的假指令及普通多行字符串。沿用增量协议行索引，只向前查看至多 16 行，首次前向扫描窗口至多 8,192 UTF-16 单位；截断窗口的前置词法状态未知且未命中时，以额外共用 8,192 单位预算重试行局部候选，不复制或扫描全文；这不是完整 AST 词法器，超出边界保留普通符号查询，不保证整条 URI 命中。普通字符串不按整条包引用处理。该词法命中不解析磁盘或判断库是否存在，真正的 library/Declared 信息与定义来自 SDK；只有确认本地定义时才显示整条 URI 的临时链接下划线/手形。鼠标在 `/`、`.`、`:` 等路径字符之间移动复用同一停留和缓存；中键、⌘点击与 ⌘B 共用定义入口，失效 URI 保留分析器诊断，不伪造跳转。
 - LSP 位置使用 UTF-16、CR/LF 行规则，与 UI 可显示的 Unicode 分行索引分开；增量维护，测试覆盖 emoji、中文、CRLF 和 Unicode 分隔符；原生编辑若拆开 CRLF 边界，会扩展协议范围并保留未改单位，不发送协议无法表示的位置。组合输入期间暂停新的诊断下划线和自动保存，不用诊断改变文字颜色或撤销历史。
 - **Dart 3.11.5 推送诊断不带文档版本**。有版本时严格匹配；无版本时清掉编辑前显示、等本地修改发出再展示，并按 URI 合并，但不能证明每条诊断属于当前修订，瞬时旧诊断仍可能出现。它只用于显示，不用于自动写入或快速修复。不能把后台用例称为无版本诊断的严格修订证明。[上游实现](https://github.com/dart-lang/sdk/blob/3.11.5/pkg/analysis_server/lib/src/lsp/lsp_analysis_server.dart)。
 - 语义入口限初次载入不超过 1 MiB 的解码后 UTF-8 Dart 文件；基础编辑仍保留原 8 MiB 上限。协议帧至多 8 MiB、128 个在途请求、事件缓冲 512；单 URI 最多 1,000 条诊断、500 URI/全局 5,000 条。Pub stdout/stderr 各保留最多 1 MiB，UI 最多约 256 KiB 并按 80 ms 合并刷新；分块 UTF-8 解码保留中文/emoji。
@@ -81,15 +82,18 @@ build 26 新增 10 项运行配置/设备/状态/断点基线与解析事件/tes
 
 build 27 全仓 125 Swift / 15 Rust 静默检查通过，新增 3 项配置草稿隔离/取消/冲突与校验测试；原生 UI 仅编译和静态复核，未重跑真实 SDK 或 sanitizer。完整记录见[本轮证据](evidence/2026-10-22-build27-webstorm-tools.json)。
 
+build 31 在自建临时 package_config/库文件中验证 Dart 3.11.5 的 `dart:async`、`package:` 与相对 import：本地完整 URI 命中、library/Declared 分节、路径标点位置 hover 一致、定义返回；不存在的 URI 没有定义，且诊断范围覆盖导入路径。没有执行 Pub、下载依赖或访问用户项目；协议通过不代表窗口悬浮、下划线或鼠标跳转已验收。完整记录见[本轮证据](evidence/2026-10-22-build31-import-menu.json)。
+
 ## 源码入口
 
 | 路径 | 职责 |
 | --- | --- |
 | [Language/](../packages/HyCodeWorkspace/Sources/Language/) | JSON-RPC、增量 framing、位置与文本编辑、SDK/包读取、进程组/任务 |
 | [DartWorkspaceController.swift](../app/macos/Sources/Language/DartWorkspaceController.swift) | 工作区服务、版本/会话隔离、诊断队列与 Pub 生命周期 |
-| [DartEditorFeatures.swift](../app/macos/Sources/Language/DartEditorFeatures.swift) | 编辑增量、临时下划线、悬浮、导航、补全/格式化事务 |
+| [EditorLanguageFeatures.swift](../app/macos/Sources/Language/EditorLanguageFeatures.swift) | 编辑增量、临时下划线、悬浮、导航、补全/格式化事务 |
 | [DartHoverController.swift](../app/macos/Sources/Language/DartHoverController.swift) / [DartHoverCard.swift](../app/macos/Sources/Language/DartHoverCard.swift) | 单工作任务悬浮、确认链接、临时下划线与原生无焦点卡片/菜单 |
 | [DartHoverContent.swift](../packages/HyCodeWorkspace/Sources/Language/DartHoverContent.swift) / [DartHoverState.swift](../packages/HyCodeWorkspace/Sources/Language/DartHoverState.swift) / [DartHoverPlacement.swift](../packages/HyCodeWorkspace/Sources/Language/DartHoverPlacement.swift) | 有界内容/整词解析、语义缓存与调度、屏幕/桥接几何；对应 [DartHoverTests](../packages/HyCodeWorkspace/Tests/DartHoverTests.swift) |
+| [DartDirectiveTarget.swift](../packages/HyCodeWorkspace/Sources/Language/DartDirectiveTarget.swift) / [DartDirectiveTests.swift](../packages/HyCodeWorkspace/Tests/DartDirectiveTests.swift) / [ImportProbe.swift](../tools/DartProbe/ImportProbe.swift) | 有界 Dart 指令 URI 命中、纯模型与真实 SDK 的包/相对/SDK 引用验证 |
 | [DartToolPanels.swift](../app/macos/Sources/Language/DartToolPanels.swift) | 依赖、问题、结构与输出面板 |
 | [FlutterWorkspaceController.swift](../app/macos/Sources/Language/FlutterWorkspaceController.swift) / [FlutterDebugPanel.swift](../app/macos/Sources/Language/FlutterDebugPanel.swift) | 独立运行/工具任务、会话与调试/测试/Inspector 内容 |
 | [FlutterRunToolbar.swift](../app/macos/Sources/Language/FlutterRunToolbar.swift) / [FlutterRunConfigurationEditor.swift](../app/macos/Sources/Language/FlutterRunConfigurationEditor.swift) | 设备、运行配置与独立配置/断点弹层 |
@@ -100,3 +104,7 @@ build 27 全仓 125 Swift / 15 Rust 静默检查通过，新增 3 项配置草�
 | [DartProbe](../tools/DartProbe/main.swift) | 临时样本的官方分析器协议验证 |
 
 协议依据：[Dart 3.11.5 LSP 支持](https://github.com/dart-lang/sdk/blob/3.11.5/pkg/analysis_server/tool/lsp_spec/README.md)、[LSP 3.17](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/)。
+
+## build 29 项目后台诊断
+
+打开含 Dart/pubspec 的项目时即启动分析器，`onlyAnalyzeProjectsWithOpenFiles: false`，由 SDK 处理根目录及关联增量，不要求先打开文件。Dart 的项目诊断与 Web 共同进入左下角计数和按文件分组的问题面板，支持筛选、行列定位，并显示 SDK 分析状态。真实临时样本已验证未发送 didOpen 前收到未打开文件的错误；未保存依赖变更触发未打开导入方诊断，关闭后回到磁盘内容，原文件未被分析器写入。范围与资源限制见[项目后台诊断](PROJECT_ANALYSIS.md)。`$/analyzerStatus` 仅表示 SDK 当前分析活动，不证明所有插件结果已最终到齐。

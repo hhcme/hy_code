@@ -47,6 +47,15 @@ public struct LSPDiagnostic: Decodable, Sendable, Identifiable {
     public let severity: Int?
     public let message: String
     public let code: JSONValue?
+    /// Preserve opaque provider data for a subsequent codeAction request.
+    public let raw: JSONValue
+    public init(from decoder: any Decoder) throws {
+        raw = try JSONValue(from: decoder)
+        range = try raw["range"].decode(LSPRange.self)
+        message = try raw["message"].decode(String.self)
+        severity = raw["severity"].int
+        code = raw["code"] == .null ? nil : raw["code"]
+    }
     public var id: String { "\(range.start.line):\(range.start.character):\(message)" }
 }
 public struct LSPLocation: Codable, Sendable, Identifiable {

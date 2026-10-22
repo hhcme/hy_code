@@ -4,10 +4,20 @@ import Observation
 @MainActor @Observable final class EditorWorkspace {
     private(set) var documents: [String: EditorDocument] = [:]
     weak var language: DartWorkspaceController?
-    private var packageToolRoot: URL?
+    weak var web: WebWorkspaceController?
+    var packageToolRoot: URL?
+    var preparingLanguageEdit = false
+    var editPreview: LanguageEditPreview?
+    var editRequest = UUID()
+    var isDocumentVisible: ((String) -> Bool)?
+    var onLanguageFilesApplied: (([String]) -> Void)?
     private var pendingToolReload: [String: UUID] = [:]
     private func isManifest(_ document: EditorDocument) -> Bool {
-        !document.readOnly && ["pubspec.yaml", "pubspec.lock"].contains(document.sourceURL.lastPathComponent)
+        !document.readOnly
+            && [
+                "pubspec.yaml", "pubspec.lock", "package.json", "package-lock.json", "npm-shrinkwrap.json",
+                "pnpm-lock.yaml", "pnpm-workspace.yaml", "yarn.lock", ".yarnrc.yml",
+            ].contains(document.sourceURL.lastPathComponent)
     }
     var autoSave = UserDefaults.standard.object(forKey: "editor.autoSave") as? Bool ?? true {
         didSet {
@@ -18,13 +28,24 @@ import Observation
     private(set) var isClosing = false
     func open(path: String, access: WorkspaceAccess, onEdit: @escaping () -> Void) {
         guard !isClosing, documents[path] == nil else { return }
-        let document = EditorDocument(path: path, access: access, autoSave: autoSave, language: language)
+        let document = EditorDocument(path: path, access: access, autoSave: autoSave, language: language, web: web)
         if packageToolRoot != nil && isManifest(document) { document.toolManaged = true }
-        document.onEdit = onEdit
+        document.onEdit = { [weak self] in
+            // Include buffers above the semantic size limit and other language
+            // families in the fence used by unversioned workspace edit replies.
+            self?.web?.invalidateEdits()
+            onEdit()
+        }
         documents[path] = document
     }
-    func remove(_ path: String) { documents.removeValue(forKey: path)?.close() }
+    func remove(_ path: String) {
+        web?.invalidateEdits()
+        documents.removeValue(forKey: path)?.close()
+    }
     func reset() {
+        editRequest = UUID()
+        editPreview = nil
+        preparingLanguageEdit = false
         packageToolRoot = nil
         pendingToolReload.removeAll()
         for document in documents.values { document.close() }
@@ -42,7 +63,7 @@ import Observation
         return success && !documents.values.contains(where: \.isDirty)
     }
     func preparePackageTool(_ root: URL) async -> Bool {
-        guard !isClosing, packageToolRoot == nil else { return false }
+        guard !isClosing, packageToolRoot == nil, !preparingLanguageEdit, editPreview == nil else { return false }
         packageToolRoot = root
         let protected = documents.values.filter(isManifest)
         for document in protected { document.toolManaged = true }
@@ -67,7 +88,7 @@ import Observation
             if reload, isClosing, !document.isDirty { pendingToolReload[path] = document.id }
             if reload, !isClosing, !document.isDirty {
                 document.close()
-                documents[path] = document.reloadedAfterTool(language: language)
+                documents[path] = document.reloadedAfterTool(language: language, web: web)
             }
         }
     }
@@ -103,7 +124,7 @@ import Observation
         for (path, id) in pending {
             if let document = documents[path], document.id == id, !document.isDirty {
                 document.close()
-                documents[path] = document.reloadedAfterTool(language: language)
+                documents[path] = document.reloadedAfterTool(language: language, web: web)
             }
         }
     }

@@ -12,6 +12,7 @@ DerivedData/
 xcuserdata/
 *.xcuserstate
 __pycache__/
+node_modules/
 *.py[cod]
 
 # Generated bindings/frameworks

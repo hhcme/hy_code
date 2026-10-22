@@ -5,7 +5,7 @@ import HyCodeWorkspace
 /// latest complete symbol; parsed docs and confirmed definitions are cached
 /// only for the same workspace semantic context.
 @MainActor final class DartHoverController: NSObject {
-    private weak var feature: DartEditorFeatures?
+    private weak var feature: EditorLanguageFeatures?
     private var state = DartHoverState()
     private let presenter = DartHoverPresenter()
     private var worker: Task<Void, Never>?
@@ -22,7 +22,7 @@ import HyCodeWorkspace
         let navigable: Bool
     }
     private var presented: Presentation?
-    init(feature: DartEditorFeatures) {
+    init(feature: EditorLanguageFeatures) {
         self.feature = feature
         super.init()
         presenter.entered = { [weak self] in self?.cancelDismissal() }
@@ -82,7 +82,7 @@ import HyCodeWorkspace
     func move(at offset: Int?, command: Bool) {
         guard let feature, let document = feature.document, !document.closed, !document.composing,
             let view = document.editor?.textView, let source = view.textStorage?.mutableString,
-            let offset, let range = DartHoverTarget.range(at: offset, in: source)
+            let offset, let range = feature.hoverTarget(at: offset, in: source)
         else {
             if presented != nil { pointerExitedEditor() } else { dismiss() }
             return
@@ -195,7 +195,7 @@ import HyCodeWorkspace
     func cachedDefinition(at offset: Int) -> [LSPLocation]? {
         guard state.context == feature?.controller?.semanticRevision,
             let source = feature?.document?.editor?.textView.textStorage?.mutableString,
-            let range = DartHoverTarget.range(at: offset, in: source),
+            let range = feature?.hoverTarget(at: offset, in: source),
             let value = state.entry(for: range)?.definition, value.complete
         else { return nil }
         return value.targets

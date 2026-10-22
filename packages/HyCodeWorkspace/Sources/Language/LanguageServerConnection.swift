@@ -3,18 +3,33 @@ import Foundation
 
 private actor LanguageServerWriter {
     let handle: FileHandle
+    private let queue = DispatchQueue(label: "HyCode.LanguageWriter", qos: .utility)
     private var closed = false
     init(_ handle: FileHandle) {
         self.handle = handle
         _ = fcntl(handle.fileDescriptor, F_SETNOSIGPIPE, 1)
     }
-    func write(_ data: Data) throws {
+    func write(_ data: Data) async throws {
         guard !closed else { throw LanguageServiceFailure("语言服务写端已关闭") }
-        try handle.write(contentsOf: data)
+        let handle = handle
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            queue.async {
+                do {
+                    try handle.write(contentsOf: data)
+                    continuation.resume()
+                } catch { continuation.resume(throwing: error) }
+            }
+        }
     }
-    func close() {
+    func close() async {
         closed = true
-        try? handle.close()
+        let handle = handle
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            queue.async {
+                try? handle.close()
+                continuation.resume()
+            }
+        }
     }
 }
 
@@ -48,35 +63,35 @@ public actor StdioProtocolConnection {
         events = stream.stream
         emitter = stream.continuation
     }
-    public func start(executable: URL, arguments: [String], directory: URL, configuration: JSONValue = .null) throws {
+    public func start(
+        executable: URL, arguments: [String], directory: URL, configuration: JSONValue = .null,
+        environment: [String: String] = [:]
+    ) throws {
         guard !started else { throw LanguageServiceFailure("此连接不能重复启动，请创建新连接") }
         started = true
         writer = LanguageServerWriter(input.fileHandleForWriting)
         self.configuration = configuration
         let child = try OwnedToolProcess.launch(
             executable: executable, arguments: arguments, directory: directory, input: input.fileHandleForReading,
-            environment: ["DASH__IDE_NAME": "HyCode", "DASH__IDE_VERSION": "0.1.0"])
+            environment: environment.merging(["DASH__IDE_NAME": "HyCode", "DASH__IDE_VERSION": "0.1.0"]) { _, new in new
+            })
         process = child
         try? input.fileHandleForReading.close()
         alive = true
         let stdout = child.stdout
         let stderr = child.stderr
         exitWait = Task.detached(priority: .utility) { [weak self] in
-            let status = child.wait()
+            let status = await ToolBlockingIO.wait(child)
             await self?.disconnected()
             return status
         }
         readers.append(
             Task.detached(priority: .utility) { [weak self] in
                 defer { try? stdout.close() }
-                var bytes = [UInt8](repeating: 0, count: 65_536)
                 while true {
-                    let count = bytes.withUnsafeMutableBytes {
-                        Darwin.read(stdout.fileDescriptor, $0.baseAddress, $0.count)
-                    }
-                    if count < 0 && errno == EINTR { continue }
-                    guard count > 0 else { break }
-                    await self?.receive(Data(bytes.prefix(count)))
+                    let data = await ToolBlockingIO.read(stdout, capacity: 65_536)
+                    guard !data.isEmpty else { break }
+                    await self?.receive(data)
                 }
                 await self?.disconnected()
             })
@@ -85,14 +100,10 @@ public actor StdioProtocolConnection {
         readers.append(
             Task.detached(priority: .utility) { [weak self] in
                 defer { try? stderr.close() }
-                var bytes = [UInt8](repeating: 0, count: 16_384)
                 while true {
-                    let count = bytes.withUnsafeMutableBytes {
-                        Darwin.read(stderr.fileDescriptor, $0.baseAddress, $0.count)
-                    }
-                    if count < 0 && errno == EINTR { continue }
-                    guard count > 0 else { break }
-                    await self?.stderrMessage(String(decoding: bytes.prefix(count), as: UTF8.self))
+                    let data = await ToolBlockingIO.read(stderr, capacity: 16_384)
+                    guard !data.isEmpty else { break }
+                    await self?.stderrMessage(String(decoding: data, as: UTF8.self))
                 }
             })
     }
@@ -235,7 +246,9 @@ public actor StdioProtocolConnection {
             result = .array(
                 message["params"]["items"].array.map { item in
                     let section = item["section"].string ?? ""
-                    return section.isEmpty || section == "dart" ? configuration : .null
+                    if section.isEmpty { return configuration }
+                    if section == "dart", configuration["dart"] == .null { return configuration }
+                    return section.split(separator: ".").reduce(configuration) { $0[String($1)] }
                 })
         case "client/registerCapability", "client/unregisterCapability", "window/workDoneProgress/create":
             result = .null

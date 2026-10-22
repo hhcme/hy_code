@@ -12,6 +12,10 @@ if [[ "$configuration" != debug && "$configuration" != release ]]; then
     exit 1
 fi
 bash scripts/build_core.sh
+if [[ ! -f tools/web-language-services/node_modules/typescript/lib/tsserver.js ]]; then
+    bash scripts/setup_web_tools.sh
+fi
+node scripts/web_tools.mjs
 swift build --configuration "$configuration" --jobs 2 --product HyCode
 binary_dir="$(swift build --configuration "$configuration" --show-bin-path)"
 bash scripts/build_icons.sh
@@ -25,4 +29,11 @@ cp .build/icons/HyCode.icns "$app_dir/Contents/Resources/HyCode.icns"
 cp app/macos/Resources/brand/icon.png "$app_dir/Contents/Resources/HyCode.png"
 cp LICENSE THIRD_PARTY_NOTICES.md "$app_dir/Contents/Resources/"
 cp -R third_party/licenses "$app_dir/Contents/Resources/third_party/"
+runtime_dir="$app_dir/Contents/Resources/web-language-services"
+runtime_stage="$(mktemp -d "$app_dir/Contents/Resources/.web-language-services.XXXXXX")"
+trap 'rm -rf "$runtime_stage"' EXIT
+cp tools/web-language-services/package.json tools/web-language-services/package-lock.json tools/web-language-services/third-party.json "$runtime_stage/"
+/usr/bin/ditto --norsrc --noextattr tools/web-language-services/node_modules "$runtime_stage/node_modules"
+rm -rf "$runtime_dir"
+mv "$runtime_stage" "$runtime_dir"
 echo "Built $app_dir ($configuration, unsigned development build). Application was not launched."

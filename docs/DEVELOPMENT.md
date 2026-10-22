@@ -1,5 +1,9 @@
 # HyCode 开发约定
 
+Web 固定运行资源另需外部 Node 22.22.2+ 与 npm。首次执行 `bash scripts/setup_web_tools.sh` 联网准备锁定的公开 npm 包（禁用 hooks），不修改用户项目。构建缺资源时调用此步骤，应用带服务 JavaScript 而不带 Node。`check_native.sh` 仅检查已准备资源，不安装 npm 包。设置中可指定 Node 路径。
+
+`swift run --jobs 2 HyCodeWebProbe /absolute/path/to/node tools/web-language-services` 仅用自建临时 fixture 检查 stdio、未保存分析、自动导入、Vue 桥接和不执行配置插件的 canary；不启动 AppKit、浏览器/dev server 或用户 scripts。完整边界见 [Web 工具](WEB_TOOLS.md)。
+
 更新：2026-10-22。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件工作台、原生基础编辑、Rust 文本/目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)和[编辑说明](EDITING.md)。
 
 ## 开始工作
@@ -53,7 +57,7 @@ Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并�
 | `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `26`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `31`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
 
@@ -99,3 +103,5 @@ Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.
 `.gitattributes` 保留历史快照与上游许可的原始字节；上游许可不参与本项目的空白格式改写，避免为通过检查修改通知原文。
 
 保留无关改动；只有用户授权时才提交、推送或发布。默认分支为 `main`，新自动化工作分支使用 `codex/` 前缀。新应用 target、crate、CLI、Bundle ID 和数据目录围绕 HyCode 定义，不沿用旧产品标识。应用打包和发布另行授权，不由文档推送自动触发。
+
+项目后台诊断的 FSEvents 测试只监听生成的临时目录，在 utility 队列接收事件，不使用主 run loop 或 GUI 宿主；扫描/汇总/有序同步测试同样在命令行执行。真实外部 SDK/Node 探针仍需显式运行，不加入通用检查；入口及边界见[项目分析](PROJECT_ANALYSIS.md)。

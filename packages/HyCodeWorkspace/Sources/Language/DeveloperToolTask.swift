@@ -18,7 +18,7 @@ public actor DeveloperToolTask {
     private var cancelled = false
     public init() {}
     public func run(
-        executable: URL, arguments: [String], directory: URL,
+        executable: URL, arguments: [String], directory: URL, environment: [String: String] = [:],
         standardOutput: (@Sendable (String) async -> Void)? = nil,
         output: @escaping @Sendable (String) async -> Void
     ) async throws -> DeveloperToolResult {
@@ -28,20 +28,17 @@ public actor DeveloperToolTask {
         stdout = Data()
         stderr = Data()
         truncated = false
-        let child = try OwnedToolProcess.launch(executable: executable, arguments: arguments, directory: directory)
+        let child = try OwnedToolProcess.launch(
+            executable: executable, arguments: arguments, directory: directory,
+            environment: environment)
         process = child
         let readers = [(child.stdout, false), (child.stderr, true)].map { handle, isError in
             Task.detached(priority: .utility) { [weak self] in
                 defer { try? handle.close() }
-                var bytes = [UInt8](repeating: 0, count: 8192)
                 var decoder = UTF8OutputDecoder()
                 while true {
-                    let count = bytes.withUnsafeMutableBytes {
-                        Darwin.read(handle.fileDescriptor, $0.baseAddress, $0.count)
-                    }
-                    if count < 0 && errno == EINTR { continue }
-                    guard count > 0 else { break }
-                    let data = Data(bytes.prefix(count))
+                    let data = await ToolBlockingIO.read(handle, capacity: 8192)
+                    guard !data.isEmpty else { break }
                     await self?.capture(data, error: isError)
                     let text = decoder.append(data)
                     if !isError, !text.isEmpty { await standardOutput?(text) }
@@ -52,7 +49,7 @@ public actor DeveloperToolTask {
                 if !suffix.isEmpty { await output(suffix) }
             }
         }
-        let waiting = Task.detached(priority: .utility) { child.wait() }
+        let waiting = Task.detached(priority: .utility) { await ToolBlockingIO.wait(child) }
         self.waiting = waiting
         let status = await withTaskCancellationHandler {
             await waiting.value

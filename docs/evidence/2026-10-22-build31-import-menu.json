@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "date": "2026-10-22",
+  "build": 31,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "a2218cf646b238b1c66c6c2543c5e955087a2cdf",
+  "working_tree": "Includes prior uncommitted build28/29/30 changes; no stage, commit or push.",
+  "environment": {
+    "architecture": "arm64",
+    "macos": "27.0.1",
+    "swift": "6.4",
+    "rust": "1.96.0",
+    "dart": "3.11.5",
+    "deployment_target": "14.0"
+  },
+  "implementation": [
+    "Dart import/export/part URI hit testing preserves complete SDK, package and relative paths, including punctuation and UTF-16 names.",
+    "Library signature and Declared metadata come from existing SDK hover parsing; no invented package resolution or fabricated definitions.",
+    "Complete URI shares hover dwell, revision/context cache, confirmed navigation underline/hand and definition cache used by Command-click, middle-click and Command-B.",
+    "Bounded source window: up to 16 prior lines and 8192 UTF-16 units per primary pass; truncated-context fallback shares a second 8192-unit budget, no full-source copy, disk lookup or scan.",
+    "Conditional and multiline directives, prefix/nested/long comments and ordinary strings have regression fixtures; this is not a complete Dart AST lexer.",
+    "Editor context menu measures titles/shortcuts, minimum 220pt and maximum 360pt with screen clamp; visible themed separators retain existing non-key panel/event lifecycle.",
+    "Editing history, clipboard/selection, navigation, supported refactor/import and formatting groups; parameter information placed with navigation."
+  ],
+  "checks": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 165,
+      "rust_tests": 15,
+      "new_tests": 8,
+      "scope": "format, Clippy, C/C++ headers, locked dependency notices, headless model/process tests, docs and diff"
+    },
+    {
+      "command": "swift test --jobs 2 --disable-xctest --filter 'DartDirectiveTests|ContextMenuInteractionTests'",
+      "result": "pass",
+      "tests": 11
+    },
+    {
+      "command": "nice -n 10 HyCodeDartProbe <installed-sdk-root>",
+      "result": "pass",
+      "dart": "3.11.5",
+      "scope": [
+        "SDK/package/relative library signature and declaration",
+        "complete URI hit and punctuation hover consistency",
+        "definitions present for resolved imports; unresolved import absent",
+        "unresolved import diagnostic range covers URI",
+        "prefix, nested fake-import and long-comment actual SDK navigation",
+        "existing unopened diagnostics, unsaved reverse-dependency, hover/navigation/completion/symbol/formatting checks"
+      ],
+      "fixtures": "Generated temporary workspace, own package_config and cache; no Pub, network package install or user project."
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "app_launched": false
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only-source-review",
+    "fixed": [
+      "Leading comment before import no longer hides the directive",
+      "Fake import inside a comment no longer stops discovery of the real URI",
+      "Unknown prefix context in long comments cannot swallow later real directives"
+    ],
+    "remaining_confirmed_p1_p2": 0,
+    "not_gui_verification": true
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "version": "0.1.0",
+    "build": "31",
+    "bundle_id": "io.github.hhcme.hycode",
+    "minimum_system": "14.0",
+    "architecture": "arm64",
+    "binary_sha256": "a4668ee78dc6008c2e022e5d188da4534422e25ad3ccfdbfcedf0306aceafe90",
+    "bundle_bytes": 146650517,
+    "distribution_signed": false,
+    "launched": false,
+    "installed": false,
+    "published": false
+  },
+  "not_verified": [
+    "Real hover card, underline, hand cursor, middle-click and modifier navigation in native windows",
+    "Menu width, separators and pointer/keyboard/IME/VoiceOver in actual windows",
+    "Actual project indexing latency, rendering frame rate and older macOS runtime",
+    "No new sanitizer, Web runtime or Flutter run/debug tests for this change"
+  ],
+  "source_sha256": {
+    "app/macos/Sources/Language/EditorLanguageFeatures.swift": "9095181bcd80fdb189d838105823bebe0cc6e5bee8537eef737922886b831f01",
+    "app/macos/Sources/Language/DartHoverController.swift": "fd26c842044b07235b7b162f28d246f9888463bfcebee80c05ec90d30b9bbd0a",
+    "app/macos/Sources/Language/DartHoverCard.swift": "c50f396a143c9d2dfa4e934a21719c882fe9429a4779d4981614ce9fb80274e6",
+    "app/macos/Sources/Workbench/WorkbenchContextMenu.swift": "edadc4cf70203ae781fcc3c98faada4541e4e8e83801ce29049e203101aecc3c",
+    "app/macos/Sources/Editor/EditorContextCommands.swift": "9dc037dd3e68aff6ab6d685f6c2fca88770cd171ddb012e4d1ce11d2104c226c",
+    "packages/HyCodeWorkspace/Sources/Language/DartDirectiveTarget.swift": "f411da834215d2f5200656538c2da6c827f76d663511413bd5afe7e0c6bd5db8",
+    "packages/HyCodeWorkspace/Sources/ContextMenuInteraction.swift": "b9d51b29f8de8abb8890a6db7d30f57544aa4584d269ff26433fdb51cdfdf42a",
+    "packages/HyCodeWorkspace/Tests/DartDirectiveTests.swift": "093c3ebdc19398f3fac30250f2976f209bf6efd89f37ce1246be799b280139bf",
+    "packages/HyCodeWorkspace/Tests/EditorFeedbackTests.swift": "d6f6738aadcdc6aadfbdeadcbc7a3039980e8173ac18c5b0cb1206cefc731a7f",
+    "packages/HyCodeWorkspace/Sources/Language/DartHoverContent.swift": "65f805112b7a1fb9ecd21d0eebda59ac72765d2449651fbeed873f492e750e0d",
+    "packages/HyCodeWorkspace/Sources/Language/DartHoverState.swift": "7b7ed1697895922b4378b7deec009dcb347590697581cc2c8bfacaa0108c80f7",
+    "tools/DartProbe/ImportProbe.swift": "e8e66607a54daea514fe014a6bc3c058b3067a41d00a88d99bb43258d3e1a029",
+    "tools/DartProbe/main.swift": "3c06c2b0d0a6dbd6b8090470985d3e11908fceb86e4299ff35059470eaa27ccb",
+    "app/macos/Resources/Info.plist": "ffd4b631951a053f11d38b26585076c2341d3c7f1df107c6d83505729e7ea4f5"
+  },
+  "log_sha256": {
+    ".build/build31-check-native.log": "522ead07c7ec7f88d289a5221e5aaaccf5cd8401729f4f4ebff2ba6fc36454bd",
+    ".build/build31-focused-tests.log": "d71eb23224cf722aefd4092dd82ce7de4dc0c7b14782e144b4b107ae43cf33ed",
+    ".build/build31-dart-probe.log": "91d74b25b5d033b1bf55392888583e8a000fc9a91f89208892dcb80924136bc3",
+    ".build/build31-release.log": "dd9b73b24d83b54fab404956e247e04b141f36153810323b89e9a107bfcf90e3",
+    ".build/build31-docs.log": "ab16b4176d09de40f5f5241da919c8c98761bac2cd26a5ae2c54695defd224a2"
+  }
+}

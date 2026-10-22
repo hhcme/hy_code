@@ -70,7 +70,7 @@ struct DartAnalysisPanel: View {
 }
 
 struct DartProblemsPanel: View {
-    @Bindable var controller: DartWorkspaceController
+    let controller: any EditorLanguageController
     let navigate: (LSPLocation) -> Void
     var body: some View {
         ScrollView {
@@ -132,7 +132,7 @@ struct DartProblemsPanel: View {
 }
 
 struct DartStructurePanel: View {
-    @Bindable var controller: DartWorkspaceController
+    let controller: any EditorLanguageController
     let document: EditorDocument?
     private struct Row: Identifiable {
         let id: String

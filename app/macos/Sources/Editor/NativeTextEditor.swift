@@ -44,133 +44,6 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
     }
 }
 
-@MainActor private final class CodeTextView: NSTextView {
-    weak var semantic: DartEditorFeatures?
-    var semanticLinkRange: NSRange? { didSet { window?.invalidateCursorRects(for: self) } }
-    private var hoverTracking: NSTrackingArea?
-    override func resetCursorRects() {
-        super.resetCursorRects()
-        guard let range = semanticLinkRange, let layout = layoutManager, let container = textContainer,
-            NSMaxRange(range) <= (textStorage?.length ?? 0)
-        else { return }
-        let glyphs = layout.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
-        layout.enumerateEnclosingRects(
-            forGlyphRange: glyphs, withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0), in: container
-        ) { rect, _ in
-            self.addCursorRect(
-                rect.offsetBy(dx: self.textContainerOrigin.x, dy: self.textContainerOrigin.y), cursor: .pointingHand)
-        }
-    }
-    private func symbolOffset(at point: NSPoint) -> Int? {
-        guard let layout = layoutManager, let container = textContainer else { return nil }
-        let local = NSPoint(x: point.x - textContainerOrigin.x, y: point.y - textContainerOrigin.y)
-        let glyph = layout.glyphIndex(for: local, in: container)
-        guard glyph < layout.numberOfGlyphs,
-            layout.boundingRect(forGlyphRange: NSRange(location: glyph, length: 1), in: container).contains(local)
-        else { return nil }
-        return layout.characterIndexForGlyph(at: glyph)
-    }
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if let hoverTracking { removeTrackingArea(hoverTracking) }
-        let area = NSTrackingArea(
-            rect: .zero, options: [.mouseMoved, .mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self
-        )
-        addTrackingArea(area)
-        hoverTracking = area
-    }
-    override func mouseMoved(with event: NSEvent) {
-        super.mouseMoved(with: event)
-        let point = convert(event.locationInWindow, from: nil)
-        semantic?.hoverInteraction.move(at: symbolOffset(at: point), command: event.modifierFlags.contains(.command))
-    }
-    override func flagsChanged(with event: NSEvent) {
-        super.flagsChanged(with: event)
-        guard let window else { return }
-        let point = convert(window.mouseLocationOutsideOfEventStream, from: nil)
-        semantic?.hoverInteraction.move(
-            at: visibleRect.contains(point) ? symbolOffset(at: point) : nil,
-            command: event.modifierFlags.contains(.command))
-    }
-    override func mouseExited(with event: NSEvent) {
-        semantic?.hoverInteraction.pointerExitedEditor()
-        super.mouseExited(with: event)
-    }
-    override func mouseDown(with event: NSEvent) {
-        if event.modifierFlags.contains(.command), let semantic,
-            let offset = symbolOffset(at: convert(event.locationInWindow, from: nil))
-        {
-            semantic.navigate(
-                "textDocument/definition", at: offset)
-        } else {
-            semantic?.dismissHover()
-            super.mouseDown(with: event)
-        }
-    }
-    override func otherMouseDown(with event: NSEvent) {
-        if event.buttonNumber == 2, let semantic,
-            let offset = symbolOffset(at: convert(event.locationInWindow, from: nil))
-        {
-            semantic.navigate("textDocument/definition", at: offset)
-        } else {
-            super.otherMouseDown(with: event)
-        }
-    }
-    override func otherMouseUp(with event: NSEvent) {
-        if event.buttonNumber != 2 || semantic == nil { super.otherMouseUp(with: event) }
-    }
-    override func keyDown(with event: NSEvent) {
-        semantic?.dismissHover()
-        super.keyDown(with: event)
-    }
-    override func viewDidMoveToWindow() {
-        super.viewDidMoveToWindow()
-        semantic?.dismissHover()
-    }
-    override func complete(_ sender: Any?) { if let semantic { semantic.complete() } else { super.complete(sender) } }
-    override func menu(for event: NSEvent) -> NSMenu? {
-        semantic?.dismissHover()
-        if semantic != nil {
-            let index = characterIndexForInsertion(at: convert(event.locationInWindow, from: nil))
-            if !NSLocationInRange(index, selectedRange()) { setSelectedRange(NSRange(location: index, length: 0)) }
-        }
-        let menu = super.menu(for: event) ?? NSMenu()
-        if let semantic {
-            menu.addItem(.separator())
-            for (title, action) in [
-                ("跳转定义 ⌘B", #selector(DartEditorFeatures.definition)),
-                ("查找引用", #selector(DartEditorFeatures.references)), ("格式化文档", #selector(DartEditorFeatures.format)),
-            ] {
-                let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
-                item.target = semantic
-                menu.addItem(item)
-            }
-        }
-        return menu
-    }
-    var newline = "\n"
-    var compositionChanged: (() -> Void)?
-    override func setMarkedText(_ string: Any, selectedRange: NSRange, replacementRange: NSRange) {
-        super.setMarkedText(string, selectedRange: selectedRange, replacementRange: replacementRange)
-        compositionChanged?()
-    }
-    override func unmarkText() {
-        super.unmarkText()
-        compositionChanged?()
-    }
-    override func insertText(_ insertString: Any, replacementRange: NSRange) {
-        super.insertText(insertString, replacementRange: replacementRange)
-        compositionChanged?()
-    }
-    override func insertNewline(_ sender: Any?) {
-        if newline == "\n" {
-            super.insertNewline(sender)
-        } else {
-            insertText(newline, replacementRange: selectedRange())
-        }
-    }
-}
-
 @MainActor final class NativeTextEditor: NSObject, NSTextViewDelegate {
     let scroll: NSScrollView = EditorScrollView()
     let textView: NSTextView
@@ -237,7 +110,7 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         applyAppearance()
     }
     func undoManager(for view: NSTextView) -> UndoManager? { undo }
-    func connect(_ semantic: DartEditorFeatures?) {
+    func connect(_ semantic: EditorLanguageFeatures?) {
         guard let view = textView as? CodeTextView else { return }
         view.semantic = semantic
         presentation?.gutter.semantic = semantic
@@ -253,12 +126,14 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
             removed: removed, currentLength: storage.length) ?? false
     }
     func textDidChange(_ notification: Notification) { document?.inputChanged(composing: textView.hasMarkedText()) }
-    func textViewDidChangeSelection(_ notification: Notification) { presentation?.selectionChanged() }
+    func textViewDidChangeSelection(_ notification: Notification) {
+        (textView as? CodeTextView)?.selectionFeedbackChanged()
+        presentation?.selectionChanged()
+    }
     func applyAppearance() {
         textView.backgroundColor = WorkbenchColors.nativePanel
         textView.textColor = WorkbenchColors.nativeText
-        textView.insertionPointColor = WorkbenchColors.nativeText
-        textView.selectedTextAttributes = [.backgroundColor: WorkbenchColors.nativeSelection]
+        (textView as? CodeTextView)?.updateEditorFocus()
         scroll.contentView.backgroundColor = WorkbenchColors.nativePanel
         presentation?.appearanceChanged()
     }

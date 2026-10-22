@@ -2,6 +2,7 @@
 
 - 正式名称 HyCode，仓库为 `hhcme/hy_code`。目标是高性能原生开源代码编辑器；首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。
 - 开始前读 README.md、docs/EDITOR_DIRECTION.md、docs/PRODUCT_REQUIREMENTS.md、docs/TECH_DESIGN.md、docs/DEVELOPMENT.md，再按 docs/README.md 读任务专题。
+- Web 多语言服务、修改预览和 package 工具的当前范围见 docs/WEB_TOOLS.md；需要外部 Node 22.22.2+，Vue 项目插件须显式工作区信任。Web 调试与框架专用工具尚未全部实现。
 - 2026-10-21 清理旧实现后，现已重新建立 macOS 文件工作台、原生基础编辑、Rust 文本/目录内核及后台测试。当前范围见 docs/WORKBENCH.md、docs/EDITING.md 和 docs/SYNTAX.md；行号/语法高亮已接入，Dart/Flutter 首批语义与 Pub 工具已接入，见 docs/DART_FLUTTER.md；Flutter 运行/调试、热更新、测试/构建及基础 Inspector 首批入口已接入，真实 Flutter/设备未验证；完整必做范围见 docs/FLUTTER_PLAN.md。旧源码和 docs/history/ 仅用于追溯，不据此恢复旧产品。
 - 自有代码与文档采用根 MIT LICENSE；可以采用官方或社区开源组件，接入前记录版本、来源、许可、通知与验证。候选和已采用依赖在 docs/DEPENDENCIES.md 分开登记。
 - 规划、选型、已实现、后台验证、真实窗口验证、签名打包和应用发布分别记录。公开仓库或文档 CI 通过不表示应用存在或通过验收。

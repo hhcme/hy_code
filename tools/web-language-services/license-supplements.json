@@ -1,0 +1,29 @@
+{
+  "@johnsoncodehk/pug-beautify": {
+    "version": "0.2.2",
+    "license": "MIT",
+    "source": "https://github.com/johnsoncodehk/pug-beautify/tree/b229fbee1009fbf78a43b89defa45144aad33898",
+    "commit": "b229fbee1009fbf78a43b89defa45144aad33898",
+    "retained": "third_party/licenses/npm/johnsoncodehk__pug-beautify-0.2.2/package.json",
+    "sha256": "3472ea54db0ea080a2203f45b2418d36552eb32e2662bc7a2f97b618ab6383ba",
+    "note": "npm declares MIT but neither npm archive nor inspected upstream has a standalone license text; original declaration and README retained"
+  },
+  "@vscode/l10n": {
+    "version": "0.0.18",
+    "license": "MIT",
+    "source": "https://raw.githubusercontent.com/Microsoft/vscode-l10n/95f82a6bbb54e7b60545368728edd4cd6f98ba6e/LICENSE",
+    "commit": "95f82a6bbb54e7b60545368728edd4cd6f98ba6e",
+    "retained": "third_party/licenses/npm/vscode__l10n-0.0.18/LICENSE",
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "note": "upstream license text"
+  },
+  "boolbase": {
+    "version": "1.0.0",
+    "license": "ISC",
+    "source": "https://raw.githubusercontent.com/fb55/boolbase/54811f01c797a6bb1c263183ae90b7dd627e0638/LICENSE",
+    "commit": "54811f01c797a6bb1c263183ae90b7dd627e0638",
+    "retained": "third_party/licenses/npm/boolbase-1.0.0/LICENSE",
+    "sha256": "cdf4d87ae0a6c160227263bf4e39a0a10e30e89ae7256e0f7ac7bde0836552c6",
+    "note": "upstream license text"
+  }
+}

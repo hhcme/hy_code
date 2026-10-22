@@ -1,6 +1,6 @@
 # 行号与语法高亮
 
-更新：2026-10-21，build 23。当前新增原生逻辑行号和后台 Tree-sitter 着色；本页记录着色链路及 build 23 的滚动修正。build 24 另已接入 Dart/Flutter 首批诊断、补全、定义与引用，见 [Dart/Flutter 工具](DART_FLUTTER.md)；Web、Rust、C/C++ 语义服务仍待实现，不能将各语言着色统称为语义检查完成。
+更新：2026-10-22。本文记录原生逻辑行号、后台 Tree-sitter 着色及 build 23 的滚动修正。Dart/Flutter 语义见[工具说明](DART_FLUTTER.md)，build 28 的 Web 语义见 [Web 工具](WEB_TOOLS.md)。Rust/C/C++ 语义仍待实现，不能将各语言着色统称为语义检查完成。
 
 ## 当前行为
 

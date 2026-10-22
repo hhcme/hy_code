@@ -18,7 +18,7 @@ import Observation
             }
         }
     }
-    private(set) var semantic: DartEditorFeatures?
+    private(set) var semantic: EditorLanguageFeatures?
     var pendingReveal: LSPRange?
     private(set) var loading = true
     private(set) var loadError: String?
@@ -55,6 +55,8 @@ import Observation
         }
     }
     var isDirty: Bool { edits.isDirty }
+    var workspaceRoot: URL { access.url }
+    var workspaceAccess: WorkspaceAccess { access }
     var status: String {
         if loading { return "正在打开…" }
         if loadError != nil { return "无法编辑" }
@@ -66,7 +68,10 @@ import Observation
         return "已保存"
     }
 
-    init(path: String, access: WorkspaceAccess, autoSave: Bool, language: DartWorkspaceController? = nil) {
+    init(
+        path: String, access: WorkspaceAccess, autoSave: Bool, language: DartWorkspaceController? = nil,
+        web: WebWorkspaceController? = nil
+    ) {
         self.path = path
         readOnly = path.hasPrefix("/")
         let sourceAccess =
@@ -87,8 +92,12 @@ import Observation
                 self.byteCount = content.byteCount
                 self.hasBOM = content.hasBOM
                 self.editor = NativeTextEditor(document: self, content: content)
-                if path.lowercased().hasSuffix(".dart"), let language, content.text.utf8.count <= 1_048_576 {
-                    self.semantic = DartEditorFeatures(document: self, controller: language, content: content)
+                let owner: (any EditorLanguageController)? =
+                    path.lowercased().hasSuffix(".dart")
+                    ? language
+                    : WebLanguage.detect(path) != nil ? web : nil
+                if let owner, content.text.utf8.count <= 1_048_576 {
+                    self.semantic = EditorLanguageFeatures(document: self, controller: owner, content: content)
                     self.editor?.connect(self.semantic)
                 }
                 self.loading = false
@@ -240,8 +249,8 @@ import Observation
             view.scrollRangeToVisible(selection)
         }
     }
-    func reloadedAfterTool(language: DartWorkspaceController?) -> EditorDocument {
-        let replacement = EditorDocument(path: path, access: access, autoSave: autoSave, language: language)
+    func reloadedAfterTool(language: DartWorkspaceController?, web: WebWorkspaceController? = nil) -> EditorDocument {
+        let replacement = EditorDocument(path: path, access: access, autoSave: autoSave, language: language, web: web)
         replacement.onEdit = onEdit
         return replacement
     }

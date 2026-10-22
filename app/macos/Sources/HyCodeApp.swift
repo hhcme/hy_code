@@ -73,13 +73,29 @@ struct HyCodeApplication: App {
                 )
                 .disabled(store.activeDocument?.semantic == nil)
                 Divider()
+                Group {
+                    Button("跳转类型") { store.activeDocument?.semantic?.typeDefinition() }
+                    Button("跳转实现") { store.activeDocument?.semantic?.implementation() }
+                    Button("参数信息") { store.activeDocument?.semantic?.signatureHelp() }.keyboardShortcut("p")
+                    Button("快速修复 / 重构…") { store.activeDocument?.semantic?.quickFix() }
+                        .keyboardShortcut(.return, modifiers: .option)
+                    Button("重命名…") { store.activeDocument?.semantic?.renameSymbol() }
+                    Button("整理导入…") { store.activeDocument?.semantic?.organizeImports() }
+                }.disabled(store.activeDocument?.semantic?.controller?.supportsWorkspaceEdits != true)
+                Divider()
                 Button("Dart / Flutter 依赖管理") {
+                    store.analysisLanguage = "dart"
                     if !store.docking.isVisible(.analysis) { store.docking.toggle(.analysis) }
                 }.disabled(store.rootURL == nil)
                 Button("显示问题") {
                     if !store.docking.isVisible(.problems) { store.docking.toggle(.problems) }
                 }
                 Button("重启 Dart 分析器", action: store.dart.restart).disabled(store.rootURL == nil)
+                Button("Web 依赖与脚本") {
+                    store.analysisLanguage = "web"
+                    if !store.docking.isVisible(.analysis) { store.docking.toggle(.analysis) }
+                }.disabled(store.rootURL == nil)
+                Button("重启 Web 分析器", action: store.web.restart).disabled(store.rootURL == nil)
             }
             CommandMenu("外观") {
                 Picker("主题", selection: $appearance) {

@@ -13,6 +13,8 @@ HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **m
 - 反馈与需求：[GitHub Issues](https://github.com/hhcme/hy_code/issues)
 - 参与贡献：[CONTRIBUTING.md](CONTRIBUTING.md)
 
+Web 已接入 JS/TS/JSX/TSX、Vue、HTML/CSS/SCSS/LESS、JSON/JSONC 的按需语言服务、诊断/导航、显式补全/自动导入、重命名/代码动作修改预览及 package scripts/依赖入口。需要外部 Node 22.22.2+，Vue 项目插件须显式信任。打开项目自动执行后台诊断，左下角汇总错误/警告/建议并可定位；编辑后检查变动及关联文件，范围/资源限制见[项目后台分析](docs/PROJECT_ANALYSIS.md)。全部目标、当前实现及剩余功能见 [Web 开发工具](docs/WEB_TOOLS.md)；Web 调试器、测试树与框架专用工具仍未完成。
+
 ## 产品方向
 
 - **先做好代码编辑**：本地文件与项目目录、项目树、多标签、面包屑、可靠编辑与安全保存。
@@ -39,6 +41,8 @@ HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **m
 | [基础编辑与保存](docs/EDITING.md) | 单击编辑、自动保存开关、文档所有权与安全写入 |
 | [行号与语法高亮](docs/SYNTAX.md) | 语言范围、增量解析、可见行及资源边界 |
 | [Dart / Flutter 工具](docs/DART_FLUTTER.md) | SDK 设置、诊断/导航、补全/格式化、依赖与验证限制 |
+| [项目后台分析](docs/PROJECT_ANALYSIS.md) | 全项目诊断、依赖增量、问题计数与调度边界 |
+| [Web 开发工具](docs/WEB_TOOLS.md) | 语言服务、修改预览、包任务、信任边界与完整待办 |
 | [实施路线](docs/ROADMAP.md) | macOS 分阶段目标和验收条件 |
 | [性能设计与验收](docs/PERFORMANCE.md) | 测量口径、样本和待确定的预算 |
 | [编辑内核与语言服务](docs/CODE_INTELLIGENCE.md) | 文本、语法、语义的候选与边界 |
@@ -61,6 +65,7 @@ python3 scripts/check_docs.py
 macOS / Apple Silicon 的本地构建（当前验证环境：Xcode 27.1 / Swift 6.4、Rust 1.96.0）：
 
 ```sh
+bash scripts/setup_web_tools.sh  # 外部 Node 22.22.2+ / npm；首次联网准备固定依赖，禁用 hooks
 bash scripts/build_macos.sh debug
 bash scripts/check_native.sh
 ```

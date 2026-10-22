@@ -2,16 +2,18 @@ import AppKit
 import HyCodeWorkspace
 import Observation
 
-@MainActor @Observable final class DartWorkspaceController {
+@MainActor @Observable final class DartWorkspaceController: EditorLanguageController {
     weak var flutter: FlutterWorkspaceController?
     var sdkPath = UserDefaults.standard.string(forKey: "dart.sdkPath") ?? ""
     @ObservationIgnored private var appliedSDKPath = UserDefaults.standard.string(forKey: "dart.sdkPath") ?? ""
     @ObservationIgnored private(set) var semanticRevision: UInt64 = 0
     private(set) var status = "打开 Dart 文件后启动分析"
+    private(set) var analyzing = false
     private(set) var toolchain: DartToolchain?
     private(set) var project: DartProjectInfo?
     private(set) var diagnostics: [String: [LSPDiagnostic]] = [:]
     private(set) var diagnosticsLimited = false
+    @ObservationIgnored private var diagnosticCount = 0
     private(set) var locations: [LSPLocation] = []
     private(set) var symbols: [JSONValue] = []
     private(set) var symbolURI = ""
@@ -21,6 +23,12 @@ import Observation
     var addDevDependency = false
     var onNavigate: ((LSPLocation) -> Void)?
     var onShowResults: (() -> Void)?
+    var onDiagnosticsChanged: (([String: [LSPDiagnostic]], Bool) -> Void)?
+    @ObservationIgnored private var projectAnalysisEnabled = false
+    func startProjectAnalysis() {
+        projectAnalysisEnabled = true
+        enqueue { _ in }
+    }
     @ObservationIgnored private var access: WorkspaceAccess?
     @ObservationIgnored private var generation = UUID()
     @ObservationIgnored private var server: DartLanguageServer?
@@ -45,8 +53,8 @@ import Observation
     @ObservationIgnored private var pendingOutput = ""
     @ObservationIgnored private var outputFlush: Task<Void, Never>?
     private final class WeakFeature {
-        weak var value: DartEditorFeatures?
-        init(_ value: DartEditorFeatures) { self.value = value }
+        weak var value: EditorLanguageFeatures?
+        init(_ value: EditorLanguageFeatures) { self.value = value }
     }
 
     func configure(access: WorkspaceAccess?) {
@@ -57,6 +65,7 @@ import Observation
         refreshProject()
     }
     @discardableResult func stop() -> Task<Void, Never> {
+        projectAnalysisEnabled = false
         semanticRevision &+= 1
         for value in features.values {
             value.value?.hoverInteraction.invalidate()
@@ -102,14 +111,17 @@ import Observation
         pendingDiagnostics.removeAll()
         diagnosticTickets.removeAll()
         diagnostics.removeAll()
+        diagnosticCount = 0
         locations.removeAll()
         symbols.removeAll()
         status = "打开 Dart 文件后启动分析"
+        analyzing = false
         project = nil
         toolchain = nil
         flutter?.metadata(sdk: nil, project: nil)
         toolRunning = false
         diagnosticsLimited = false
+        onDiagnosticsChanged?([:], false)
         return cleanup
     }
     func refreshProject(path: String? = nil) {
@@ -138,6 +150,7 @@ import Observation
     func restart() {
         UserDefaults.standard.set(sdkPath, forKey: "dart.sdkPath")
         appliedSDKPath = sdkPath
+        let analyzeProject = projectAnalysisEnabled
         let current = features.values.compactMap(\.value)
         let access = access
         let cleanup = stop()
@@ -149,6 +162,7 @@ import Observation
             guard let self, self.generation == generation else { return }
             let openedDuringRestart = self.features.values.compactMap(\.value)
             self.configure(access: access)
+            if analyzeProject { self.startProjectAnalysis() }
             var replayed = Set<String>()
             for feature in current + openedDuringRestart where feature.document?.closed == false {
                 if replayed.insert(feature.uri).inserted { feature.reopen() }
@@ -203,7 +217,7 @@ import Observation
             }
         }
     }
-    func opened(_ feature: DartEditorFeatures, text: String) {
+    func opened(_ feature: EditorLanguageFeatures, text: String) {
         semanticRevision &+= 1
         features[feature.uri] = WeakFeature(feature)
         let uri = feature.uri
@@ -215,7 +229,9 @@ import Observation
     }
     func changed(uri: String, range: LSPRange, text: String, version: Int) {
         semanticRevision &+= 1
+        diagnosticCount -= diagnostics[uri]?.count ?? 0
         diagnostics[uri] = nil
+        onDiagnosticsChanged?(diagnostics, diagnosticsLimited)
         waitingDiagnostics[uri] = nil
         pendingDiagnostics[uri] = nil
         diagnosticTickets[uri] = nil
@@ -235,11 +251,13 @@ import Observation
         waitingDiagnostics[uri] = nil
         pendingDiagnostics[uri] = nil
         diagnosticTickets[uri] = nil
-        diagnostics[uri] = nil
         enqueue { await $0.close(uri: uri) }
     }
     func saved(uri: String) { enqueue { await $0.saved(uri: uri) } }
-    func query(_ method: String, feature: DartEditorFeatures, position: LSPPosition? = nil) async throws -> JSONValue {
+    func query(
+        _ method: String, feature: EditorLanguageFeatures, position: LSPPosition? = nil,
+        parameters: [String: JSONValue] = [:]
+    ) async throws -> JSONValue {
         guard let (server, startup) = ensureServer() else { throw LanguageServiceFailure("没有打开工作区") }
         let generation = generation
         let version = feature.version
@@ -258,7 +276,14 @@ import Observation
     private func receive(_ event: JSONValue) {
         switch event["method"].string {
         case "textDocument/publishDiagnostics": queueDiagnostics(event)
-        case "hycode/disconnected": status = "Dart 分析器已退出，使用“重启分析器”重新连接"
+        case "$/analyzerStatus":
+            if case .bool(let busy) = event["params"]["isAnalyzing"] {
+                analyzing = busy
+                status = busy ? "Dart 项目分析中…" : "Dart 分析服务已连接 · 后台监听"
+            }
+        case "hycode/disconnected":
+            analyzing = false
+            status = "Dart 分析器已退出，使用“重启分析器”重新连接"
         case "window/showMessage": status = event["params"]["message"].string ?? status
         default: break
         }
@@ -301,13 +326,25 @@ import Observation
                         guard self.sentVersions[uri] == feature.version else { continue }
                     }
                 }
-                guard self.diagnostics.count < 500 || self.diagnostics[uri] != nil else { continue }
-                let otherCount = self.diagnostics.filter { $0.key != uri }.values.reduce(0) { $0 + $1.count }
+                if values.isEmpty {
+                    self.diagnosticCount -= self.diagnostics[uri]?.count ?? 0
+                    self.diagnostics[uri] = nil
+                    self.features[uri]?.value?.setDiagnostics([])
+                    self.onDiagnosticsChanged?(self.diagnostics, self.diagnosticsLimited)
+                    continue
+                }
+                guard self.diagnostics.count < 500 || self.diagnostics[uri] != nil else {
+                    self.diagnosticsLimited = true
+                    continue
+                }
+                let otherCount = self.diagnosticCount - (self.diagnostics[uri]?.count ?? 0)
                 let count = min(1_000, max(0, 5_000 - otherCount))
                 self.diagnosticsLimited = self.diagnosticsLimited || params["diagnostics"].array.count > count
                 let limited = Array(values.prefix(count))
-                self.diagnostics[uri] = limited
+                self.diagnosticCount = otherCount + limited.count
+                self.diagnostics[uri] = limited.isEmpty ? nil : limited
                 self.features[uri]?.value?.setDiagnostics(limited)
+                self.onDiagnosticsChanged?(self.diagnostics, self.diagnosticsLimited)
             }
         }
     }
@@ -317,7 +354,7 @@ import Observation
     }
     func report(_ error: Error) { if !(error is CancellationError) { status = error.localizedDescription } }
     func clearLocations() { locations.removeAll() }
-    func showSymbols(_ feature: DartEditorFeatures) {
+    func showSymbols(_ feature: EditorLanguageFeatures) {
         Task {
             do {
                 symbols = try await query("textDocument/documentSymbol", feature: feature).array

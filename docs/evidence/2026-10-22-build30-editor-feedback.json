@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "date": "2026-10-22",
+  "build": 30,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "a2218cf646b238b1c66c6c2543c5e955087a2cdf",
+  "working_tree": "Includes prior uncommitted build28/29 changes; no stage, commit or push.",
+  "environment": {
+    "architecture": "arm64",
+    "macos": "27.0.1",
+    "swift": "6.4",
+    "rust": "1.96.0",
+    "deployment_target": "14.0"
+  },
+  "implementation": [
+    "High-contrast appearance-resolved native caret; two-point custom drawing and matching dirty-region union.",
+    "Local current visual-line background, active/inactive selection and explicit text-area I-beam/click focus.",
+    "Separate observer target preserves AppKit internal text-view caret/focus registrations.",
+    "Themed editor context menu in a non-key child panel; retains text responder and owns only a temporary local event monitor.",
+    "Editing and semantic commands, disabled/guarded mutating actions during read-only or composition state.",
+    "Mouse/Control-click, Shift-F10 and accessibility show-menu; arrows/Home/End/Enter/Escape navigation.",
+    "Outside clicks and ordinary text input close menu and pass through; loss of focus/parent geometry/detach removes panel and monitor.",
+    "Menu placement respects pointer screen and skips disabled/separator keyboard rows."
+  ],
+  "checks": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 157,
+      "rust_tests": 15,
+      "scope": "format, Clippy, C/C++ headers, locked dependency notices, headless model/process tests, docs and diff"
+    },
+    {
+      "command": "swift test --jobs 2 --disable-xctest --filter 'EditorFeedbackTests|ContextMenuInteractionTests'",
+      "result": "pass",
+      "tests": 5,
+      "note": "Initial five focused cases; full check additionally includes the sixth widened-caret damage regression."
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "app_launched": false
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only-source-review",
+    "fixed": [
+      "Widened caret drawing now shares geometry with native dirty-region invalidation"
+    ],
+    "remaining_confirmed_p1_p2": 0,
+    "not_gui_verification": true
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "version": "0.1.0",
+    "build": "30",
+    "bundle_id": "io.github.hhcme.hycode",
+    "minimum_system": "14.0",
+    "architecture": "arm64",
+    "binary_sha256": "1598fdf987331e9e70b3e98369750cf09c3d222518740131f481b7eca01a49d5",
+    "bundle_bytes": 146638741,
+    "distribution_signed": false,
+    "launched": false,
+    "installed": false,
+    "published": false
+  },
+  "not_verified": [
+    "Real native caret blinking, width, current-line drawing and pointer visibility in actual windows",
+    "Context-menu mouse/keyboard/VoiceOver and IME interactions or outside-click routing in actual windows",
+    "Actual rendering/input performance and older macOS runtime",
+    "No new sanitizer or SDK probe run for this editor-only change",
+    "Project tree, main menu and other native popups retain their existing implementations"
+  ],
+  "source_sha256": {
+    "app/macos/Sources/Editor/CodeTextView.swift": "e109993d1e5d8ab687412c1b280cecbbfdd5e04cf9760ba494c048f4b496d6e1",
+    "app/macos/Sources/Editor/EditorContextCommands.swift": "1d3b588de523d4f8757524535cc241636cf4d2665a327b76f1356463d79f831f",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "158352bb861cc8ce83eec6e83f05a1fb898e1a52d2b7e3264960e621183d34d8",
+    "app/macos/Sources/Workbench/WorkbenchContextMenu.swift": "455fbe8c1776da3103202aed9ec9923a6071930dc9b1afadf6c9f7132f615437",
+    "app/macos/Sources/Workbench/WorkbenchTheme.swift": "80d51e556b083c45d0b8d1acf6cf8fa1f61ba1d6f534cd0edeaf8097c6ec0a65",
+    "packages/HyCodeWorkspace/Sources/EditorFeedback.swift": "8776d21dc1371caea4471d7ca6c547ff3804b50312b07030248afe390eab252a",
+    "packages/HyCodeWorkspace/Sources/ContextMenuInteraction.swift": "92b7af7686f3e8cf6989f4f21d83c7cb32f5ac60e4887451298deffd6e9fd7ff",
+    "packages/HyCodeWorkspace/Tests/EditorFeedbackTests.swift": "f88c27c7f0c1ad41127842384e4fec5854c4a543036e5b8c213b9fadfb905164",
+    "app/macos/Resources/Info.plist": "32487da1648ad8f48724a5d3d4678a781033a631995cb7b1ae53dd9ce1bfc517"
+  },
+  "log_sha256": {
+    ".build/build30-check-native.log": "174af96604ddb2be741d0cdaf815cd8ca0ea123f5c4ace30f3cb6e39e1f49d39",
+    ".build/build30-feedback-tests.log": "9cd99124a3179b5141e1b5b7396d68a241df83a357b1a43420c1ac68f45f8af0",
+    ".build/build30-compile.log": "354bf6bc1e7e98507209c0781eee47633decffb22eddc66fad7b1b1e386770c8",
+    ".build/build30-release.log": "ab695e7042cea0ad54dbb3a623efcf438d4d35fd218b19a72445113f27d2b41a",
+    ".build/build30-docs.log": "3185148b0ad63b1e61d30d6974a5d1b91a482f628c5ad0b3584bb4fee82aedca"
+  }
+}

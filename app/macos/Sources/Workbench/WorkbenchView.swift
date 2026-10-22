@@ -31,6 +31,12 @@ struct WorkbenchView: View {
             case .breakpoints: FlutterBreakpointsEditor(controller: store.flutter)
             }
         }
+        .sheet(
+            item: Binding(
+                get: { store.editing.editPreview }, set: { if $0 == nil { store.editing.cancelLanguagePreview() } })
+        ) { preview in
+            LanguageEditPreviewView(editing: store.editing, preview: preview)
+        }
         .ignoresSafeArea(.container, edges: .all)
     }
 
@@ -52,19 +58,23 @@ struct WorkbenchView: View {
             VStack(spacing: 0) {
                 toolPanelHeader(.analysis)
                 WorkbenchSeparator()
-                DartAnalysisPanel(controller: store.dart)
+                LanguageAnalysisPanel(store: store)
             }
         case .problems:
             VStack(spacing: 0) {
                 toolPanelHeader(.problems)
                 WorkbenchSeparator()
-                DartProblemsPanel(controller: store.dart, navigate: store.navigateSemantic)
+                WorkspaceProblemsPanel(
+                    model: store.problems, analysis: store.web.projectAnalysis, dart: store.dart,
+                    controller: store.languageController, navigate: store.navigateSemantic)
             }
         case .structure:
             VStack(spacing: 0) {
                 toolPanelHeader(.structure)
                 WorkbenchSeparator()
-                DartStructurePanel(controller: store.dart, document: store.activeDocument)
+                DartStructurePanel(
+                    controller: store.activeDocument?.semantic?.controller ?? store.languageController,
+                    document: store.activeDocument)
             }
         case .debug:
             FlutterDebugPanel(controller: store.flutter, headerHeight: panelHeaderHeight(.debug)) {
@@ -332,6 +342,12 @@ struct WorkbenchView: View {
     private var statusBar: some View {
         HStack(spacing: 10) {
             if store.rootURL != nil {
+                WorkspaceProblemsSummary(
+                    model: store.problems, analysis: store.web.projectAnalysis, dart: store.dart,
+                    show: store.showProblems)
+                WorkbenchSeparator(vertical: true).frame(height: 12)
+            }
+            if store.rootURL != nil {
                 breadcrumbs
             } else {
                 Text("HyCode").fontWeight(.medium)
@@ -345,17 +361,6 @@ struct WorkbenchView: View {
             if store.includeHidden { Text("包含隐藏文件").fixedSize() }
             WorkbenchSeparator(vertical: true).frame(height: 12)
             if let document = store.activeDocument {
-                if document.semantic != nil {
-                    let issues = store.dart.diagnostics[document.sourceURL.absoluteString] ?? []
-                    Button {
-                        if !store.docking.isVisible(.problems) { store.docking.toggle(.problems) }
-                    } label: {
-                        Label(
-                            "\(issues.count)",
-                            systemImage: issues.contains { $0.severity == 1 }
-                                ? "xmark.circle" : "exclamationmark.bubble")
-                    }.buttonStyle(WorkbenchButtonStyle()).help(store.dart.status)
-                }
                 Text(document.status).fixedSize()
                 Text(document.encoding == "utf8" ? "UTF-8" : "UTF-16")
                 Text(document.lineEnding)

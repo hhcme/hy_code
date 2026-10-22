@@ -2,17 +2,18 @@ import AppKit
 import HyCodeWorkspace
 import SwiftUI
 
-@MainActor final class DartEditorFeatures: NSObject {
+@MainActor final class EditorLanguageFeatures: NSObject {
     weak var document: EditorDocument?
-    private(set) weak var controller: DartWorkspaceController?
+    private(set) weak var controller: (any EditorLanguageController)?
     let uri: String
     private(set) var lines: TextLineIndex
     var version: Int { Int(document?.edits.revision ?? 0) }
     private var pending: (LSPRange, String)?
     private var underlines: [NSRange] = []
     private var diagnostics: [LSPDiagnostic] = []
+    private var snippetSession = LSPSnippetSession(ranges: [])
     private(set) lazy var hoverInteraction = DartHoverController(feature: self)
-    init(document: EditorDocument, controller: DartWorkspaceController, content: TextDocumentContent) {
+    init(document: EditorDocument, controller: any EditorLanguageController, content: TextDocumentContent) {
         self.document = document
         self.controller = controller
         uri = document.sourceURL.absoluteString
@@ -27,6 +28,11 @@ import SwiftUI
         controller?.opened(self, text: text)
     }
     func willReplace(change: TextLineChange, protocolChange: LSPDocumentChange?) {
+        if let protocolChange {
+            snippetSession.replace(protocolChange.range, count: protocolChange.text.utf16.count)
+        } else {
+            snippetSession = LSPSnippetSession(ranges: [])
+        }
         hoverInteraction.invalidate()
         clearDiagnostics()
         pending = protocolChange.map {
@@ -78,6 +84,9 @@ import SwiftUI
                 return NSLocationInRange(offset, range)
             }.map(\.message).joined(separator: "\n").prefix(2_000))
     }
+    func diagnosticContext(line: Int) -> [JSONValue] {
+        diagnostics.filter { $0.range.start.line <= line && $0.range.end.line >= line }.map(\.raw)
+    }
     func restoreDiagnosticUnderline(in restored: NSRange) {
         guard let view = document?.editor?.textView, let source = view.textStorage?.mutableString else { return }
         for item in diagnostics {
@@ -104,6 +113,22 @@ import SwiftUI
         hoverInteraction.restoreLink()
     }
     func dismissHover() { hoverInteraction.dismiss() }
+    func hoverTarget(at offset: Int, in source: NSString) -> NSRange? {
+        if document?.sourceURL.pathExtension.lowercased() == "dart",
+            let range = DartDirectiveTarget.range(at: offset, in: source, lines: lines)
+        {
+            return range
+        }
+        return DartHoverTarget.range(at: offset, in: source)
+    }
+    func advanceSnippet(backward: Bool) -> Bool {
+        guard document?.composing == false, let view = document?.editor?.textView,
+            let selection = snippetSession.advance(backward: backward, selection: view.selectedRange())
+        else { return false }
+        view.setSelectedRange(selection)
+        view.scrollRangeToVisible(selection)
+        return true
+    }
     @objc func definition() { navigate("textDocument/definition") }
     @objc func references() { navigate("textDocument/references") }
     @objc func structure() { controller?.showSymbols(self) }
@@ -156,12 +181,14 @@ import SwiftUI
                 let values = result["items"].array.isEmpty ? result.array : result["items"].array
                 let menu = NSMenu()
                 var actions: [DartCompletionAction] = []
-                for value in values.prefix(100) where value["insertTextFormat"].int != 2 {
+                for value in values.prefix(100) {
                     guard let label = value["label"].string else { continue }
                     let action = DartCompletionAction { [weak self] in
                         guard let self, self.version == revision else { return }
                         Task {
                             do {
+                                let value = try await controller.resolveCompletion(value, feature: self)
+                                guard self.version == revision, view.selectedRange() == selected else { return }
                                 let fallback = LSPRange(
                                     start: .at(
                                         partial.location == NSNotFound ? selected.location : partial.location,
@@ -175,9 +202,11 @@ import SwiftUI
                                 let range = (try? editRange.decode(LSPRange.self)) ?? fallback
                                 let text = value["textEdit"]["newText"].string ?? value["insertText"].string ?? label
                                 var edits = (try? value["additionalTextEdits"].decode([LSPTextEdit].self)) ?? []
-                                let primary = LSPTextEdit(range: range, newText: text)
+                                let expanded = value["insertTextFormat"].int == 2 ? try LSPSnippet.expand(text) : nil
+                                let primary = LSPTextEdit(range: range, newText: expanded?.text ?? text)
                                 edits.append(primary)
-                                try await self.apply(edits, revision: revision, primary: primary)
+                                try await self.apply(
+                                    edits, revision: revision, primary: primary, stops: expanded?.stops ?? [])
                             } catch { controller.report(error) }
                         }
                     }
@@ -195,7 +224,9 @@ import SwiftUI
             } catch { controller.report(error) }
         }
     }
-    private func apply(_ edits: [LSPTextEdit], revision: Int, primary: LSPTextEdit? = nil) async throws {
+    private func apply(_ edits: [LSPTextEdit], revision: Int, primary: LSPTextEdit? = nil, stops: [NSRange] = [])
+        async throws
+    {
         guard !edits.isEmpty, let document, !document.readOnly, !document.composing,
             let view = document.editor?.textView, version == revision
         else { return }
@@ -212,7 +243,10 @@ import SwiftUI
         guard version == revision, !document.composing, view.isEditable else { return }
         view.insertText(result.0, replacementRange: NSRange(location: 0, length: view.textStorage?.length ?? 0))
         guard version != revision else { return }
-        view.setSelectedRange(NSRange(location: result.1, length: 0))
+        let base = result.1 - (primary?.newText.utf16.count ?? 0)
+        let absolute = stops.map { NSRange(location: max(0, base + $0.location), length: $0.length) }
+        snippetSession = LSPSnippetSession(ranges: absolute)
+        view.setSelectedRange(snippetSession.current ?? NSRange(location: result.1, length: 0))
         view.scrollRangeToVisible(view.selectedRange())
     }
     func reveal(_ range: LSPRange) {

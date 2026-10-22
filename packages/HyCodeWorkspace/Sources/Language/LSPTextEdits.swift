@@ -18,7 +18,9 @@ public enum LSPTextEdits {
             guard let range = edit.range.range(in: index, source: source) else {
                 throw LanguageServiceFailure("导入位置无效")
             }
-            if range.location < main.location { offset += edit.newText.utf16.count - range.length }
+            if range.location < main.location || (range.location == main.location && range.length == 0) {
+                offset += edit.newText.utf16.count - range.length
+            }
         }
         return offset
     }
@@ -33,17 +35,26 @@ public enum LSPTextEdits {
                 throw LanguageServiceFailure("分析器编辑范围无效")
             }
             return (range, edit.newText)
-        }.sorted { $0.0.location > $1.0.location }
+        }.sorted {
+            if $0.0.location == $1.0.location { return $0.0.length > $1.0.length }
+            return $0.0.location > $1.0.location
+        }
         var boundary = source.length
         var lastStart: Int?
+        var lastLength = 0
         let result = NSMutableString(string: text)
         for (range, replacement) in mapped {
-            guard NSMaxRange(range) <= boundary, lastStart != range.location else {
+            // An import insertion and replacement may share a starting offset.
+            // Apply the replacement first; reject ambiguous duplicate insertions.
+            guard NSMaxRange(range) <= boundary,
+                lastStart != range.location || (lastLength > 0 && range.length == 0)
+            else {
                 throw LanguageServiceFailure("分析器编辑范围重叠")
             }
             result.replaceCharacters(in: range, with: replacement)
             boundary = range.location
             lastStart = range.location
+            lastLength = range.length
         }
         guard result.length <= 8 * 1024 * 1024 else { throw LanguageServiceFailure("编辑结果过大") }
         return result as String
