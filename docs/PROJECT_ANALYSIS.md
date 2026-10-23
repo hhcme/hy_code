@@ -1,14 +1,16 @@
 # 项目后台诊断
 
-更新：2026-10-22，build 29。打开项目后自动检查项目源文件，错误、警告与建议汇总在左下角；点击计数打开“问题”，可按类别筛选、按文件分组并跳转到具体行列。分析不要求先在编辑器中打开文件。
+更新：2026-10-23，build 36（原 build 29 后台调度基线）。打开项目后自动检查项目源文件，错误、警告与建议汇总在左下角；点击计数打开“问题”，可按类别筛选、按文件分组并跳转到具体行列。分析不要求先在编辑器中打开文件。
 
 ## 当前范围
 
 - Dart/Flutter 复用当前工作区的外部 Dart Analysis Server，初始化 `onlyAnalyzeProjectsWithOpenFiles: false`；未保存变更与关联文件由 SDK 的项目依赖图增量处理。SDK 缺失或启动失败显示实际状态，不能将零条结果解释为通过。
 - JS/TS/JSX/TSX 复用工作区现有 TypeScript 服务，首次注册项目源文件并分批请求诊断。后续变更通过服务的 `fileReferences` 查找反向引用，包含间接导入和 re-export；不在 Swift 中猜测 import 文本。
 - 全局脚本、全局声明、`.d.ts`、配置/JSON 变化、文件删除和依赖关系查询失败采用保守的项目范围检查；新增文件或目录结构变化重新发现源文件。普通模块编辑只检查自身与反向关联文件，不强制重查独立模块。
-- HTML、CSS/SCSS/LESS、JSON/JSONC 使用对应服务的后台文档注册与增量诊断。Vue 仍需先在 Web 分析面板显式信任工作区插件；未信任的 Vue 文件显示为未纳入范围，不自动执行插件。
-- JSON 的编辑内容也同步给 TypeScript，用于 `resolveJsonModule` 的导入方检查；JSON 在扫描前被打开时也保留原生未保存覆盖。因此打开 JSON 编辑可能启动 TypeScript 服务。Swift 不为此持有第二份正式文本或撤销栈。
+- HTML、CSS/SCSS/LESS、JSON/JSONC、YAML/YML 使用对应服务的后台文档注册与增量诊断。Vue 仍需先在 Web 分析面板显式信任工作区插件；未信任的 Vue 文件显示为未纳入范围，不自动执行插件。
+- JSON/JSONC 的编辑内容也同步给 TypeScript，用于 `resolveJsonModule` 的导入方检查；JSON 在扫描前被打开时也保留原生未保存覆盖。因此打开 JSON/JSONC 编辑可能启动 TypeScript 服务。Swift 不为此持有第二份正式文本或撤销栈。
+
+JSON/YAML 规则依赖在保存或外部文件变化后通知对应服务重新验证；全量重查包括已删除/曾读取失败的 Schema。监听保留非标准扩展名规则的文件事件，这类事件只刷新已观察的依赖，不因此注册未知语言或全扫 TS。`pubspec.yaml` 同时进入 YAML 后台文档刷新，不被 Dart 首次发现分支吞掉。详细规则与限制见[配置工具](CONFIGURATION_TOOLS.md)。
 
 这是语法/类型及服务提供的建议，不等同于项目编译、测试或全套 WebStorm 检查。专用 ESLint/Prettier、更多框架规则、Rust/C/C++ 语义仍按原台账继续实现；基础高亮不能替代这些分析器。
 
@@ -26,7 +28,7 @@ TS 后台文件直接注册给同一个 tsserver，不进入 TLS 的交互缓冲
 
 ## 资源与不完整结果
 
-Web 发现预算为最多 50,000 个目录项、5,000 个源文件、64 MiB 源文件元数据总大小，单文件最多 1 MiB。不遍历符号链接或隐藏目录，排除 `node_modules`、`.git`、`.dart_tool`、`build`、`dist`、`coverage`、`Pods`、`vendor`、`target` 等依赖/产物；完整列表由 `ProjectSourceCatalog.excluded` 定义。扫描只读取元数据，后续按批读取受限的 UTF-8/BOM UTF-16 文本，通过逐级 `openat/O_NOFOLLOW` 防止路径替换后跟随链接。单个不可读/不支持编码的文件跳过，其他文件继续分析，可重新扫描重试。
+Web 发现预算为最多 50,000 个目录项、5,000 个源文件、64 MiB 源文件元数据总大小，单文件最多 1 MiB。不遍历符号链接或一般隐藏目录，明确允许 `.github` 与 `.vscode` 配置目录；排除 `node_modules`、`.git`、`.dart_tool`、`build`、`dist`、`coverage`、`Pods`、`vendor`、`target` 等依赖/产物；完整列表由 `ProjectSourceCatalog.excluded` 定义。扫描只读取元数据，后续按批读取受限的 UTF-8/BOM UTF-16 文本，通过逐级 `openat/O_NOFOLLOW` 防止路径替换后跟随链接。单个不可读/不支持编码的文件跳过，其他文件继续分析，可重新扫描重试。
 
 Dart 的实际检查范围和排除规则由 SDK、工作区根目录及项目 `analysis_options.yaml` 等配置决定，不套用 Web 的 5,000 文件发现预算；Dart 项目分析器可能按其 SDK 配置加载项目插件。应用不为自动分析运行 Pub、package scripts 或构建命令。
 

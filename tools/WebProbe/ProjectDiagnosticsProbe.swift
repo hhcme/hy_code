@@ -15,11 +15,13 @@ extension WebProbe {
             "consumer.ts": "import { value } from './model';\nexport const amount: number = value;\n",
             "unopened.ts": "export const broken: number = 'wrong';\n",
             "unrelated.ts": "export const stable: number = 1;\n",
-            "settings.json": #"{"n":1}"#,
-            "json-consumer.ts": "import settings from './settings.json';\nexport const n: number = settings.n;\n",
+            ".vscode/settings.json": #"{"n":1}"#,
+            "json-consumer.ts":
+                "import settings from './.vscode/settings.json';\nexport const n: number = settings.n;\n",
             "blocked.vue": "<template><div/></template>",
             "style.scss": ".demo { unknown-property: red; }",
         ]
+        try fm.createDirectory(at: root.appendingPathComponent(".vscode"), withIntermediateDirectories: true)
         for (path, text) in contents { try Data(text.utf8).write(to: root.appendingPathComponent(path)) }
         // Escaping these bounded comments exceeds one 8 MiB LSP body if the
         // initial eight-file registration is not split by wire budget.
@@ -30,14 +32,20 @@ extension WebProbe {
         let inbox = WebInbox()
         let listener = Task { for await event in server.events { await inbox.receive(event) } }
         do {
-            let settings = root.appendingPathComponent("settings.json")
+            let settings = root.appendingPathComponent(".vscode/settings.json")
             let jsonConsumer = root.appendingPathComponent("json-consumer.ts")
-            try await server.open(uri: settings.absoluteString, language: .json, text: #"{"n":"initial"}"#, version: 0)
+            try await server.open(uri: settings.absoluteString, language: .jsonc, text: #"{"n":"initial"}"#, version: 0)
             let catalog = try ProjectSourceCatalog.scan(root: root)
             log("Project fixture catalog: " + catalog.files.map(\.path).joined(separator: ", "))
             try await server.setProjectFiles(catalog.files)
             let first = try await server.checkProject()
             try require(first.checked.count == 13 && first.fullSweep, "Initial project scope omitted TS files")
+            let auxiliary = try await server.checkProject(changed: [
+                root.appendingPathComponent("schema.schema").absoluteString
+            ])
+            try require(
+                !auxiliary.fullSweep && auxiliary.checked.isEmpty, "Auxiliary schema triggered unrelated TS scan")
+            log("PASS: auxiliary schema file event does not trigger unrelated TypeScript scan")
             let scope = await server.projectScope()
             try require(
                 scope.failed == 1 && scope.blockedVue == 1, "Unsupported file and untrusted Vue must mark partial scope"
@@ -77,10 +85,10 @@ extension WebProbe {
             let settingsText = #"{"n":"wrong"}"#
             try Data(settingsText.utf8).write(to: settings)
             await inbox.clear(jsonConsumer.absoluteString)
-            try await server.refreshProjectFiles(["settings.json"])
+            try await server.refreshProjectFiles([".vscode/settings.json"])
             _ = try await server.checkProject(changed: [settings.absoluteString])
             try await waitFor(inbox, jsonConsumer) { $0.array.contains { $0["severity"].int == 1 } }
-            try await server.open(uri: settings.absoluteString, language: .json, text: settingsText, version: 0)
+            try await server.open(uri: settings.absoluteString, language: .jsonc, text: settingsText, version: 0)
             await inbox.clear(jsonConsumer.absoluteString)
             try await server.change(
                 uri: settings.absoluteString,
@@ -114,7 +122,7 @@ extension WebProbe {
             await server.stop()
             listener.cancel()
             log(
-                "PASS: project-wide unopened TS/SCSS diagnostics, unsaved reverse-import check, unrelated exclusion, close-to-disk handoff, JSON cross-service overlays, disk refresh, deleted dependency and empty-scope cleanup"
+                "PASS: project-wide unopened TS/SCSS diagnostics, unsaved reverse-import check, unrelated exclusion, close-to-disk handoff, JSONC cross-service overlays, disk refresh, deleted dependency and empty-scope cleanup"
             )
         } catch {
             await server.stop()

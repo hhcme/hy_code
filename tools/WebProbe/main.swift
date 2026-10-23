@@ -13,6 +13,10 @@ actor WebInbox {
     func get(_ uri: String) -> JSONValue? { values[uri] }
     func get(_ uri: String, service: String) -> JSONValue? { services[uri + "|" + service] }
     func clear(_ uri: String) { values[uri] = nil }
+    func clear(_ uri: String, service: String) {
+        values[uri] = nil
+        services[uri + "|" + service] = nil
+    }
 }
 
 @main struct WebProbe {
@@ -27,6 +31,12 @@ actor WebInbox {
         }
     }
     static func run() async throws {
+        if CommandLine.arguments.count == 4, CommandLine.arguments[3] == "--configuration" {
+            let tools = try WebToolchain.discover(
+                configured: CommandLine.arguments[1], services: URL(fileURLWithPath: CommandLine.arguments[2]))
+            try await checkConfigurations(tools)
+            return
+        }
         guard CommandLine.arguments.count == 3 else {
             throw LanguageServiceFailure("Usage: HyCodeWebProbe /path/to/node /path/to/web-language-services")
         }

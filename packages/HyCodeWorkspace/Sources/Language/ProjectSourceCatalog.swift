@@ -24,7 +24,7 @@ public struct ProjectSourceCatalog: Sendable {
         let parts = path.split(separator: "/")
         return !parts.isEmpty && !path.hasPrefix("/") && !path.contains("\0")
             && !parts.contains("..") && !parts.contains { excluded.contains(String($0)) }
-            && !parts.contains { $0.hasPrefix(".") }
+            && !parts.contains { $0.hasPrefix(".") && ![".github", ".vscode"].contains(String($0)) }
     }
     public static func scan(root: URL, fileLimit: Int = 5_000, byteLimit: Int = 64 * 1024 * 1024) throws -> Self {
         let root = root.resolvingSymlinksInPath().standardizedFileURL

@@ -171,16 +171,26 @@ struct WorkspaceSourceWatcherTests {
         let fixture = try AnalysisFixture()
         defer { fixture.remove() }
         try fixture.put("nested/a.ts", Data("first".utf8))
+        try fixture.put("nested/schema.schema", Data("{}".utf8))
+        try fixture.put("nested/schema", Data("{}".utf8))
         let inbox = WatchEventsInbox()
         let watcher = try WorkspaceSourceWatcher(root: fixture.root) { event in Task { await inbox.add(event) } }
         defer { watcher.stop() }
         try await Task.sleep(for: .milliseconds(350))
         try fixture.put("nested/a.ts", Data("second".utf8))
+        try fixture.put("nested/schema.schema", Data("{\"type\":\"string\"}".utf8))
+        try fixture.put("nested/schema", Data("{\"type\":\"integer\"}".utf8))
         for _ in 0..<100 {
-            if await inbox.contains("nested/a.ts") { break }
+            if await inbox.contains("nested/a.ts"), await inbox.contains("nested/schema.schema"),
+                await inbox.contains("nested/schema")
+            {
+                break
+            }
             try await Task.sleep(for: .milliseconds(50))
         }
         #expect(await inbox.contains("nested/a.ts"))
+        #expect(await inbox.contains("nested/schema.schema"))
+        #expect(await inbox.contains("nested/schema"))
         watcher.stop()
         watcher.stop()
     }

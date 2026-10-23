@@ -4,7 +4,9 @@
 
 ## 分层与职责
 
-build 28 已增加 [Web 多服务与修改预览](WEB_TOOLS.md)，决策见 [ADR 0007](adr/0007-web-tooling.md)。`EditorLanguageController` 统一原生交互，`WebWorkspaceController` 拥有同步、诊断和包任务；`WebLanguageServer` actor 惰性拥有五类服务。阻塞 pipe/read/wait 在独立 utility 队列执行，写入使用串行队列，不占用 Swift cooperative executor 等待管道。
+build 36 的 JSON/YAML 配置服务使用自有固定启动适配器；离线 Schema 字节只来自随包固定数据，本地 Schema 通过原生连接的受限反向请求读取。连接记录有界规则依赖，保存/磁盘事件和全量重查清除服务缓存；非标准扩展名的规则事件不注册为源语言，也不触发无关 TS 全扫。格式化仅返回原生文本修改，不调用项目插件。决策与预算见 [ADR 0010](adr/0010-configuration-tools.md) 和[配置工具](CONFIGURATION_TOOLS.md)。
+
+build 28 已增加 [Web 多服务与修改预览](WEB_TOOLS.md)，决策见 [ADR 0007](adr/0007-web-tooling.md)。`EditorLanguageController` 统一原生交互，`WebWorkspaceController` 拥有同步、诊断和包任务；`WebLanguageServer` actor 惰性拥有六类服务（build 36 增加 YAML）。阻塞 pipe/read/wait 在独立 utility 队列执行，写入使用串行队列，不占用 Swift cooperative executor 等待管道。
 
 Web 编辑请求绑定工作区编辑代次。`LSPWorkspaceEdits` 在后台校验本地路径、UTF-16 范围和预算；`EditorWorkspace` 持有预览文档，拒绝未同步脏目标，应用前再次检查 UUID/修订/权限。修改走原生 insertText 与各文档撤销，不新建正式缓冲，不声称跨文件磁盘原子提交或统一撤销。
 

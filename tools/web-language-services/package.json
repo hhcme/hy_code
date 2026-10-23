@@ -4,11 +4,14 @@
   "private": true,
   "description": "Pinned public language-server runtime for the native HyCode host",
   "license": "MIT",
-  "engines": { "node": ">=22.22.2" },
+  "engines": {
+    "node": ">=22.22.2"
+  },
   "dependencies": {
     "@vue/language-server": "3.3.13",
     "typescript": "6.0.3",
     "typescript-language-server": "6.0.2",
-    "vscode-langservers-extracted": "4.10.0"
+    "vscode-langservers-extracted": "4.10.0",
+    "yaml-language-server": "2.0.0"
   }
 }

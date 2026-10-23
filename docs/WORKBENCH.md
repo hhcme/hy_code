@@ -8,9 +8,11 @@ build 28 已增加 [Web 工作流](WEB_TOOLS.md)：代码菜单提供多语言�
 
 ## 当前范围
 
+build 36 增加[JSON/JSONC、YAML/YML 配置工具](CONFIGURATION_TOOLS.md)：后台语法/Schema 问题、字段补全/说明、结构、格式化，YAML 锚点定义与重命名预览。常用 package、TS/JS 配置、GitHub Actions 与 pubspec 规则离线随包；本地规则安全读取与保存后依赖刷新，尚未进行真实窗口验收。全量静默检查 202 Swift（38 组）/ 19 Rust / 4 Node 通过，配置/监听 7 项 Swift ASan 与真实服务回归通过。Release 本地开发包 0.1.0 / build 36、arm64、约 159.3 MiB；未启动、安装或发布。可执行 SHA-256：`763092bc82d8fe9236e6942440ccedf8cecdecfa9c9e79828144d6d201c1a98f`。记录见[后台证据](evidence/2026-10-23-build36-configuration-tools.json)。当前本批未提交推送。
+
 build 35 增加[简单视频只读预览](VIDEO_PREVIEW.md)：本地 MP4/MOV/M4V 单击进入标签，默认暂停、播放/暂停、进度/音量、自动适应画面；切标签卸载播放器并保留进度。源视频按固定描述符分段读取，元数据异步加载；无文本缓冲、保存或新增第三方解码器。真实窗口/声音/播放仍未验收。
 
-完整静默检查为 196 项 Swift（37 组）与 19 项 Rust，新增 10 项视频回归另通过 Swift ASan；Rust 静态库和 Apple 框架未插桩。Release 本地开发包 0.1.0 / build 35、arm64、约 144.8 MiB；未启动、安装或发布。可执行文件 SHA-256：`532158c714fe60302d949cd38757228440c33b5ba0610aa342334022dff7ff60`。源码、日志、独立审查与验证边界见[后台证据](evidence/2026-10-23-build35-video-preview.json)。本批未提交推送。
+完整静默检查为 196 项 Swift（37 组）与 19 项 Rust，新增 10 项视频回归另通过 Swift ASan；Rust 静态库和 Apple 框架未插桩。Release 本地开发包 0.1.0 / build 35、arm64、约 144.8 MiB；未启动、安装或发布。可执行文件 SHA-256：`532158c714fe60302d949cd38757228440c33b5ba0610aa342334022dff7ff60`。源码、日志、独立审查与验证边界见[后台证据](evidence/2026-10-23-build35-video-preview.json)。该批随后已提交推送至 `456bc18`。
 
 build 34 增加[图片只读预览](IMAGE_PREVIEW.md)：项目树单击图片进入独立标签，提供适应窗口、100%、缩放、拖动、背景与透明度查看；ImageIO 解码位图，Rust resvg 处理受限 SVG，多帧暂显示首帧。加载/解码在后台串行执行，非活动标签释放像素，固定尺寸原生画布只绘制已解码投影。图片不建立文本/撤销/自动保存或语言修改。实现决策见 [ADR 0008](adr/0008-image-preview.md)。
 

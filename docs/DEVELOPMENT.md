@@ -113,3 +113,5 @@ build 33 的整体界面样式覆盖、系统界面边界与未验证项见[视�
 build 34 的图片只读预览、后台 ImageIO/resvg 与资源限制见[图片预览](IMAGE_PREVIEW.md)。全量 186 Swift / 19 Rust、13 项图片 Swift ASan 和未启动的 Release 本地包见[证据](evidence/2026-10-23-build34-image-preview.json)；Rust 静态库未插桩，真实图像方向/缩放/捏合/键鼠及帧率仍未窗口验证。
 
 build 35 新增[视频只读预览](VIDEO_PREVIEW.md)，196 Swift / 19 Rust、10 项视频 Swift ASan 与未启动的 Release 开发包见[证据](evidence/2026-10-23-build35-video-preview.json)。没有创建播放器测试实例、播放音频或执行 GUI；真实播放与性能仍待验收。
+
+build 36 增加[JSON/JSONC 与 YAML/YML 配置工具](CONFIGURATION_TOOLS.md)：202 Swift / 19 Rust / 4 Node、7 项配置/监听 Swift ASan、JSON/YAML 与完整 Web 真实服务临时样本验证见[证据](evidence/2026-10-23-build36-configuration-tools.json)。规则文件由原生授权读取，不自动联网或执行项目格式化配置；真实窗口/性能未验收。

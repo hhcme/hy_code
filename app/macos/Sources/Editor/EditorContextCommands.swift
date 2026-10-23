@@ -1,4 +1,5 @@
 import AppKit
+import HyCodeWorkspace
 
 @MainActor enum EditorContextCommands {
     static func make(for view: NSTextView, semantic: EditorLanguageFeatures?) -> [WorkbenchContextCommand] {
@@ -36,6 +37,33 @@ import AppKit
             ) { [weak view] in view?.selectAll(nil) },
         ]
         guard let semantic else { return items }
+        if let language = WebLanguage.detect(semantic.document?.path ?? ""), language.isConfiguration {
+            items += [
+                .separator,
+                .init(title: "结构导航", symbol: "list.bullet.indent") { [weak semantic] in semantic?.structure() },
+                .init(title: "补全", symbol: "text.cursor", shortcut: "⌃空格", enabled: editable) { [weak semantic] in
+                    semantic?.complete()
+                },
+                .init(title: "格式化文档", symbol: "text.alignleft", enabled: editable) { [weak semantic] in
+                    semantic?.format()
+                },
+            ]
+            if language == .yaml {
+                items += [
+                    .separator,
+                    .init(title: "跳转锚点定义", symbol: "arrow.turn.down.right", shortcut: "⌘B") { [weak semantic] in
+                        semantic?.definition()
+                    },
+                    .init(title: "重命名锚点…", symbol: "pencil", enabled: editable) { [weak semantic] in
+                        semantic?.renameSymbol()
+                    },
+                    .init(title: "快速修复…", symbol: "lightbulb", shortcut: "⌥↩", enabled: editable) { [weak semantic] in
+                        semantic?.quickFix()
+                    },
+                ]
+            }
+            return items
+        }
         items += [
             .separator,
             .init(title: "跳转定义", symbol: "arrow.turn.down.right", shortcut: "⌘B") { [weak semantic] in

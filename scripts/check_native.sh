@@ -9,6 +9,10 @@ for script in scripts/build_core.sh scripts/build_icons.sh scripts/build_macos.s
 done
 cargo fmt --all -- --check
 xcrun swift-format lint --strict --recursive app/macos/Sources packages/HyCodeWorkspace tools/DirectoryProbe tools/DartProbe tools/DebugProbe tools/WebProbe Package.swift
+for script in tools/web-language-services/native/*.mjs; do
+    node --check "$script"
+done
+node --test tools/web-language-services/native/schema-runtime.test.mjs
 node --check scripts/web_tools.mjs
 node scripts/web_tools.mjs
 python3 scripts/check_image_dependencies.py

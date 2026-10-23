@@ -15,6 +15,8 @@ HyCode 是高性能、轻量、原生的开源代码编辑器。首版专注 **m
 
 Web 已接入 JS/TS/JSX/TSX、Vue、HTML/CSS/SCSS/LESS、JSON/JSONC 的按需语言服务、诊断/导航、显式补全/自动导入、重命名/代码动作修改预览及 package scripts/依赖入口。需要外部 Node 22.22.2+，Vue 项目插件须显式信任。打开项目自动执行后台诊断，左下角汇总错误/警告/建议并可定位；编辑后检查变动及关联文件，范围/资源限制见[项目后台分析](docs/PROJECT_ANALYSIS.md)。全部目标、当前实现及剩余功能见 [Web 开发工具](docs/WEB_TOOLS.md)；Web 调试器、测试树与框架专用工具仍未完成。
 
+JSON/JSONC 与 YAML/YML 已增加语法检查、离线 Schema 验证、字段补全、悬浮说明、结构和格式化；常见清单规则及安全读取范围见[配置文件工具](docs/CONFIGURATION_TOOLS.md)。服务与解析在后台执行，不加载项目 Prettier 配置或自动下载 Schema。
+
 ## 产品方向
 
 - **先做好代码编辑**：本地文件与项目目录、项目树、多标签、面包屑、可靠编辑与安全保存。
@@ -43,6 +45,7 @@ Web 已接入 JS/TS/JSX/TSX、Vue、HTML/CSS/SCSS/LESS、JSON/JSONC 的按需语
 | [基础编辑与保存](docs/EDITING.md) | 单击编辑、自动保存开关、文档所有权与安全写入 |
 | [行号与语法高亮](docs/SYNTAX.md) | 语言范围、增量解析、可见行及资源边界 |
 | [Dart / Flutter 工具](docs/DART_FLUTTER.md) | SDK 设置、诊断/导航、补全/格式化、依赖与验证限制 |
+| [配置文件工具](docs/CONFIGURATION_TOOLS.md) | JSON/JSONC、YAML/YML 检查、格式化与离线 Schema |
 | [项目后台分析](docs/PROJECT_ANALYSIS.md) | 全项目诊断、依赖增量、问题计数与调度边界 |
 | [Web 开发工具](docs/WEB_TOOLS.md) | 语言服务、修改预览、包任务、信任边界与完整待办 |
 | [实施路线](docs/ROADMAP.md) | macOS 分阶段目标和验收条件 |

@@ -32,9 +32,15 @@ public struct WebToolchain: Sendable {
             "typescript/lib/tsserver.js", "typescript-language-server/lib/cli.mjs",
             "@vue/language-server/bin/vue-language-server.js",
             "vscode-langservers-extracted/bin/vscode-html-language-server",
+            "yaml-language-server/bin/yaml-language-server",
         ] {
             guard manager.fileExists(atPath: services.appendingPathComponent("node_modules/" + path).path) else {
                 throw LanguageServiceFailure("Web 语言工具缺失，请重新构建完整开发包")
+            }
+        }
+        for path in ["native/config-language-server.mjs", "native/schema-runtime.mjs", "schemas/catalog.json"] {
+            guard manager.fileExists(atPath: services.appendingPathComponent(path).path) else {
+                throw LanguageServiceFailure("配置语言工具缺失，请重新构建完整开发包")
             }
         }
         return Self(node: node.resolvingSymlinksInPath(), services: services)
@@ -47,15 +53,22 @@ public struct WebToolchain: Sendable {
         return values[0] > 22 || (values[0] == 22 && (values[1] > 22 || (values[1] == 22 && values[2] >= 2)))
     }
     public func script(_ service: WebLanguage.Service) -> URL {
+        if service == .json || service == .yaml {
+            return services.appendingPathComponent("native/config-language-server.mjs")
+        }
         let path: String
         switch service {
         case .typescript: path = "typescript-language-server/lib/cli.mjs"
         case .vue: path = "@vue/language-server/bin/vue-language-server.js"
         case .html: path = "vscode-langservers-extracted/bin/vscode-html-language-server"
         case .css: path = "vscode-langservers-extracted/bin/vscode-css-language-server"
-        case .json: path = "vscode-langservers-extracted/bin/vscode-json-language-server"
+        case .json, .yaml: preconditionFailure("Configuration service uses the owned adapter")
         }
         return services.appendingPathComponent("node_modules/" + path)
+    }
+    public func arguments(_ service: WebLanguage.Service) -> [String] {
+        ["--max-old-space-size=512", script(service).path]
+            + (service == .json || service == .yaml ? [service.rawValue, "--stdio"] : ["--stdio"])
     }
     public func packageManager(_ manager: WebProject.Manager) throws -> URL {
         let directories =

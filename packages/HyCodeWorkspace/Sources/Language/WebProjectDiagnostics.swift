@@ -81,7 +81,7 @@ extension WebLanguageServer {
             failedFiles.insert(uri)
         }
         let typescript = loaded.filter {
-            $0.0.language.service == .typescript || ($0.0.language == .json && hasTypeScriptProject)
+            $0.0.language.service == .typescript || ($0.0.language.isJSON && hasTypeScriptProject)
         }
         // JSON escaping can expand a one-byte control character to six bytes.
         // Bound the wire payload as well as file count (LSP body cap: 8 MiB).
@@ -141,7 +141,7 @@ extension WebLanguageServer {
         if backgroundURIs.remove(uri) != nil { await closeDocument(uri: uri) }
         if let url = URL(string: uri),
             WebLanguage.detect(url.path)?.service == .typescript
-                || WebLanguage.detect(url.path) == .json
+                || WebLanguage.detect(url.path)?.isJSON == true
         {
             _ = try? await tsCommand("updateOpen", JSONValue(["closedFiles": [url.path]]))
         }
@@ -172,6 +172,10 @@ extension WebLanguageServer {
     /// The compiler owns resolution/caches. Follow reverse file references,
     /// including aliases and re-exports, rather than guessing imports in Swift.
     public func checkProject(changed: Set<String>? = nil) async throws -> ProjectAnalysisReport {
+        await configurationFilesChanged(changed)
+        let sourceChanges = changed.map { uris in
+            Set(uris.filter { URL(string: $0).flatMap { WebLanguage.detect($0.path) } != nil })
+        }
         let candidates = Set(
             projectFiles.compactMap { uri, file in
                 (registeredFiles[uri] != nil || liveURIs.contains(uri))
@@ -179,12 +183,12 @@ extension WebLanguageServer {
                     ? uri : nil
             })
         guard !candidates.isEmpty else { return ProjectAnalysisReport(checked: [], fullSweep: changed == nil) }
-        var all = changed == nil || !(changed ?? []).subtracting(Set(projectFiles.keys)).isEmpty
+        var all = sourceChanges == nil || !(sourceChanges ?? []).subtracting(Set(projectFiles.keys)).isEmpty
         var affected = Set<String>()
-        var queue = Array((changed ?? []).intersection(candidates)).sorted()
-        for uri in changed ?? [] {
+        var queue = Array((sourceChanges ?? []).intersection(candidates)).sorted()
+        for uri in sourceChanges ?? [] {
             let name = URL(string: uri)?.lastPathComponent ?? ""
-            if projectFiles[uri]?.language == .json { all = true }
+            if projectFiles[uri]?.language.isJSON == true { all = true }
             if name == "package.json" || name.hasPrefix("tsconfig") || name.hasPrefix("jsconfig") {
                 all = true
                 _ = try await tsCommand("reloadProjects", JSONValue([:]), expectsResult: false)

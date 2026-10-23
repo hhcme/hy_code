@@ -56,6 +56,10 @@ public actor StdioProtocolConnection {
     private var terminating = false
     private var writer: LanguageServerWriter?
     private var configuration = JSONValue.null
+    private var schemaRoot: URL?
+    // Keep failed/missing dependencies as well: a full rescan must invalidate
+    // the upstream cache after creation, deletion or watcher overflow.
+    private var schemaURIs = Set<String>()
     private let wire: StdioProtocol
     public init(wire: StdioProtocol = .languageServer) {
         self.wire = wire
@@ -65,12 +69,13 @@ public actor StdioProtocolConnection {
     }
     public func start(
         executable: URL, arguments: [String], directory: URL, configuration: JSONValue = .null,
-        environment: [String: String] = [:]
+        environment: [String: String] = [:], schemaRoot: URL? = nil
     ) throws {
         guard !started else { throw LanguageServiceFailure("此连接不能重复启动，请创建新连接") }
         started = true
         writer = LanguageServerWriter(input.fileHandleForWriting)
         self.configuration = configuration
+        self.schemaRoot = schemaRoot
         let child = try OwnedToolProcess.launch(
             executable: executable, arguments: arguments, directory: directory, input: input.fileHandleForReading,
             environment: environment.merging(["DASH__IDE_NAME": "HyCode", "DASH__IDE_VERSION": "0.1.0"]) { _, new in new
@@ -159,6 +164,15 @@ public actor StdioProtocolConnection {
                 request.continuation.resume(throwing: error)
             }
         }
+    }
+    func invalidateSchemaDependencies(changed: Set<String>?) async {
+        let paths = changed.map { Set($0.compactMap { URL(string: $0)?.path }) }
+        let changes = schemaURIs.filter { uri in
+            guard let paths else { return true }
+            return URL(string: uri).map { paths.contains($0.path) } == true
+        }.sorted().map { JSONValue(["uri": $0, "type": 2]) }
+        guard !changes.isEmpty else { return }
+        try? await notify("workspace/didChangeWatchedFiles", params: .object(["changes": .array(changes)]))
     }
     public func notify(_ method: String, params: JSONValue) async throws {
         guard alive, wire == .languageServer else { throw LanguageServiceFailure("语言服务已断开或不支持通知") }
@@ -250,6 +264,26 @@ public actor StdioProtocolConnection {
                     if section == "dart", configuration["dart"] == .null { return configuration }
                     return section.split(separator: ".").reduce(configuration) { $0[String($1)] }
                 })
+        case "hycode/schemaContent":
+            do {
+                guard let root = schemaRoot else {
+                    throw LanguageServiceFailure("Schema 读取未启用")
+                }
+                let uri = try ConfigurationSchemas.requestURI(message["params"])
+                _ = try ConfigurationSchemas.relativePath(uri, root: root)
+                guard schemaURIs.contains(uri) || schemaURIs.count < 500 else {
+                    throw LanguageServiceFailure("项目 Schema 依赖数量超限（500）")
+                }
+                schemaURIs.insert(uri)
+                result = .string(try await ConfigurationSchemas.readLocal(uri, root: root))
+            } catch {
+                try await write(
+                    JSONValue([
+                        "jsonrpc": "2.0", "id": message["id"],
+                        "error": ["code": -32602, "message": String(error.localizedDescription.prefix(2000))],
+                    ]))
+                return
+            }
         case "client/registerCapability", "client/unregisterCapability", "window/workDoneProgress/create":
             result = .null
         case "workspace/applyEdit": result = JSONValue(["applied": false, "failureReason": "请使用编辑器中的显式编辑入口"])

@@ -51,11 +51,14 @@ public actor WebLanguageServer {
         let allowProjectPlugins = allowProjectPlugins
         let task = Task {
             let initialization = Self.options(service, tools: tools, allowProjectPlugins: allowProjectPlugins)
-            let configuration = Self.configuration
+            let configuration = try await Task.detached(priority: .utility) {
+                try ConfigurationSchemas.configured(Self.configuration, directory: tools.services)
+            }.value
             try await connection.start(
                 executable: tools.node,
-                arguments: ["--max-old-space-size=512", tools.script(service).path, "--stdio"], directory: root,
-                configuration: configuration, environment: tools.environment)
+                arguments: tools.arguments(service), directory: root,
+                configuration: configuration, environment: tools.environment,
+                schemaRoot: service == .json || service == .yaml ? root : nil)
             do {
                 let response = try await connection.request(
                     "initialize",
@@ -118,6 +121,12 @@ public actor WebLanguageServer {
         "html": ["format": ["enable": true], "validate": ["scripts": true, "styles": true]],
         "css": ["validate": true], "scss": ["validate": true], "less": ["validate": true],
         "json": ["validate": ["enable": true], "format": ["enable": true], "schemaDownload": ["enable": false]],
+        "yaml": [
+            "validate": true, "hover": true, "hoverAnchor": true, "completion": true,
+            "format": ["enable": true, "printWidth": 100, "proseWrap": "preserve"],
+            "schemaStore": ["enable": false], "kubernetesCRDStore": ["enable": false],
+            "yamlVersion": "1.2", "maxItemsComputed": 2000,
+        ],
     ])
     private static func options(_ service: WebLanguage.Service, tools: WebToolchain, allowProjectPlugins: Bool)
         -> JSONValue
@@ -141,7 +150,9 @@ public actor WebLanguageServer {
             ])
         }
         if service == .html { return JSONValue(["provideFormatter": true]) }
-        if service == .json { return JSONValue(["provideFormatter": true, "handledSchemaProtocols": []]) }
+        if service == .json {
+            return JSONValue(["provideFormatter": true, "handledSchemaProtocols": ["file", "http", "https"]])
+        }
         return JSONValue([:])
     }
     private func receive(_ event: JSONValue, service: WebLanguage.Service) {
@@ -214,7 +225,7 @@ public actor WebLanguageServer {
         if backgroundURIs.remove(uri) != nil { await closeDocument(uri: uri) }
         // Native JSON may open before discovery finds a TS project. Keep its
         // service overlay from the start; Swift retains no second text buffer.
-        if language == .json && !hasTypeScriptProject {
+        if language.isJSON && !hasTypeScriptProject {
             _ = try await tsCommand(
                 "updateOpen",
                 JSONValue([
@@ -234,7 +245,7 @@ public actor WebLanguageServer {
             "textDocument": ["uri": uri, "languageId": language.rawValue, "version": version, "text": text]
         ])
         if language == .vue { try await connections[.typescript]?.notify("textDocument/didOpen", params: params) }
-        if language == .json && hasTypeScriptProject {
+        if language.isJSON && hasTypeScriptProject {
             _ = try await tsCommand(
                 "updateOpen",
                 JSONValue([
@@ -260,7 +271,7 @@ public actor WebLanguageServer {
             "contentChanges": [["range": range.json, "text": text]],
         ])
         if language == .vue { try await connections[.typescript]?.notify("textDocument/didChange", params: params) }
-        if language == .json && connections[.typescript] != nil {
+        if language.isJSON && connections[.typescript] != nil {
             _ = try await tsCommand(
                 "updateOpen",
                 JSONValue([
@@ -294,7 +305,7 @@ public actor WebLanguageServer {
         guard let language = opened.removeValue(forKey: uri) else { return }
         let params = JSONValue(["textDocument": ["uri": uri]])
         if language == .vue { try? await connections[.typescript]?.notify("textDocument/didClose", params: params) }
-        if language == .json && connections[.typescript] != nil {
+        if language.isJSON && connections[.typescript] != nil {
             _ = try? await tsCommand("updateOpen", JSONValue(["closedFiles": [URL(string: uri)?.path ?? ""]]))
         }
         try? await connections[language.service]?.notify("textDocument/didClose", params: params)
@@ -388,6 +399,13 @@ public actor WebLanguageServer {
         guard case .object(var fields) = value else { return value }
         fields["hycodeService"] = .string(service.rawValue)
         return .object(fields)
+    }
+    /// Schema dependencies are owned by the upstream service. Reset saved local
+    /// schema URIs so its dependent JSON/YAML documents are revalidated.
+    func configurationFilesChanged(_ uris: Set<String>?) async {
+        for service in [WebLanguage.Service.json, .yaml] {
+            await connections[service]?.invalidateSchemaDependencies(changed: uris)
+        }
     }
     public func stop() async {
         stopped = true

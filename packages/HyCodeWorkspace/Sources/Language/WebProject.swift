@@ -1,8 +1,8 @@
 import Foundation
 
 public enum WebLanguage: String, Sendable {
-    case javascript, javascriptreact, typescript, typescriptreact, vue, html, css, scss, less, json, jsonc
-    public enum Service: String, CaseIterable, Sendable { case typescript, vue, html, css, json }
+    case javascript, javascriptreact, typescript, typescriptreact, vue, html, css, scss, less, json, jsonc, yaml
+    public enum Service: String, CaseIterable, Sendable { case typescript, vue, html, css, json, yaml }
     public var service: Service {
         switch self {
         case .javascript, .javascriptreact, .typescript, .typescriptreact: .typescript
@@ -10,8 +10,11 @@ public enum WebLanguage: String, Sendable {
         case .html: .html
         case .css, .scss, .less: .css
         case .json, .jsonc: .json
+        case .yaml: .yaml
         }
     }
+    public var isJSON: Bool { self == .json || self == .jsonc }
+    public var isConfiguration: Bool { isJSON || self == .yaml }
     public func synchronizes(with service: Service) -> Bool {
         self.service == service || (self == .vue && service == .typescript)
     }
@@ -27,8 +30,13 @@ public enum WebLanguage: String, Sendable {
         case "css": return .css
         case "scss": return .scss
         case "less": return .less
+        case "yaml", "yml": return .yaml
         case "jsonc": return .jsonc
-        case "json": return ["tsconfig.json", "jsconfig.json"].contains(url.lastPathComponent) ? .jsonc : .json
+        case "json":
+            return url.lastPathComponent.hasPrefix("tsconfig.") || url.lastPathComponent.hasPrefix("jsconfig.")
+                || (url.pathComponents.contains(".vscode")
+                    && ["settings.json", "tasks.json", "launch.json", "extensions.json"].contains(url.lastPathComponent))
+                ? .jsonc : .json
         default: return nil
         }
     }

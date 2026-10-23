@@ -85,9 +85,15 @@ import Observation
         for path in event.paths {
             if path.hasSuffix(".dart") || path.hasSuffix("pubspec.yaml") {
                 if !dartStarted { full = true }
-                continue
+                if path.hasSuffix(".dart") { continue }
             }
             let uri = access.url.appendingPathComponent(path).absoluteString
+            if WebLanguage.detect(path) == nil {
+                // Auxiliary schema bytes only invalidate already observed
+                // dependencies; do not scan/register arbitrary project files.
+                changed.insert(uri)
+                continue
+            }
             if !known.contains(uri) { full = true }
             changed.insert(uri)
             disk.insert(path)

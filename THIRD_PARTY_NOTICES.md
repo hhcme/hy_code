@@ -1,19 +1,24 @@
 # Third-party notices
 
-## Bundled Web language services (build 28)
+## Bundled Web and configuration language services (build 36)
 
-Public npm JavaScript packages are fixed by [package-lock.json](tools/web-language-services/package-lock.json). All 106 direct/transitive entries, registry archives, integrity metadata, license expressions and retained notice SHA-256 values are in [third-party.json](tools/web-language-services/third-party.json). Original LICENSE/COPYRIGHT/NOTICE files are retained in [third_party/licenses/npm/](third_party/licenses/npm/). `node scripts/web_tools.mjs` checks installed package metadata and retained files. External Node.js (minimum 22.22.2) is not copied into the app.
+Public npm JavaScript packages are fixed by [package-lock.json](tools/web-language-services/package-lock.json). All 119 direct/transitive entries (106 existing entries unchanged plus 13 YAML additions), registry archives, integrity metadata, license expressions and retained notice SHA-256 values are in [third-party.json](tools/web-language-services/third-party.json). Original LICENSE/COPYRIGHT/NOTICE files are retained in [third_party/licenses/npm/](third_party/licenses/npm/). `node scripts/web_tools.mjs` checks installed package metadata and retained files. External Node.js (minimum 22.22.2) is not copied into the app.
 
 | Direct component | Version | License | Upstream |
 | --- | --- | --- | --- |
 | TypeScript | 6.0.3 | Apache-2.0 | [Microsoft](https://github.com/microsoft/TypeScript) |
 | typescript-language-server | 6.0.2 | Apache-2.0 | [community LSP adapter](https://github.com/typescript-language-server/typescript-language-server) |
 | @vue/language-server | 3.3.13 | MIT | [Vue language-tools](https://github.com/vuejs/language-tools) |
+| yaml-language-server | 2.0.0 | MIT | [Red Hat](https://github.com/redhat-developer/yaml-language-server) |
 | vscode-langservers-extracted | 4.10.0 | MIT | [public extraction project](https://github.com/hrsh7th/vscode-langservers-extracted) |
 
 These are public packages, not resources extracted from a locally installed IDE. Transitive packages retain MIT, ISC, BSD-2-Clause, BSD-3-Clause or Apache-2.0 terms as listed individually; HyCode's MIT does not replace them.
 
 Three missing archive notices are documented in [license-supplements.json](tools/web-language-services/license-supplements.json). @vscode/l10n and boolbase use upstream license texts pinned to repository commits. **@johnsoncodehk/pug-beautify 0.2.2 declares MIT but its npm archive and inspected upstream have no standalone license text.** Its original [package declaration](third_party/licenses/npm/johnsoncodehk__pug-beautify-0.2.2/package.json) and [README](third_party/licenses/npm/johnsoncodehk__pug-beautify-0.2.2/README.md) are retained without inventing copyright text. This limitation remains explicit for future binary distribution review.
+
+## Bundled offline schemas (build 36)
+
+14 original JSON Schema files are pinned to [SchemaStore commit 4b9347599acb42276483fc514f641505e205d331](https://github.com/SchemaStore/schemastore/tree/4b9347599acb42276483fc514f641505e205d331). The four associations cover package.json, TS/JS configuration, GitHub workflows and pubspec; the remaining files resolve their transitive references offline. Original bytes, source URLs and SHA-256 values are in [catalog.json](tools/web-language-services/schemas/catalog.json). Original [LICENSE](third_party/licenses/schemastore-4b9347599acb/LICENSE) and [NOTICE](third_party/licenses/schemastore-4b9347599acb/NOTICE) are retained and bundled. JSON Schema Store, Copyright 2015-Current Mads Kristensen and Contributors, Apache-2.0. These data retain upstream terms; HyCode MIT does not replace them.
 
 ## Rust and platform dependencies
 

@@ -4,6 +4,7 @@
 - 开始前读 README.md、docs/EDITOR_DIRECTION.md、docs/PRODUCT_REQUIREMENTS.md、docs/TECH_DESIGN.md、docs/DEVELOPMENT.md，再按 docs/README.md 读任务专题。
 - Web 多语言服务、修改预览和 package 工具的当前范围见 docs/WEB_TOOLS.md；需要外部 Node 22.22.2+，Vue 项目插件须显式工作区信任。Web 调试与框架专用工具尚未全部实现。
 - 2026-10-21 清理旧实现后，现已重新建立 macOS 文件工作台、原生基础编辑、Rust 文本/目录内核及后台测试。当前范围见 docs/WORKBENCH.md、docs/EDITING.md 和 docs/SYNTAX.md；行号/语法高亮已接入，Dart/Flutter 首批语义与 Pub 工具已接入，见 docs/DART_FLUTTER.md；Flutter 运行/调试、热更新、测试/构建及基础 Inspector 首批入口已接入，真实 Flutter/设备未验证；完整必做范围见 docs/FLUTTER_PLAN.md。旧源码和 docs/history/ 仅用于追溯，不据此恢复旧产品。
+- JSON/JSONC、YAML/YML 的语法/Schema 检查、格式化与补全见 docs/CONFIGURATION_TOOLS.md；仅使用固定离线 Schema 或原生授权根内的受限读取，不自动联网或加载项目格式化插件。
 - 图片采用独立只读会话，支持缩放/平移；格式、ImageIO/resvg 预算、许可与验证限制见 docs/IMAGE_PREVIEW.md，不将图片交给文本自动保存。
 - 视频只读预览使用原生 AVFoundation，默认暂停、切走卸载播放器；格式、分段资源与静默验证限制见 docs/VIDEO_PREVIEW.md。测试不得实例化播放器或播放声音。
 - 自有代码与文档采用根 MIT LICENSE；可以采用官方或社区开源组件，接入前记录版本、来源、许可、通知与验证。候选和已采用依赖在 docs/DEPENDENCIES.md 分开登记。

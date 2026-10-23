@@ -42,7 +42,9 @@ build 28 的 [Web 工具](WEB_TOOLS.md) 增加 JS/TS/JSX/TSX、Vue、HTML/CSS/SC
 | Git、终端 | 仅空面板入口，无服务 | 无 | 未验证 |
 | 正式应用分发 | 未实施签名、公证、上传或应用发布 | 仅本地开发构建 | 未验证 |
 
-源码地图、完整交互和命令见[工作台说明](WORKBENCH.md)。当前 build 35 的 Swift 196 项（37 组）与 Rust 19 项通过；10 项视频测试另通过 Swift ASan，见[视频证据](evidence/2026-10-23-build35-video-preview.json)。此前 build 34 的 Swift 186 项（34 组）与 Rust 19 项后台测试通过；图片新增 13 项 Swift 另通过 ASan，Rust 静态库未插桩，见[图片证据](evidence/2026-10-23-build34-image-preview.json)。此前 build 30 的 Rust 15 项、Swift 157 项后台测试通过，本批新增 6 项插入点对比度/几何/重绘和菜单导航/定位回归。此前 build 29 的 151 项 Swift 通过，其中 8 项新增扫描/安全读取/问题汇总/队列取消/FSEvents 回归；这 8 项与 6 项进程生命周期用例共 14 项通过 build 29 的 Swift ASan，Rust 静态库未插桩。此前 10 项 Flutter 运行模型/stdio fixture 与 12 项既有协议/进程回归通过 Swift ASan；此前 11 项悬浮模型测试及此前 16 项 Dart 协议/进程/SDK/包模型测试、11 项视口/高亮测试、3 项行号裁剪像素回归、7 项行索引/高亮桥接测试与 13 项 Swift 文本测试分别完成 Address Sanitizer，原 7 项 Swift 工作区测试曾通过 ASan，未重跑全部几何测试的 sanitizer。未由此推导 Rust 内部 sanitizer、完整 ABI 稳定性或真实窗口性能通过。
+build 36 的 202 Swift（38 组）/ 19 Rust / 4 Node 静默检查、7 项配置/监听 Swift ASan 与真实服务回归通过，见[证据](evidence/2026-10-23-build36-configuration-tools.json)。JSON/JSONC、YAML/YML 配置检查、格式化、补全、结构与离线 Schema 见[配置工具](CONFIGURATION_TOOLS.md)；真实窗口尚未验收。
+
+源码地图、完整交互和命令见[工作台说明](WORKBENCH.md)。此前 build 35 的 Swift 196 项（37 组）与 Rust 19 项通过；10 项视频测试另通过 Swift ASan，见[视频证据](evidence/2026-10-23-build35-video-preview.json)。此前 build 34 的 Swift 186 项（34 组）与 Rust 19 项后台测试通过；图片新增 13 项 Swift 另通过 ASan，Rust 静态库未插桩，见[图片证据](evidence/2026-10-23-build34-image-preview.json)。此前 build 30 的 Rust 15 项、Swift 157 项后台测试通过，本批新增 6 项插入点对比度/几何/重绘和菜单导航/定位回归。此前 build 29 的 151 项 Swift 通过，其中 8 项新增扫描/安全读取/问题汇总/队列取消/FSEvents 回归；这 8 项与 6 项进程生命周期用例共 14 项通过 build 29 的 Swift ASan，Rust 静态库未插桩。此前 10 项 Flutter 运行模型/stdio fixture 与 12 项既有协议/进程回归通过 Swift ASan；此前 11 项悬浮模型测试及此前 16 项 Dart 协议/进程/SDK/包模型测试、11 项视口/高亮测试、3 项行号裁剪像素回归、7 项行索引/高亮桥接测试与 13 项 Swift 文本测试分别完成 Address Sanitizer，原 7 项 Swift 工作区测试曾通过 ASan，未重跑全部几何测试的 sanitizer。未由此推导 Rust 内部 sanitizer、完整 ABI 稳定性或真实窗口性能通过。
 
 ## 文件与格式范围
 

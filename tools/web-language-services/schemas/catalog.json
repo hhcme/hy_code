@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "commit": "4b9347599acb42276483fc514f641505e205d331",
+  "license": {
+    "path": "third_party/licenses/schemastore-4b9347599acb/LICENSE",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  "schemas": [
+    {
+      "uri": "https://json.schemastore.org/package",
+      "file": "package.json",
+      "languages": [
+        "json"
+      ],
+      "fileMatch": [
+        "package.json"
+      ],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/package.json",
+      "sha256": "76767b4e0b941f048f20d6de3eef2b8dd5f2b09816913a26b4bbf1afbd31fd79",
+      "externalRefs": [
+        "ava.json",
+        "eslintrc.json",
+        "https://www.schemastore.org/prettierrc.json",
+        "https://www.schemastore.org/quikrun.json",
+        "jscpd.json",
+        "madge.json",
+        "nodemon.json",
+        "semantic-release.json",
+        "stylelintrc.json"
+      ]
+    },
+    {
+      "uri": "https://json.schemastore.org/tsconfig",
+      "file": "tsconfig.json",
+      "languages": [
+        "json"
+      ],
+      "fileMatch": [
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "jsconfig.json",
+        "jsconfig.*.json"
+      ],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/tsconfig.json",
+      "sha256": "4323b790e65e979876bd48c7387a5150520e0c4cf1e36c221252a7234c2bd70a",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/github-workflow",
+      "file": "github-workflow.json",
+      "languages": [
+        "yaml"
+      ],
+      "fileMatch": [
+        "**/.github/workflows/*.yml",
+        "**/.github/workflows/*.yaml"
+      ],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/github-workflow.json",
+      "sha256": "d10c9f4656e1bd5bc6727e9b35080e017dc167154726fca93da33c7a6bd1c4f3",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/pubspec",
+      "file": "pubspec.json",
+      "languages": [
+        "yaml"
+      ],
+      "fileMatch": [
+        "pubspec.yaml",
+        "pubspec.yml"
+      ],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/pubspec.json",
+      "sha256": "29f65aebfcf21559e4d2bdc3d3902318f867be458fd05eee6bb535a68da5f4b5",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/ava",
+      "file": "ava.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/ava.json",
+      "sha256": "3c02652299c240b152d8d30bc476dfa4bda7854132632dc9595afe53ac12ee0a",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/eslintrc",
+      "file": "eslintrc.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/eslintrc.json",
+      "sha256": "2e7bf9df71bef201db128b6287c9d8b89bad4e7f8aa839d224e9c42141bb4e09",
+      "externalRefs": [
+        "partial-eslint-plugins.json"
+      ]
+    },
+    {
+      "uri": "https://json.schemastore.org/prettierrc",
+      "file": "prettierrc.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/prettierrc.json",
+      "sha256": "a5f9c7ed250e12c1b5fb7f0a2ae1b03e064513b40be96688cd2517925f42a6f0",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/quikrun",
+      "file": "quikrun.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/quikrun.json",
+      "sha256": "67cf4391e674bd17b77e893e97860d6d0c12f815a777251b65563c72e522b646",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/jscpd",
+      "file": "jscpd.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/jscpd.json",
+      "sha256": "c4451c972dd7c5040375d01279d1e777f1cf672f0e227e2ea92e3ac4b106cfd7",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/madge",
+      "file": "madge.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/madge.json",
+      "sha256": "b6e5ae0126cdfd73dcc1592bc91de0a8f246fde16fe9b7d0c0ad9c8b46b4a034",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/nodemon",
+      "file": "nodemon.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/nodemon.json",
+      "sha256": "cc1c775543f377b9561fbf56e7a30a64dea18c0d7bff993ad1ad15ec8c3eaf04",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/semantic-release",
+      "file": "semantic-release.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/semantic-release.json",
+      "sha256": "0a471bd80eafbed9d250da67c2d6fbf2b6fab93d3cd1d627193875bf6a2c2168",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/stylelintrc",
+      "file": "stylelintrc.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/stylelintrc.json",
+      "sha256": "bbd2ced672f359a43a38f59d5cb380d6938e52f6cdf5058e9cea0870c9886efb",
+      "externalRefs": []
+    },
+    {
+      "uri": "https://json.schemastore.org/partial-eslint-plugins",
+      "file": "partial-eslint-plugins.json",
+      "languages": [],
+      "fileMatch": [],
+      "source": "https://raw.githubusercontent.com/SchemaStore/schemastore/4b9347599acb42276483fc514f641505e205d331/src/schemas/json/partial-eslint-plugins.json",
+      "sha256": "64cb0d70799fccd67e24ae1befd7643a4808c78e383f361b820932aa80a5cf16",
+      "externalRefs": []
+    }
+  ],
+  "notice": {
+    "path": "third_party/licenses/schemastore-4b9347599acb/NOTICE",
+    "sha256": "8ef971b09c8988fab0872f534432611ba90611ed93da61cb9cf2722c69a570ef"
+  }
+}

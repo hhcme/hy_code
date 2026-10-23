@@ -1,6 +1,8 @@
 # Web 开发工具
 
-更新：2026-10-22。用户要求补齐 Web 开发能力；本页是实现与验收台账，不能把范围确认当成完成。首版宿主仍为原生 macOS，Rust 独占正式文本；Web 项目不迁入 WebView 编辑器，也不复制 WebStorm 插件。
+更新：2026-10-23。用户要求补齐 Web 开发能力；本页是实现与验收台账，不能把范围确认当成完成。首版宿主仍为原生 macOS，Rust 独占正式文本；Web 项目不迁入 WebView 编辑器，也不复制 WebStorm 插件。
+
+build 36 增加 YAML/YML；JSON/JSONC 和 YAML 共用固定离线 Schema 与原生授权读取，检查、格式化及常用配置文件范围见[配置工具](CONFIGURATION_TOOLS.md)。TS/Vue 等既有能力不由此扩为全部配置格式。
 
 ## 完整范围
 
@@ -25,6 +27,7 @@
 | typescript | 6.0.3 | [Microsoft TypeScript](https://github.com/microsoft/TypeScript)，Apache-2.0 | TS/JS/JSX/TSX 类型服务 |
 | typescript-language-server | 6.0.2 | [上游社区项目](https://github.com/typescript-language-server/typescript-language-server)，Apache-2.0 | TypeScript 的 LSP 适配，非 Microsoft 官方语言服务器 |
 | @vue/language-server | 3.3.13 | [Vue Language Tools](https://github.com/vuejs/language-tools)，MIT | Vue 模板与脚本，桥接所附 @vue/typescript-plugin |
+| yaml-language-server | 2.0.0 | [Red Hat](https://github.com/redhat-developer/yaml-language-server)，MIT | YAML 检查、格式化、Schema、结构、补全与锚点导航 |
 | vscode-langservers-extracted | 4.10.0 | [上游提取项目](https://github.com/hrsh7th/vscode-langservers-extracted)，MIT | 公开 VS Code HTML/CSS/JSON 服务，非从本机安装包提取 |
 
 Vue 3 服务需要转发 `tsserver/request` / `tsserver/response`，不能只启动一个进程就声称模板类型检查可用。依据：[Vue 集成说明](https://github.com/vuejs/language-tools/discussions/5456)、[TypeScript 服务配置](https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md)。Node 要求与固定服务版本一致，最低 22.22.2。自动类型下载、JSON schema 网络请求与隐式 npm 安装默认关闭；打开项目不执行 package scripts、ESLint/Prettier 项目配置或构建脚本。
@@ -45,7 +48,7 @@ Vue 3 服务需要转发 `tsserver/request` / `tsserver/response`，不能只启
 
 ### 预算与编辑安全
 
-语义文档最多 1 MiB，基础编辑仍为 8 MiB。五类语言进程按项目分析或编辑需求启动，Node 每进程 old-space 上限 512 MiB；这不是实测 RSS 或性能达标结论。诊断最多 500 URI、每 URI 1000、合计 5000；补全/代码动作菜单最多 100 项，符号/引用最多 2000 项。Vue 隧道最多 64 个在途请求，过量请求返回 null 结束等待。
+语义文档最多 1 MiB，基础编辑仍为 8 MiB。六类语言进程按项目分析或编辑需求启动，Node 每进程 old-space 上限 512 MiB；这不是实测 RSS 或性能达标结论。诊断最多 500 URI、每 URI 1000、合计 5000；补全/代码动作菜单最多 100 项，符号/引用最多 2000 项。Vue 隧道最多 64 个在途请求，过量请求返回 null 结束等待。
 
 修改预览最多 32 文件、5000 edits、新文本总计 8 MiB、输入总计 8 MiB，单文件差异展示最多 256 KiB；拒绝越界/远程 URI、路径别名、符号链接逃逸、重叠、无效 UTF-16 和 NUL。全工作区原生编辑都会使在途旧结果失效；脏目标必须已同步给生成修改的服务，超过语义限制或仅同步给其他服务的脏文件拒绝应用。应用前再次校验文档 ID 和修订。外部磁盘写入继续由既有保存指纹检查保护，不声称跨文件磁盘事务或外部变化下服务缓存永远最新。
 
@@ -53,7 +56,7 @@ Vue 3 服务需要转发 `tsserver/request` / `tsserver/response`，不能只启
 
 - Web Node/浏览器调试适配、断点/变量/栈/source map、开发服务生命周期与浏览器连接。
 - 测试树、单项测试/重跑、覆盖率和项目测试框架适配；目前仅能显式运行已有 package scripts。
-- 专用 ESLint/Prettier 诊断/格式化配置、完整命令式重构、调用/继承层级和符号搜索交互。
+- 专用 ESLint/Prettier 诊断/项目格式化配置（YAML 已使用固定包内格式化器）、完整命令式重构、调用/继承层级和符号搜索交互。
 - 更完整 React/Vue 依赖项目与框架配置，Angular/Svelte/Astro、Tailwind/CSS modules、资源路径等独立适配。
 - 自动补全弹层、snippet 镜像、批量统一撤销和真实窗口/IME/性能验收。
 
@@ -61,7 +64,7 @@ Vue 3 服务需要转发 `tsserver/request` / `tsserver/response`，不能只启
 
 ## 固定依赖与通知
 
-完整 106 项在 [third-party.json](../tools/web-language-services/third-party.json)，通知原文在 [npm 目录](../third_party/licenses/npm/)。`scripts/setup_web_tools.sh` 使用 primary registry 的锁定归档，禁用 hooks；`scripts/web_tools.mjs` 校验版本、来源、integrity 元数据和保留通知 SHA。构建将固定服务复制到应用，不复制外部 Node。
+完整 119 项在 [third-party.json](../tools/web-language-services/third-party.json)，通知原文在 [npm 目录](../third_party/licenses/npm/)。`scripts/setup_web_tools.sh` 使用 primary registry 的锁定归档，禁用 hooks；`scripts/web_tools.mjs` 校验版本、来源、integrity 元数据和保留通知 SHA。构建将固定服务复制到应用，不复制外部 Node。
 
 有三个缺少 npm 原文通知的包使用 [补充记录](../tools/web-language-services/license-supplements.json)。其中 @johnsoncodehk/pug-beautify 0.2.2 在归档与所查上游均无独立 MIT 原文，只保留原始 package.json 许可声明与 README，不能将其描述成已取得完整版权原文；公开二进制分发前仍需复核。
 

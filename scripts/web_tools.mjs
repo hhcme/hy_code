@@ -47,3 +47,20 @@ const target = path.join(runtime, 'third-party.json');
 if (write) writeFileSync(target, output);
 else if (readFileSync(target, 'utf8') !== output) throw new Error('Web third-party inventory is stale; run node scripts/web_tools.mjs --write');
 console.log(`PASS: ${inventory.length} locked Web packages and retained notices; no project code loaded`);
+
+// Bundled schemas are original upstream bytes, not executable project config.
+const schemaDir = path.join(runtime, 'schemas');
+const catalog = JSON.parse(readFileSync(path.join(schemaDir, 'catalog.json'), 'utf8'));
+if (catalog.schema !== 1 || !/^[a-f0-9]{40}$/.test(catalog.commit) || catalog.schemas.length > 32) throw new Error('Invalid schema catalog');
+for (const notice of [catalog.license, catalog.notice]) {
+  if (!notice || !notice.path.startsWith('third_party/licenses/') || notice.path.includes('..') || digest(readFileSync(path.join(root, notice.path))) !== notice.sha256) throw new Error('Schema license/notice changed');
+}
+const known = new Set();
+for (const item of catalog.schemas) {
+  if (!/^[a-z0-9-]+\.json$/.test(item.file) || known.has(item.file) || item.uri !== `https://json.schemastore.org/${item.file.slice(0, -5)}` || item.source !== `https://raw.githubusercontent.com/SchemaStore/schemastore/${catalog.commit}/src/schemas/json/${item.file}`) throw new Error('Invalid schema provenance');
+  known.add(item.file);
+  const body = readFileSync(path.join(schemaDir, item.file));
+  if (body.length > 1048576 || digest(body) !== item.sha256) throw new Error('Schema changed: ' + item.file);
+  JSON.parse(body);
+}
+console.log(`PASS: ${known.size} pinned offline schemas and retained Apache-2.0 license`);

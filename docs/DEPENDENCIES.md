@@ -17,7 +17,8 @@
 | AVFoundation / CoreMedia / CoreVideo | macOS 系统框架；部署目标仍为 macOS 14 | 视频异步属性、AVPlayer/AVPlayerLayer、受限本地资源；测试只生成无音轨小样本和离屏单帧，无播放器/窗口；未新增第三方解码器或 SDK 分发 |
 | resvg / usvg / roxmltree | resvg/usvg 0.48.1，预检 roxmltree 0.21.1；Cargo.lock 固定 | Rust 后台 SVG 栅格化；禁用外部资源和嵌入图片，限制复杂效果；52 项新增 crate 的版本/许可/通知哈希见[机器台账](../third_party/image-preview-crates.json)与 [ADR 0008](adr/0008-image-preview.md) |
 | Python 标准库 | Python 3.9+ | 本地文档检查，无第三方 Python 包 |
-| Web 语言服务 | TypeScript 6.0.3、typescript-language-server 6.0.2、@vue/language-server 3.3.13、vscode-langservers-extracted 4.10.0 | npm 固定锁文件与 106 项传递依赖，来源/许可/校验见 [Web 工具](WEB_TOOLS.md) 和[第三方通知](../THIRD_PARTY_NOTICES.md)；外部 Node 22.22.2+ 不分发 |
+| Web 语言服务 | TypeScript 6.0.3、typescript-language-server 6.0.2、@vue/language-server 3.3.13、vscode-langservers-extracted 4.10.0、yaml-language-server 2.0.0 | npm 固定锁文件与 119 项直接/传递条目，来源/许可/校验见 [Web 工具](WEB_TOOLS.md) 和[第三方通知](../THIRD_PARTY_NOTICES.md)；外部 Node 22.22.2+ 不分发 |
+| SchemaStore 离线数据 | commit `4b9347599acb42276483fc514f641505e205d331`，14 个原始 JSON Schema | [上游](https://github.com/SchemaStore/schemastore/tree/4b9347599acb42276483fc514f641505e205d331)，Apache-2.0；[来源与哈希](../tools/web-language-services/schemas/catalog.json)、原文 LICENSE/NOTICE 随包保留；不是可执行项目配置 |
 | GitHub Actions checkout | SHA 固定在[工作流](../.github/workflows/docs.yml) | 现有 CI 只检查文档，不进入应用分发 |
 
 Cargo 共 89 项直接/传递依赖（原 37 项加图片新增 52 项），版本与源码校验值以 Cargo.lock 为准；运行时与构建时来源均记录在[第三方通知](../THIRD_PARTY_NOTICES.md)，并保留许可原文。双许可组件选择 MIT，foldhash 采用 Zlib，Unicode 数据和嵌入子组件另保留通知。没有复制第三方编辑器源码或从私有安装包提取组件，没有新增外部 Swift 包。

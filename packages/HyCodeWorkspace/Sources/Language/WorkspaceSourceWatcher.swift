@@ -50,9 +50,9 @@ public final class WorkspaceSourceWatcher: @unchecked Sendable {
                         guard ProjectSourceCatalog.allows(relative) else { continue }
                         if flag & UInt32(kFSEventStreamEventFlagItemIsDir) != 0 {
                             if flag & structural != 0 { rescan = true }
-                        } else if WebLanguage.detect(relative) != nil || relative.hasSuffix(".dart")
-                            || relative.hasSuffix("pubspec.yaml")
-                        {
+                        } else {
+                            // Local schema dependencies may have any extension.
+                            // Consumers filter observed schemas/source languages.
                             changed.insert(relative)
                         }
                     }
