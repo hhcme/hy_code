@@ -12,7 +12,7 @@ extension WorkspaceEntry {
             if ImagePreviewFormat.matches(name) { return "photo" }
             if VideoPreviewFormat.matches(name) { return "film" }
             return switch (name as NSString).pathExtension.lowercased() {
-            case "swift", "rs", "c", "h", "cpp", "m", "mm", "js", "ts", "py", "go", "dart":
+            case "swift", "java", "sql", "rs", "c", "h", "cpp", "m", "mm", "js", "ts", "py", "go", "dart":
                 "chevron.left.forwardslash.chevron.right"
             case "md", "txt", "log": "doc.text"
             case "json", "toml", "yaml", "yml", "plist": "slider.horizontal.3"
@@ -24,7 +24,7 @@ extension WorkspaceEntry {
         if isDirectory { return WorkbenchColors.nativeFolder }
         if kind == .symlink { return WorkbenchColors.nativeAccent }
         switch (name as NSString).pathExtension.lowercased() {
-        case "swift", "rs", "c", "h", "cpp", "m", "mm", "js", "ts", "py", "go", "dart":
+        case "swift", "java", "sql", "rs", "c", "h", "cpp", "m", "mm", "js", "ts", "py", "go", "dart":
             return WorkbenchColors.nativeCode
         case "json", "toml", "yaml", "yml", "plist": return WorkbenchColors.nativeConfig
         case "md", "txt", "log": return WorkbenchColors.nativeDocument

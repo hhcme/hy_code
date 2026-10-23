@@ -3,6 +3,7 @@ import HyCodeWorkspace
 
 @MainActor final class EditorLineRuler: NSRulerView {
     weak var semantic: EditorLanguageFeatures?
+    var localNumbers = false
     var lines: TextLineIndex
     private weak var editor: NSTextView?
     private let numberFont = NSFont.monospacedDigitSystemFont(ofSize: WorkbenchMetrics.gutterFontSize, weight: .regular)
@@ -107,7 +108,7 @@ import HyCodeWorkspace
                     }
                 }
                 let label = NSAttributedString(
-                    string: String(line + 1),
+                    string: (localNumbers ? "·" : "") + String(line + 1),
                     attributes: [
                         .font: numberFont,
                         .foregroundColor: line == selectedLine

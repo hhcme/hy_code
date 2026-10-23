@@ -8,6 +8,8 @@ build 28 已增加 [Web 工作流](WEB_TOOLS.md)：代码菜单提供多语言�
 
 ## 当前范围
 
+build 40 增加[跨格式大文件分段编辑](LARGE_FILES.md)，包含字节定位、整文件字面查找、跨页撤销和完整保存；后台 GB 样本与窗口缺口分别记录。本地开发包已更新至 0.1.0 / build 40，未启动、安装或发布。
+
 build 36 增加[JSON/JSONC、YAML/YML 配置工具](CONFIGURATION_TOOLS.md)：后台语法/Schema 问题、字段补全/说明、结构、格式化，YAML 锚点定义与重命名预览。常用 package、TS/JS 配置、GitHub Actions 与 pubspec 规则离线随包；本地规则安全读取与保存后依赖刷新，尚未进行真实窗口验收。全量静默检查 202 Swift（38 组）/ 19 Rust / 4 Node 通过，配置/监听 7 项 Swift ASan 与真实服务回归通过。Release 本地开发包 0.1.0 / build 36、arm64、约 159.3 MiB；未启动、安装或发布。可执行 SHA-256：`763092bc82d8fe9236e6942440ccedf8cecdecfa9c9e79828144d6d201c1a98f`。记录见[后台证据](evidence/2026-10-23-build36-configuration-tools.json)。当前本批未提交推送。
 
 build 35 增加[简单视频只读预览](VIDEO_PREVIEW.md)：本地 MP4/MOV/M4V 单击进入标签，默认暂停、播放/暂停、进度/音量、自动适应画面；切标签卸载播放器并保留进度。源视频按固定描述符分段读取，元数据异步加载；无文本缓冲、保存或新增第三方解码器。真实窗口/声音/播放仍未验收。
@@ -82,7 +84,7 @@ build 33 已扩展到全部已有应用界面的共用样式：项目/菜单弹�
 | 控件反馈 | 按钮、项目行、标签和菜单入口区分悬停/按下/选中状态；可用入口使用手形光标，禁用态不响应悬停 |
 | 滚动条 | 应用内纵向及项目树横向固定保留 8 pt 槽、4 pt 滑块；透明轨道；树滚动区右侧再留 8 pt、顶部留 5 pt、底部留 8 pt，避开面板圆角 |
 | 分隔带 | 默认与外框同色；悬停/拖动时显示一个物理像素的强调线，两端各缩进 10 pt；鼠标移出并结束拖动后隐藏，键盘焦点使用中性色 |
-| 状态栏 | 36 pt，12 pt 字号，项目路径、目录条目数或当前文件编码/换行及保存状态 |
+| 状态栏 | 36 pt，12 pt 字号，项目路径、目录条目数或当前文件编码/换行及保存状态；右侧自身内存/CPU 与闲置缓存清理，见[口径](PERFORMANCE_MONITOR.md) |
 | 深色配色 | 外框 `#26282C`、内容 `#191A1C`、文字 `#D1D3D9`；无渐变背景 |
 
 最小窗口仍为 860 × 540。双侧工具区域适应当前窗口并保留中央至少 360 × 220；底行同时显示两块时各至少 220 pt。窗口临时缩小或折叠不会覆盖用户尺寸偏好，放大后恢复；拖动以当前可见尺寸为基准，不混用适配前的另一侧宽度。小高度欢迎页可整体滚动，避免操作和最近项被截掉。
@@ -347,3 +349,21 @@ build 26 的 DAP 模型/stdio fixture 通过与真实 SDK 分开记录：生成 
 2026-10-22 build 31 按用户截图补全 Dart 导入 URI 的整段悬浮与链接：SDK 返回 library/Declared 分节，确认定义后画下划线并复用导航缓存；路径中的标点不再拆分请求。有界扫描覆盖普通多行/条件导入、注释与截断上下文，不解析磁盘或伪造未解析包的跳转。编辑菜单按内容测量收窄，分区改用可见主题细线，参数信息归入导航组。165 项 Swift、15 项 Rust 全量静默检查及 Dart 3.11.5 自建 package/SDK/相对 import 和注释边界探针通过；独立复核的三处注释识别问题已修复并复核。Release 开发包约 139.9 MiB、arm64、0.1.0 / build 31、最低系统声明 macOS 14；可执行文件 SHA-256：`a4668ee78dc6008c2e022e5d188da4534422e25ad3ccfdbfcedf0306aceafe90`。源码、检查和限制见[本轮证据](evidence/2026-10-22-build31-import-menu.json)、[Dart 工具](DART_FLUTTER.md)与[编辑菜单](EDITING.md)。没有启动或安装应用、执行 GUI/剪贴板操作、分发签名或提交推送；真实卡片/下划线/菜单效果与渲染性能未验收。
 
 2026-10-23 build 32 根据用户已提供的 2× WebStorm Islands 截图采样，统一 43 pt 头部、1 pt 左右壳体留白、5 pt 分隔、40 pt 面板标题/工具步进和 36 pt 状态栏；校齐项目树顶部/左右留白、标签/标题字体、原生编辑文本/行号/最小行高。原生系统按钮保留大小与动作，嵌套宿主不额外施加 safe-area，工具拖放标记与可见按钮共用轨道几何。169 Swift / 15 Rust 全量静默检查通过，4 项新增样式/轨道/按钮/最小尺寸回归，27 项相关布局/交互/预览用例通过，独立只读复核未发现确认 P1/P2。Release 开发包约 139.9 MiB、arm64、0.1.0 / build 32、最低系统声明 macOS 14；可执行文件 SHA-256：`6abe22c80755694039a96b87ff0039dbc94631fd3d6f1eaa4a6440bf99cb416e`。目标、推导和未验证项见[视觉说明](VISUAL_ALIGNMENT.md)与[后台记录](evidence/2026-10-23-build32-visual-alignment.json)。没有启动或操作应用/桌面，没有窗口逐像素差分、真实输入或帧率验收；未提交推送或发布。
+
+## build 37：Markdown / HTML 分屏
+
+在原生文本标签内增加源码、左右分屏、仅预览和联动/刷新入口；默认左右，可拖动并记忆比例。静态页面和后台渲染边界见[专题](MARKUP_PREVIEW.md)。本阶段不代表 Swift、SQL、Java 目标完成，参见[完整计划](LANGUAGE_EXPANSION_PLAN.md)。没有启动应用或执行 GUI 验收。
+
+## build 38：Swift / Java / SQL
+
+接入外部 SourceKit-LSP/JDT LS 与内置离线 SQL：高亮、诊断/统一问题面板、补全/说明/导航/结构与格式化；Swift/Java 文本动作沿用修改预览。SwiftPM、Xcode/BSP 及 Maven/Gradle 项目模型的信任、生命周期、SQL DDL 绑定、资源上限与验证限制见[原生语言](NATIVE_LANGUAGES.md)。真实工程、窗口和性能仍分别验收，不以语言服务接通宣称完整 IDEA 功能。
+
+本批全量 217 Swift / 25 Rust / 4 Node、9 项原生语言 Swift ASan、SourceKit SwiftPM/BSP 与 JDT 独立文件/Maven 生成样本检查通过。Release 开发包约 174.9 MiB，arm64、0.1.0 / build 38，未启动或安装；可执行文件 SHA-256 `328e5420896438c523ede9f1b864f4d8bfad98b6cf9628c0d5cfdbcc25b5ebe2`。范围与未验证项见[证据](evidence/2026-10-23-build38-native-languages.json)，未提交推送或发布。
+
+## build 39：Markdown / HTML 预览初始化修复
+
+根据用户窗口的 WKErrorDomain 6，确认原离线规则含 WebKit 不支持的正则分支；改为五条协议前缀并保留失败关闭行为。Foundation 编译器 CLI 在自有临时目录复现旧错误并确认生产规则可编译，未实例化 WebView 或创建应用宿主。7 项预览与全量 218 Swift / 25 Rust / 4 Node 通过，Release 本地包 build 39 未启动；真实窗口恢复未自动测试。说明与哈希见[预览专题](MARKUP_PREVIEW.md)和[修复证据](evidence/2026-10-23-build39-markup-rules.json)。
+
+## build 40：大文件工具条
+
+用户确认经常处理超过 1 GB 的文本；采用 Rust 磁盘 piece table、原生有界页、独占跨页历史和后台整文件查找/完整原子保存。所有扩展名共享大小/长行路由，局部页不得用于全文 LSP 修改。范围、资源预算、真实 GB 后台样本与连续滚动/全局行号/窗口性能缺口见[大文件专题](LARGE_FILES.md)和[ADR 0013](adr/0013-disk-backed-text.md)。

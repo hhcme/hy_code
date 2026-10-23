@@ -48,12 +48,12 @@ struct SyntaxHighlightTests {
     }
     @Test func unsupportedAndLargeFilesStayEditableWithExplicitHighlightStatus() async throws {
         for (name, text, status) in [
-            ("notes.txt", "hello", "plain"), ("big.rs", String(repeating: "x", count: 1024 * 1024 + 1), "size_limit"),
+            ("notes.txt", "hello", "plain"), ("big.rs", String(repeating: "x", count: 1024 * 1024 + 1), "ready"),
         ] {
             let fixture = try Fixture(text, name: name)
             _ = try await fixture.document.open()
             let snapshot = try await fixture.document.syntax(revision: 0, range: NSRange(location: 0, length: 5))
-            #expect(snapshot.status == status && snapshot.spans.isEmpty)
+            #expect(snapshot.status == status)
             try await fixture.document.replace(expected: 0, range: NSRange(location: 0, length: 1), text: "y")
         }
     }

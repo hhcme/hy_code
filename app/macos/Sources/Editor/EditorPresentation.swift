@@ -11,6 +11,7 @@ import HyCodeWorkspace
     let gutter: EditorLineRuler
     private var task: Task<Void, Never>?
     private var viewport = SyntaxViewportState()
+    private let fragmentWorker = SyntaxFragmentWorker()
     private var enabled = true
     private var dark: Bool?
     init(document: EditorDocument, scroll: NSScrollView, textView: NSTextView, lines: TextLineIndex) {
@@ -46,6 +47,12 @@ import HyCodeWorkspace
     func willReplace(_ change: TextLineChange) {
         clearColors()
         gutter.lines.apply(change)
+        gutter.updateThickness()
+        gutter.needsDisplay = true
+    }
+    func replacePage(lines: TextLineIndex) {
+        clearColors()
+        gutter.lines = lines
         gutter.updateThickness()
         gutter.needsDisplay = true
     }
@@ -94,7 +101,7 @@ import HyCodeWorkspace
                 else { return }
                 apply(snapshot)
                 document.syntaxLanguage = snapshot.language
-                document.syntaxNotice = snapshot.status == "size_limit" ? "文本超过 1 MiB，高亮已暂停，仍可编辑" : nil
+                document.syntaxNotice = snapshot.status == "windowed" ? "大文件按可见片段高亮" : nil
             } catch {
                 guard !Task.isCancelled, viewport.accepts(ticket) else { return }
                 document.syntaxNotice = error.localizedDescription
@@ -117,6 +124,14 @@ import HyCodeWorkspace
     private func highlight(document: EditorDocument, range: NSRange, visible: NSRange, revision: UInt64) async throws
         -> SyntaxHighlight
     {
+        if document.largeFile != nil {
+            do { return try await highlightFragment(range: range, path: document.path) } catch is CancellationError {
+                throw CancellationError()
+            } catch {
+                guard range != visible else { throw error }
+                return try await highlightFragment(range: visible, path: document.path)
+            }
+        }
         do { return try await document.syntax(range: range, revision: revision) } catch is CancellationError {
             throw CancellationError()
         } catch {
@@ -125,6 +140,15 @@ import HyCodeWorkspace
             guard range != visible else { throw error }
             return try await document.syntax(range: visible, revision: revision)
         }
+    }
+    private func highlightFragment(range: NSRange, path: String) async throws -> SyntaxHighlight {
+        guard let source = textView?.textStorage?.mutableString, range.location <= source.length,
+            range.length <= source.length - range.location
+        else {
+            throw CancellationError()
+        }
+        let text = source.substring(with: range)
+        return try await fragmentWorker.highlight(text: text, path: path, start: range.location)
     }
     private func clearColors() {
         cancel()

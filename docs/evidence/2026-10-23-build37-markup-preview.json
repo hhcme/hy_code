@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "date": "2026-10-23",
+  "build": 37,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "3fe752fb628141a446cd649e3c29c123da4a744f",
+  "request": "Markdown/HTML split preview phase of Java/SQL/Swift and preview goal",
+  "goal_remaining": [
+    "Swift tools",
+    "SQL tools",
+    "Java tools"
+  ],
+  "checks": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 208,
+      "rust_tests": 22,
+      "node_tests": 4
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --disable-xctest --sanitize address --filter MarkupPreviewTests",
+      "result": "pass",
+      "tests": 6,
+      "limitations": "Rust static library and Apple frameworks not instrumented"
+    },
+    {
+      "command": "nice -n 10 swift build --jobs 2 --product HyCode",
+      "result": "pass",
+      "scope": "Final app-only observation, activation, scroll restore and theme generation fixes"
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "launched": false
+    },
+    {
+      "result": "pass",
+      "scope": "Packaged three new crate notices and inventory match exact source SHA-256; build metadata37"
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only",
+    "confirmed_unresolved_P1_P2": 0,
+    "fixes": [
+      "preinstalled network content rules fail closed",
+      "missed final revision retry",
+      "mode bridge reconfiguration",
+      "serial 256 queued resources",
+      "async browser observation/placeholder",
+      "stale failure cannot discard latest edit"
+    ],
+    "scope": "Source, compile, tests and ASan logs; no WebView instantiation"
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "configuration": "release",
+    "version": "0.1.0",
+    "build": 37,
+    "architecture": "arm64",
+    "minimum_system": "14.0",
+    "executable_sha256": "2de94a60f52089d933419bbc1783561955a39034a75514f527bf63a46b8785c0",
+    "executable_bytes": 25941432,
+    "bundle_bytes": 167787391,
+    "launched": false,
+    "installed": false,
+    "published": false,
+    "signing": "unsigned local development build"
+  },
+  "not_verified": [
+    "No WKWebView instantiated, no WebKit rule engine or real network behavior executed",
+    "Real window, source/preview scroll/layout, ratios, keyboard/IME/focus and performance",
+    "No GUI, sound, clipboard, desktop capture, installation or publishing",
+    "No commit or push for this work; Swift/SQL/Java goal still active"
+  ],
+  "source_sha256": {
+    "AGENTS.md": "716d397da1473934c583c9cf825a03b0d9d7cb3bddb3061af3d7f6c96ac39258",
+    "Cargo.lock": "cb9d97ec0cda8f96ecbce1f5a315546ae6c3d534af10d41cb6dc2006aed6b489",
+    "README.md": "7ec789f4ce6bd1c766e62bb04284ea4f9b72b10889473105ee3f931df102c928",
+    "THIRD_PARTY_NOTICES.md": "a6ef78151f8a9a1c45b607acc15b89e2e5f934ab053a6a157bf05827ba5948e5",
+    "app/macos/Resources/Info.plist": "747aea08fcd7cfe3907b2da79ea2a7f3257884c9d6a031326279378a4ec6f989",
+    "app/macos/Sources/Editor/EditorDocument.swift": "8cbb6aff73ac9fcd7c242eb77a7791b5dbe4f41c36dfb3f4fc59f51d540a24f1",
+    "app/macos/Sources/Editor/EditorPanel.swift": "935b7dda5b00a92b9a366ecac5cb4a00be8d69530fca84f7f929ad1d34653817",
+    "bindings/CHyCodeCore/include/hycode_core.h": "cc847e456f6a12268b583bb85184a0f27d1876a0c2c8efcd773c1fccdeffc279",
+    "crates/hycode-core/Cargo.toml": "11f20b8509ffffb358345e29bca366439fed4b8005ff41ee31491ec5da551f11",
+    "crates/hycode-core/src/document.rs": "45be10098649597f1ccaa933777411310cff358e003faec78ac535f949b6d5eb",
+    "crates/hycode-core/src/document_ffi.rs": "d361878561fe88205cde712cebc92144a8bc6ec7ac703161e278f14f4a31e3f6",
+    "crates/hycode-core/src/lib.rs": "b4e806adda7379030709eb00f9322c2ea0ea926d0b9a2f4f51b31922037a1b2c",
+    "docs/DEPENDENCIES.md": "86345c8857dd925b352fffb87da529a98326fa6319f72d63ab25efb28fc09c7d",
+    "docs/DEVELOPMENT.md": "2bb2a0776b752499b9cfec46f99141ec4d2573ddac34afd36cd43c811de37841",
+    "docs/EDITING.md": "d7e625a6017bf54425398a7045e0397c646ab689cc7d44d722fb9a86b69971a9",
+    "docs/EDITOR_DIRECTION.md": "fc641948cceda869995f5d7324eb23a41c4d81b90002d6c7fa4c5c97257ab324",
+    "docs/FORMAT_SUPPORT.md": "d8d28a908e0c4658c2714bbd2ebed776071f728195b24816bcabb6da74d8c412",
+    "docs/PRODUCT_REQUIREMENTS.md": "2b988b52efa6fa81a6ad1280432135278df405ae73636b2c532f2b7a53d53c19",
+    "docs/README.md": "e6e49e37618c6510374d43ae182b7ab861614aac8610196783c99f99b62e887f",
+    "docs/ROADMAP.md": "e829bf17171b2b80dd5138e7fedf41d9a8123e27ba4f9d17fa31acfed5a4266f",
+    "docs/TECH_DESIGN.md": "1922c48b87d2e6dfe06855a183fb1a5beb78521b4db474de630e18ff3e5787b0",
+    "docs/WORKBENCH.md": "44054c7cff811733cd40e518d165d448d97bd73867fd428b23311833e5fe8aef",
+    "docs/adr/README.md": "a46e3ffd5b69381954761000848b925e9e312bd203d89c1a6b6326ffc0fccab7",
+    "packages/HyCodeWorkspace/Sources/NativeTextDocument.swift": "4435b8116613ed56dd815b0748eca534161031359ca745cf4dfbf891cc2766f7",
+    "packages/HyCodeWorkspace/Sources/Preview/PreviewFileIO.swift": "99c54735b0b816fedfdffeefd067ec4e9a6cdf8126002924340c9a7f31ea495a",
+    "scripts/build_macos.sh": "b76951e8c7403fc114deeb350ede991692abbc5d936ea02a6903bdb921d73d0a",
+    "scripts/check_native.sh": "9a4c880266b9e49e5feea0d377b4291270bd2351cc25a5694ffb3baa817f5048",
+    "app/macos/Sources/Markup/MarkupEditorHost.swift": "27650fcabc4ff12e15cd6b065fde8d10f1f76fadf66d4d4ee8dee12c927d9807",
+    "app/macos/Sources/Markup/MarkupEditorScroll.swift": "778016e466f06bb6695138a8f2d00c5681845aa6b381905a824d6527ca040c44",
+    "app/macos/Sources/Markup/MarkupNetworkPolicy.swift": "eca6303b7bd983f0758d5e10b0e8cd3fdd73d9b6d17be5a63fed8537d5f6ecb4",
+    "app/macos/Sources/Markup/MarkupPreviewBridge.swift": "295e2d234c7ded53062316274789a70a6a4c7736479cb6fe325b669227cf5099",
+    "app/macos/Sources/Markup/MarkupPreviewController.swift": "198b8c18001b7b4a068a99265a715f1adbeab56dbe07f35e7c472899582993e3",
+    "app/macos/Sources/Markup/MarkupResourceHandler.swift": "c9dac8d5ecedb1daf71e3297eb09729eeb69654728fcdee914cdd891a3f806dc",
+    "crates/hycode-core/src/markup.rs": "7d3ddaa60c3200ba0659bbedae4d9ae9efe2ae7f3a273e94f0929d698516e246",
+    "docs/LANGUAGE_EXPANSION_PLAN.md": "7c30d20dc06265e77a389d097870a73922fd538a43923c1ec2bf8063f8c9fc3b",
+    "docs/MARKUP_PREVIEW.md": "0f830777d8e877050f20a9874498fc90e839c58676b435ec6bcd9961e0b5cf5f",
+    "docs/adr/0011-markup-preview.md": "6a69f303cd84230599a1d6d8ce3ae3087d6665ae0c1373224053103491f44678",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupPage.swift": "91714680d109437b6cfb584b03bb8f75a5e85abb78682c5543462fde173bf9d6",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupPreviewContent.swift": "b424be72e9dc47a9f96bb15dbd5f106e1720d78b5953273a4ffefe330a7a260b",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupResourceBudget.swift": "1e3d06779f178efb7032ed89c122888313612630364ead6fdadb3a6179358793",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupResources.swift": "3aa58c28532cef8f9ccf7be38c6c399b8ae1375d4dd0a098008051ff1ea7e476",
+    "packages/HyCodeWorkspace/Tests/MarkupPreviewTests.swift": "3fbb24ee56406b5bd2d6ade6ef9e9d9ae971d2d216f4f07fcf5731d6f8fb4a9d",
+    "scripts/check_markup_dependencies.py": "4785ab520e8918b58cc38734424d7c534ea951ed1c087f709db584d7a883bbf8",
+    "third_party/licenses/pulldown-cmark-0.13.5/LICENSE": "c4f10f55904bdb9f27d3fbf94c354926d6cfe8b982276e556238c258941b243b",
+    "third_party/licenses/pulldown-cmark-escape-0.11.0/LICENSE": "c4f10f55904bdb9f27d3fbf94c354926d6cfe8b982276e556238c258941b243b",
+    "third_party/licenses/unicase-2.10.0/LICENSE-APACHE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "third_party/licenses/unicase-2.10.0/LICENSE-MIT": "4f6bd11a0f17fe5b085ace1daaedb7b002a08316850dd9577c246c6a68a68e8c",
+    "third_party/markup-preview-crates.json": "9386ec46287a0bd08e2e7086f7715032d85dbe621759ac183339a5f63eb8cf64"
+  },
+  "log_sha256": {
+    ".build/build37-native-check.log": "165ccb290f177cfb657d69392e32015c3b9e08e68c323d679b8ca128f5152d93",
+    ".build/build37-markup-rust.log": "a30f5d1052cccbbccbfa4751016d7c55f03e7421b7cfa2298c014cc3b2f4e320",
+    ".build/build37-markup-swift.log": "76582f0333d81458a54e6d77aa53ca27dad6d6bdef370533112c60a1b5f197a7",
+    ".build/build37-markup-asan.log": "bd5032e7538c98404b0a3e9c835b14bb7e5a727f42f51fe2719936964c0fc223",
+    ".build/build37-compile.log": "71a869d59e39ddd60acb307265ead1dd3848702843ae5f08dd801c67d528f1eb",
+    ".build/build37-release-build.log": "5cb2046c9e5b04b137bd6816e6cc0d297b83037b954cd4f8efe60390e432f8ae"
+  }
+}

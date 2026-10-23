@@ -194,6 +194,11 @@ impl TextDocument {
         crate::syntax::snapshot(&mut self.syntax, &self.text, path, start, end)
     }
 
+    /// Rebuildable parser/tree only. Text, revisions and position hints survive.
+    pub fn trim_cache(&mut self) -> bool {
+        self.syntax.take().is_some()
+    }
+
     pub fn bytes(&self, expected: u64) -> Result<Vec<u8>, WorkspaceError> {
         self.check_revision(expected)?;
         let mut bytes = Vec::new();
@@ -219,6 +224,23 @@ impl TextDocument {
         Ok(bytes)
     }
 
+    pub fn markup(
+        &self,
+        expected: u64,
+        markdown: bool,
+    ) -> Result<crate::markup::MarkupContent, WorkspaceError> {
+        self.check_revision(expected)?;
+        crate::markup::render(&self.text, markdown)
+    }
+    pub fn markup_cancellable(
+        &self,
+        expected: u64,
+        markdown: bool,
+        token: Option<&crate::HyCodeCancellation>,
+    ) -> Result<crate::markup::MarkupContent, WorkspaceError> {
+        self.check_revision(expected)?;
+        crate::markup::render_cancellable(&self.text, markdown, token)
+    }
     fn check_revision(&self, expected: u64) -> Result<(), WorkspaceError> {
         if expected == self.revision {
             Ok(())
@@ -238,6 +260,27 @@ fn error(code: &'static str, message: &str) -> WorkspaceError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn cache_eviction_preserves_dirty_text_and_revision() {
+        let mut document = TextDocument::open(b"final value = 1;\n").unwrap();
+        document.replace(0, 0, 0, "// 中😀\n").unwrap();
+        let length = document.text.encode_utf16().count();
+        let colors = document.syntax(1, "main.dart", 0, length).unwrap();
+        assert!(!colors.spans.is_empty());
+        let bytes = document.bytes(1).unwrap();
+        assert!(document.trim_cache());
+        assert!(!document.trim_cache());
+        assert_eq!(document.revision(), 1);
+        assert_eq!(document.bytes(1).unwrap(), bytes);
+        assert!(
+            !document
+                .syntax(1, "main.dart", 0, length)
+                .unwrap()
+                .spans
+                .is_empty()
+        );
+        document.replace(1, 0, 0, "// next\n").unwrap();
+    }
     #[test]
     fn unicode_edits_use_utf16_and_reject_split_surrogates_without_mutation() {
         let mut doc = TextDocument::open("a😀中\r\n".as_bytes()).unwrap();

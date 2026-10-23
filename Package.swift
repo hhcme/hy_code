@@ -14,6 +14,9 @@ let package = Package(
         .executable(name: "HyCodeDartProbe", targets: ["HyCodeDartProbe"]),
         .executable(name: "HyCodeDebugProbe", targets: ["HyCodeDebugProbe"]),
         .executable(name: "HyCodeWebProbe", targets: ["HyCodeWebProbe"]),
+        .executable(name: "HyCodeNativeLanguageProbe", targets: ["HyCodeNativeLanguageProbe"]),
+        .executable(name: "HyCodeMarkupRuleProbe", targets: ["HyCodeMarkupRuleProbe"]),
+        .executable(name: "HyCodeLargeFileProbe", targets: ["HyCodeLargeFileProbe"]),
     ],
     targets: [
         .systemLibrary(name: "CHyCodeCore", path: "bindings/CHyCodeCore"),
@@ -35,5 +38,11 @@ let package = Package(
         .executableTarget(name: "HyCodeDartProbe", dependencies: ["HyCodeWorkspace"], path: "tools/DartProbe"),
         .executableTarget(name: "HyCodeDebugProbe", dependencies: ["HyCodeWorkspace"], path: "tools/DebugProbe"),
         .executableTarget(name: "HyCodeWebProbe", dependencies: ["HyCodeWorkspace"], path: "tools/WebProbe"),
+        .executableTarget(
+            name: "HyCodeNativeLanguageProbe", dependencies: ["HyCodeWorkspace"], path: "tools/NativeLanguageProbe"),
+        .executableTarget(
+            name: "HyCodeMarkupRuleProbe", dependencies: ["HyCodeWorkspace"], path: "tools/MarkupRuleProbe"),
+        .executableTarget(
+            name: "HyCodeLargeFileProbe", dependencies: ["HyCodeWorkspace"], path: "tools/LargeFileProbe"),
     ]
 )

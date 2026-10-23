@@ -60,7 +60,8 @@ extension EditorWorkspace {
                 var bytes = 0
                 for file in changes {
                     guard let document = self.documents[file.path], !document.closed, !document.readOnly,
-                        !document.toolManaged, !document.composing, document.loadError == nil,
+                        !document.toolManaged, document.largeFile == nil, !document.composing,
+                        document.loadError == nil,
                         let view = document.editor?.textView, view.isEditable,
                         !document.isDirty
                             || document.semantic.map({ controller?.isSynchronized($0, service: service) == true })
@@ -117,7 +118,8 @@ extension EditorWorkspace {
         for file in preview.files {
             guard let document = documents[file.path], document.id == file.documentID,
                 document.edits.revision == file.revision, !document.closed, !document.composing,
-                !document.toolManaged, !document.readOnly, let view = document.editor?.textView, view.isEditable,
+                !document.toolManaged, !document.readOnly, document.largeFile == nil,
+                let view = document.editor?.textView, view.isEditable,
                 document.permitsEdit(
                     range: NSRange(location: 0, length: file.before.utf16.count), replacement: file.after,
                     removed: file.before, currentLength: file.before.utf16.count)

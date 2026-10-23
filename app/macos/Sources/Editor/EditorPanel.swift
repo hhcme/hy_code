@@ -3,6 +3,7 @@ import SwiftUI
 
 struct EditorPanel: View {
     @Bindable var document: EditorDocument
+    @Environment(\.colorScheme) private var colorScheme
     let reload: () -> Void
     var body: some View {
         VStack(spacing: 0) {
@@ -27,7 +28,22 @@ struct EditorPanel: View {
                     Button("重新读取", action: reload).buttonStyle(WorkbenchActionButtonStyle())
                 }.padding(24).frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let editor = document.editor {
-                NativeEditorHost(editor: editor).id(document.id)
+                if let large = document.largeFile {
+                    LargeFileToolbar(state: large)
+                    WorkbenchSeparator()
+                }
+                if let preview = document.markupPreview {
+                    MarkupPreviewToolbar(preview: preview)
+                    WorkbenchSeparator()
+                    MarkupEditorHost(editor: editor, preview: preview, browser: preview.browser).id(document.id)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .task(id: "\(preview.mode.rawValue)-\(colorScheme == .dark)") {
+                            preview.activate(dark: colorScheme == .dark)
+                        }
+                        .onDisappear { preview.deactivate() }
+                } else {
+                    NativeEditorHost(editor: editor).id(document.id)
+                }
             }
         }.foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
     }
@@ -47,7 +63,7 @@ struct EditorSettingsView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("编辑器").fontWeight(.semibold)
                     Toggle("自动保存", isOn: $store.autoSave)
-                    Text("停止输入约 800 毫秒后保存；输入法组合期间暂停保存。关闭后使用 ⌘S 保存。")
+                    Text("停止输入约 800 毫秒后保存；大文件约 3 秒后分段写出整份文件。输入法组合期间暂停保存，关闭后使用 ⌘S 保存。")
                         .font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                     Toggle("显示行号", isOn: $lineNumbers)
                     Toggle("语法高亮", isOn: $syntaxHighlight)
@@ -63,6 +79,7 @@ struct EditorSettingsView: View {
                     Button("应用并重启 Web 分析器", action: store.web.restart)
                     Text(store.web.status).font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                         .textSelection(.enabled)
+                    NativeLanguageSettingsView(tools: store.native)
                 }.padding(16).frame(maxWidth: .infinity, alignment: .leading).background(WorkbenchScrollStyle())
             }
         }.workbenchContentStyle().frame(width: 520, height: 560).navigationTitle("编辑设置")

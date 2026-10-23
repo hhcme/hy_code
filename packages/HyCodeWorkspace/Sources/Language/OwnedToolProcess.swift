@@ -20,7 +20,7 @@ final class OwnedToolProcess: @unchecked Sendable {
 
     static func launch(
         executable: URL, arguments: [String], directory: URL, input: FileHandle? = nil,
-        environment additions: [String: String] = [:]
+        environment additions: [String: String] = [:], removingEnvironment: Set<String> = []
     ) throws -> OwnedToolProcess {
         let out = Pipe()
         let err = Pipe()
@@ -61,6 +61,7 @@ final class OwnedToolProcess: @unchecked Sendable {
         }
         var environment = ProcessInfo.processInfo.environment
         environment.merge(additions) { _, new in new }
+        for key in removingEnvironment { environment[key] = nil }
         environment["FLUTTER_SUPPRESS_ANALYTICS"] = "true"
         environment["DART_SUPPRESS_ANALYTICS"] = "true"
         let argv = (["/usr/bin/nice", "-n", "10", executable.path] + arguments).map { strdup($0) }

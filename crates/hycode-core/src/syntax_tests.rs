@@ -107,7 +107,7 @@ mod tests {
         assert!(doc.syntax(0, "a.rs", 0, 65_537).is_err());
         assert_eq!(doc.syntax(0, "a.txt", 0, 2).unwrap().status, "plain");
         let mut large = TextDocument::open(&vec![b'x'; 1024 * 1024 + 1]).unwrap();
-        assert_eq!(large.syntax(0, "a.rs", 0, 10).unwrap().status, "size_limit");
+        assert_eq!(large.syntax(0, "a.rs", 0, 10).unwrap().status, "windowed");
     }
     #[test]
     fn embedded_tags_and_merged_results_respect_viewport_and_budget() {

@@ -8,7 +8,7 @@ for script in scripts/build_core.sh scripts/build_icons.sh scripts/build_macos.s
     bash -n "$script"
 done
 cargo fmt --all -- --check
-xcrun swift-format lint --strict --recursive app/macos/Sources packages/HyCodeWorkspace tools/DirectoryProbe tools/DartProbe tools/DebugProbe tools/WebProbe Package.swift
+xcrun swift-format lint --strict --recursive app/macos/Sources packages/HyCodeWorkspace tools/DirectoryProbe tools/DartProbe tools/DebugProbe tools/WebProbe tools/NativeLanguageProbe tools/MarkupRuleProbe tools/LargeFileProbe Package.swift
 for script in tools/web-language-services/native/*.mjs; do
     node --check "$script"
 done
@@ -16,6 +16,8 @@ node --test tools/web-language-services/native/schema-runtime.test.mjs
 node --check scripts/web_tools.mjs
 node scripts/web_tools.mjs
 python3 scripts/check_image_dependencies.py
+python3 scripts/check_markup_dependencies.py
+python3 scripts/check_native_language_dependencies.py
 xcrun clang -x c -std=c11 -fsyntax-only -Wall -Wextra -Werror bindings/CHyCodeCore/include/hycode_core.h
 xcrun clang++ -x c++ -std=c++17 -fsyntax-only -Wall -Wextra -Werror bindings/CHyCodeCore/include/hycode_core.h
 cargo clippy --locked --workspace --all-targets -- -D warnings
@@ -24,5 +26,7 @@ cargo clippy --locked --workspace --all-targets -- -D warnings
 cargo test --locked --workspace -- --test-threads=1
 bash scripts/build_core.sh
 swift test --jobs 2 --disable-xctest
+# Fixed JSON compiler only; temporary store, no WebView/application host/page.
+swift run --skip-build HyCodeMarkupRuleProbe
 python3 scripts/check_docs.py
 git diff --check

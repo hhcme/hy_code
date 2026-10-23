@@ -42,7 +42,7 @@ enum TextFileIO {
         let name: String
         let info: stat
     }
-    private static func target(root: URL, path: String) throws -> Target {
+    private static func target(root: URL, path: String, bounded: Bool = true) throws -> Target {
         let parts = path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
         guard !parts.isEmpty, parts.allSatisfy({ !$0.isEmpty && $0 != "." && $0 != ".." && !$0.contains("\0") }) else {
             throw WorkspaceFailure(code: "invalid_path", message: "文件路径必须位于项目内")
@@ -61,16 +61,115 @@ enum TextFileIO {
         guard info.st_nlink == 1 else {
             throw WorkspaceFailure(code: "hard_link", message: "暂不编辑具有多个硬链接的文件")
         }
-        guard info.st_size <= maximumBytes else {
+        guard info.st_size >= 0, !bounded || info.st_size <= maximumBytes else {
             throw WorkspaceFailure(code: "text_too_large", message: "当前文本编辑上限为 8 MiB")
         }
         return Target(parent: directory, file: file, name: name, info: info)
+    }
+    /// Probe only a bounded prefix. Routing is independent of extension; long
+    /// single-line/minified files also use the disk-backed native page editor.
+    static func needsPaging(root: URL, path: String) throws -> Bool {
+        try Task.checkCancellation()
+        let file = try target(root: root, path: path, bounded: false)
+        if file.info.st_size > maximumBytes { return true }
+        var bytes = [UInt8](repeating: 0, count: 64 * 1024)
+        let count = Darwin.pread(file.file.value, &bytes, bytes.count, 0)
+        guard count >= 0 else { throw posixFailure() }
+        let prefix = bytes.prefix(count)
+        if prefix.starts(with: [0xff, 0xfe]) || prefix.starts(with: [0xfe, 0xff]) {
+            let little = prefix.first == 0xff
+            var run = 0
+            for i in stride(from: 2, to: max(2, count - 1), by: 2) {
+                let unit =
+                    little ? UInt16(bytes[i]) | UInt16(bytes[i + 1]) << 8 : UInt16(bytes[i]) << 8 | UInt16(bytes[i + 1])
+                run = unit == 10 || unit == 13 ? 0 : run + 1
+                if run >= 16_384 { return true }
+            }
+        } else {
+            var run = 0
+            for byte in prefix {
+                run = byte == 10 || byte == 13 ? 0 : run + 1
+                if run >= 16_384 { return true }
+            }
+        }
+        return false
+    }
+    static func withLargeFile<T>(root: URL, path: String, _ body: (Int32, Version) throws -> T) throws -> T {
+        let file = try target(root: root, path: path, bounded: false)
+        return try body(file.file.value, Version(file.info))
+    }
+    /// Never exports a page as a file. Only the Rust document can stream all
+    /// logical pieces into this private temp descriptor. The host retains the
+    /// permission/metadata/coordination/atomic-rename responsibility.
+    static func saveLarge(
+        root: URL, path: String, expected: Version, cancellation: DocumentSaveCancellation?,
+        write: (Int32) throws -> Void, committed: (Int32) throws -> Void
+    ) throws -> Version {
+        try cancellation?.check()
+        let url = root.appendingPathComponent(path)
+        var coordinationError: NSError?
+        var outcome: Result<Version, Error>?
+        NSFileCoordinator().coordinate(writingItemAt: url, options: .forReplacing, error: &coordinationError) {
+            coordinated in
+            outcome = Result {
+                guard coordinated.standardizedFileURL == url.standardizedFileURL else { throw conflict() }
+                let target = try target(root: root, path: path, bounded: false)
+                guard Version(target.info) == expected else { throw conflict() }
+                guard flock(target.file.value, LOCK_EX | LOCK_NB) == 0 else { throw posixFailure() }
+                defer { flock(target.file.value, LOCK_UN) }
+                guard target.info.st_mode & 0o222 != 0,
+                    target.info.st_flags & UInt32(UF_IMMUTABLE | SF_IMMUTABLE | UF_APPEND | SF_APPEND) == 0
+                else { throw WorkspaceFailure(code: "read_only", message: "文件为只读，未写入更改") }
+                let writable = try Descriptor(
+                    openat(target.parent.value, target.name, O_WRONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC))
+                var accessInfo = stat()
+                guard fstat(writable.value, &accessInfo) == 0, Version(accessInfo) == expected else { throw conflict() }
+                let name = ".hycode-save-" + UUID().uuidString
+                let temporary = try Descriptor(
+                    openat(target.parent.value, name, O_RDWR | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0o600))
+                var installed = false
+                defer { if !installed { unlinkat(target.parent.value, name, 0) } }
+                try write(temporary.value)
+                try cancellation?.check()
+                guard fcopyfile(target.file.value, temporary.value, nil, copyfile_flags_t(COPYFILE_METADATA)) == 0,
+                    futimens(temporary.value, nil) == 0, fsync(temporary.value) == 0
+                else { throw posixFailure() }
+                var current = stat()
+                var source = stat()
+                guard fstat(target.file.value, &source) == 0, Version(source) == expected,
+                    fstatat(target.parent.value, target.name, &current, AT_SYMLINK_NOFOLLOW) == 0,
+                    Version(current) == expected
+                else { throw conflict() }
+                try cancellation?.check()
+                guard renameat(target.parent.value, name, target.parent.value, target.name) == 0 else {
+                    throw posixFailure()
+                }
+                installed = true
+                _ = fsync(target.parent.value)
+                // No cancellation after commit; rebase must finish before a
+                // queued edit, close or save can borrow the document again.
+                do {
+                    try committed(temporary.value)
+                    var saved = stat()
+                    guard fstat(temporary.value, &saved) == 0 else { throw posixFailure() }
+                    return Version(saved)
+                } catch {
+                    throw WorkspaceFailure(
+                        code: "save_committed_rebase",
+                        message: "文件已写入，但编辑器状态未能恢复。当前页的后续输入仍保留，请保留后重新载入：" + error.localizedDescription)
+                }
+            }
+        }
+        if let coordinationError { throw coordinationError }
+        guard let outcome else { throw WorkspaceFailure(code: "coordination_failed", message: "未能协调大文件保存") }
+        return try outcome.get()
     }
     private static func read(_ file: Int32) throws -> Data {
         guard lseek(file, 0, SEEK_SET) >= 0 else { throw posixFailure() }
         var data = Data()
         var chunk = [UInt8](repeating: 0, count: 64 * 1024)
         while true {
+            try Task.checkCancellation()
             let count = Darwin.read(file, &chunk, chunk.count)
             if count < 0 {
                 if errno == EINTR { continue }

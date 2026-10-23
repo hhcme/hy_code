@@ -16,6 +16,12 @@ pub struct HyCodeCancellation {
     cancelled: AtomicBool,
 }
 
+impl HyCodeCancellation {
+    pub(crate) fn is_cancelled(&self) -> bool {
+        self.cancelled.load(Ordering::Relaxed)
+    }
+}
+
 #[derive(Serialize)]
 struct Response {
     snapshot: Option<DirectorySnapshot>,

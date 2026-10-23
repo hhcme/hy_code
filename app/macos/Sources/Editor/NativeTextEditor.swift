@@ -4,6 +4,18 @@ import SwiftUI
 
 @MainActor private final class EditorScrollView: NSScrollView {
     weak var presentation: EditorPresentation?
+    private var fitting = false
+    override func tile() {
+        guard !fitting else { return }
+        fitting = true
+        defer { fitting = false }
+        super.tile()
+        guard let editor = documentView as? NSTextView, editor.isHorizontallyResizable else { return }
+        let size = contentView.bounds.size
+        editor.minSize = size
+        let fitted = NSSize(width: max(size.width, editor.frame.width), height: max(size.height, editor.frame.height))
+        if fitted != editor.frame.size { editor.setFrameSize(fitted) }
+    }
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         if window == nil { presentation?.cancel() } else { presentation?.schedule() }
@@ -14,6 +26,7 @@ import SwiftUI
 /// undo and IME changes, without diffing/copying the whole document on typing.
 private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
     private let backing = NSMutableAttributedString(string: "")
+    var suppressCallbacks = false
     var onReplace: (@MainActor (NSRange, String, String) -> Void)?
     var onWillReplace: (@MainActor (TextLineChange) -> Void)?
     var onWillEdit: (@MainActor (TextLineChange, LSPDocumentChange?) -> Void)?
@@ -22,6 +35,11 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         backing.attributes(at: location, effectiveRange: range)
     }
     override func replaceCharacters(in range: NSRange, with str: String) {
+        if suppressCallbacks {
+            backing.replaceCharacters(in: range, with: str)
+            edited(.editedCharacters, range: range, changeInLength: str.utf16.count - range.length)
+            return
+        }
         let removed = backing.mutableString.substring(with: range)
         let willReplace = onWillReplace
         let willEdit = onWillEdit
@@ -49,6 +67,7 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
     let textView: NSTextView
     private let storage = EditorTextStorage()
     private let undo = UndoManager()
+    private var replacingPage = false
     private weak var document: EditorDocument?
     private(set) var presentation: EditorPresentation?
     init(document: EditorDocument, content: TextDocumentContent) {
@@ -61,6 +80,7 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         let view = CodeTextView(frame: .zero, textContainer: container)
         view.newline = document.lineEnding == "CRLF" ? "\r\n" : document.lineEnding == "CR" ? "\r" : "\n"
         textView = view
+        view.externalHistory = document.largeFile?.history
         super.init()
         view.compositionChanged = { [weak document, weak view] in
             guard let view else { return }
@@ -70,7 +90,7 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         textView.isRichText = false
         textView.isEditable = !document.closing && !document.readOnly && !document.toolManaged
         textView.isSelectable = true
-        textView.allowsUndo = true
+        textView.allowsUndo = document.largeFile == nil
         textView.usesFindBar = true
         textView.isIncrementalSearchingEnabled = true
         textView.isAutomaticQuoteSubstitutionEnabled = false
@@ -92,6 +112,13 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         textView.minSize = .zero
         textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         container.widthTracksTextView = true
+        if document.largeFile != nil {
+            textView.isHorizontallyResizable = true
+            textView.autoresizingMask = []
+            container.widthTracksTextView = false
+            container.containerSize = NSSize(
+                width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        }
         textView.string = content.text
         storage.addAttribute(.paragraphStyle, value: paragraph, range: NSRange(location: 0, length: storage.length))
         textView.typingAttributes[.paragraphStyle] = paragraph
@@ -104,9 +131,11 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         }
         scroll.documentView = textView
         scroll.borderType = .noBorder
-        WorkbenchScroller.configure(scroll)
+        WorkbenchScroller.configure(scroll, horizontal: document.largeFile != nil)
+        if document.largeFile != nil { textView.sizeToFit() }
         presentation = EditorPresentation(
             document: document, scroll: scroll, textView: textView, lines: content.lineIndex)
+        presentation?.gutter.localNumbers = document.largeFile != nil
         (scroll as? EditorScrollView)?.presentation = presentation
         storage.onWillReplace = { [weak self] change in
             self?.presentation?.willReplace(change)
@@ -114,7 +143,7 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         textView.setAccessibilityLabel("代码编辑区 · " + document.path)
         applyAppearance()
     }
-    func undoManager(for view: NSTextView) -> UndoManager? { undo }
+    func undoManager(for view: NSTextView) -> UndoManager? { document?.largeFile?.history ?? undo }
     func connect(_ semantic: EditorLanguageFeatures?) {
         guard let view = textView as? CodeTextView else { return }
         view.semantic = semantic
@@ -124,13 +153,42 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
     func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?)
         -> Bool
     {
+        guard !replacingPage else { return false }
         guard let replacementString else { return true }
         let removed = storage.mutableString.substring(with: affectedCharRange)
         return document?.permitsEdit(
             range: affectedCharRange, replacement: replacementString,
             removed: removed, currentLength: storage.length) ?? false
     }
-    func textDidChange(_ notification: Notification) { document?.inputChanged(composing: textView.hasMarkedText()) }
+    func textView(
+        _ textView: NSTextView, shouldChangeTextInRanges affectedRanges: [NSValue], replacementStrings: [String]?
+    ) -> Bool {
+        guard !replacingPage else { return false }
+        guard let replacementStrings else { return true }
+        return document?.permitsBatch(
+            ranges: affectedRanges.map(\.rangeValue), replacements: replacementStrings, source: storage.mutableString)
+            ?? false
+    }
+    func textDidChange(_ notification: Notification) {
+        if !replacingPage { document?.inputChanged(composing: textView.hasMarkedText()) }
+    }
+    func loadPage(_ content: TextDocumentContent) {
+        replacingPage = true
+        storage.suppressCallbacks = true
+        presentation?.replacePage(lines: content.lineIndex)
+        textView.string = content.text
+        if let paragraph = textView.defaultParagraphStyle {
+            storage.addAttribute(.paragraphStyle, value: paragraph, range: NSRange(location: 0, length: storage.length))
+        }
+        (textView as? CodeTextView)?.newline =
+            content.lineEnding == "CRLF" ? "\r\n" : content.lineEnding == "CR" ? "\r" : "\n"
+        textView.sizeToFit()
+        textView.setSelectedRange(NSRange(location: 0, length: 0))
+        textView.scrollRangeToVisible(NSRange(location: 0, length: 0))
+        storage.suppressCallbacks = false
+        replacingPage = false
+        presentation?.schedule()
+    }
     func textViewDidChangeSelection(_ notification: Notification) {
         (textView as? CodeTextView)?.selectionFeedbackChanged()
         presentation?.selectionChanged()

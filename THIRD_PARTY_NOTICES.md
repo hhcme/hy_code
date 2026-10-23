@@ -29,7 +29,7 @@ The versions and crate-source checksums are fixed in `Cargo.lock`. For dual-lice
 | Component | Version | Upstream license expression | Retained notice | Upstream |
 | --- | --- | --- | --- | --- |
 | aho-corasick | 1.1.5 | Unlicense OR MIT | [LICENSE-MIT](third_party/licenses/aho-corasick-1.1.5/LICENSE-MIT) | [source](https://github.com/BurntSushi/aho-corasick) |
-| cc | 1.9.0 | MIT OR Apache-2.0 | [LICENSE-MIT](third_party/licenses/cc-1.9.0/LICENSE-MIT) | [source](https://github.com/rust-lang/cc-rs) |
+| cc | 1.2.67 | MIT OR Apache-2.0 | [LICENSE-MIT](third_party/licenses/cc-1.2.67/LICENSE-MIT) | [source](https://github.com/rust-lang/cc-rs) |
 | equivalent | 1.0.3 | Apache-2.0 OR MIT | [LICENSE-MIT](third_party/licenses/equivalent-1.0.3/LICENSE-MIT) | [source](https://github.com/indexmap-rs/equivalent) |
 | find-msvc-tools | 0.1.15 | MIT OR Apache-2.0 | [LICENSE-MIT](third_party/licenses/find-msvc-tools-0.1.15/LICENSE-MIT) | [source](https://github.com/rust-lang/cc-rs) |
 | foldhash | 0.2.0 | Zlib | [LICENSE](third_party/licenses/foldhash-0.2.0/LICENSE) | [source](https://github.com/orlp/foldhash) |
@@ -139,3 +139,34 @@ SVG rendering uses resvg/usvg with text and system-font discovery, without SVGZ 
 | version_check | 0.9.5 | MIT/Apache-2.0 | [LICENSE-APACHE](third_party/licenses/version_check-0.9.5/LICENSE-APACHE) / [LICENSE-MIT](third_party/licenses/version_check-0.9.5/LICENSE-MIT) | [upstream](https://github.com/SergioBenitez/version_check) |
 | xmlwriter | 0.1.0 | MIT | [LICENSE](third_party/licenses/xmlwriter-0.1.0/LICENSE) | [upstream](https://github.com/RazrFalcon/xmlwriter) |
 | zlib-rs | 0.6.8 | Zlib | [LICENSE](third_party/licenses/zlib-rs-0.6.8/LICENSE) | [upstream](https://github.com/trifectatechfoundation/zlib-rs) |
+
+## Markdown preview (build 37)
+
+Statically linked [pulldown-cmark 0.13.5](https://github.com/pulldown-cmark/pulldown-cmark) and pulldown-cmark-escape 0.11.0 use MIT; [unicase 2.10.0](https://github.com/seanmonstar/unicase) is MIT OR Apache-2.0, with the MIT option selected. Exact registry checksums, original notice paths and SHA-256 values are retained in [markup-preview-crates.json](third_party/markup-preview-crates.json); original notices are bundled. WebKit is a macOS system dependency, not redistributed or relicensed by HyCode. No IDE renderer or private-source code was copied.
+
+## Swift, Java and offline SQL (build 38)
+
+The 16 new or changed registry packages are pinned in Cargo.lock and [native-language-crates.json](third_party/native-language-crates.json), including exact archive checksums, upstream repositories, selected licenses and original-notice SHA-256 values. All 107 Cargo registry entries retain their own terms. The SQL grammar requires cc ~1.2.1; Cargo therefore selects cc 1.2.67 instead of baseline 1.9.0. All other baseline versions and checksums are retained. Original notices are bundled even for build-time and non-macOS transitive packages.
+
+| Component | Version | Selected license | Upstream |
+| --- | --- | --- | --- |
+| ar_archive_writer | 0.5.3 | Apache-2.0 WITH LLVM-exception | [upstream](https://github.com/rust-lang/ar_archive_writer) |
+| cc | 1.2.67 | MIT | [upstream](https://github.com/rust-lang/cc-rs) |
+| libc | 0.2.191 | MIT | [upstream](https://github.com/rust-lang/libc) |
+| object | 0.39.1 | MIT | [upstream](https://github.com/gimli-rs/object) |
+| psm | 0.1.32 | MIT | [upstream](https://github.com/rust-lang/stacker/) |
+| recursive | 0.1.1 | MIT | [upstream](https://github.com/orlp/recursive) |
+| recursive-proc-macro-impl | 0.1.1 | MIT | [upstream](https://github.com/orlp/recursive) |
+| sqlparser | 0.63.0 | Apache-2.0 | [upstream](https://github.com/apache/datafusion-sqlparser-rs) |
+| sqlparser_derive | 0.6.0 | Apache-2.0 | [upstream](https://github.com/sqlparser-rs/sqlparser-rs) |
+| stacker | 0.1.25 | MIT | [upstream](https://github.com/rust-lang/stacker) |
+| syn | 2.0.119 | MIT | [upstream](https://github.com/dtolnay/syn) |
+| tree-sitter-java | 0.23.5 | MIT | [upstream](https://github.com/tree-sitter/tree-sitter-java) |
+| tree-sitter-sequel | 0.3.11 | MIT | [upstream](https://github.com/derekstride/tree-sitter-sql.git) |
+| tree-sitter-swift | 0.7.4 | MIT | [upstream](https://github.com/alex-pinkus/tree-sitter-swift) |
+| windows-link | 0.2.1 | MIT | [upstream](https://github.com/microsoft/windows-rs) |
+| windows-sys | 0.61.2 | MIT | [upstream](https://github.com/microsoft/windows-rs) |
+
+The Java and SQL grammar archives omitted standalone license files. Their retained MIT notices come from immutable upstream commits recorded as notice_source in the inventory; original bytes were not rewritten. The LLVM exception in ar_archive_writer is preserved in its complete original license.
+
+[SourceKit-LSP](https://github.com/swiftlang/sourcekit-lsp/blob/main/LICENSE.txt) uses Apache-2.0 with its runtime-library exception; [Eclipse JDT LS 1.50.0](https://github.com/eclipse-jdtls/eclipse.jdt.ls/blob/v1.50.0/LICENSE) uses EPL-2.0. These servers, JDK and toolchains are user-installed external tools and are not redistributed in the application. Protocol integration does not copy private IDE code. Installed distributions may include additional upstream components under their own terms.

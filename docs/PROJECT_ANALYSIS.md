@@ -57,3 +57,5 @@ build 29 的 151 项 Swift、15 项 Rust 全量静默检查、14 项 Swift 地�
 后台验证与开发包结果独立记录，不启动 HyCode 或其他 GUI，不读取用户项目或剪贴板，不执行项目脚本/安装依赖。不使用协议耗时或文件事件延迟推断窗口交互延迟。真实项目规模、窗口计数与点击定位、快速输入/滚动时帧率和旧系统运行仍未验收。
 
 协议依据：[TypeScript tsserver 协议](https://github.com/microsoft/TypeScript/blob/main/src/server/protocol.ts)、[TLS 配置](https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md)、[Dart LSP 说明](https://github.com/dart-lang/sdk/blob/3.11.5/pkg/analysis_server/tool/lsp_spec/README.md)。本地固定版本与许可沿用 [Web 工具](WEB_TOOLS.md) 和[依赖台账](DEPENDENCIES.md)。
+
+Swift/Java/SQL 的独立所有者、源发现/监听、诊断队列与问题汇总于 build 38 接入，具体项目模型/信任和 SQL 语义限制见[原生语言](NATIVE_LANGUAGES.md)。Swift/JDT 服务管理自己的关联分析；SQL 从扫描内 DDL 生成有界离线投影，不执行数据库检查。

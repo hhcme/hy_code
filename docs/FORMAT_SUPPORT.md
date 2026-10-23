@@ -32,7 +32,7 @@ build 28 的 [Web 工具](WEB_TOOLS.md) 增加 JS/TS/JSX/TSX、Vue、HTML/CSS/SC
 | 图片只读预览 | 独立图片标签；缩放/适应/100%/平移与背景切换；位图 ImageIO、基础 SVG resvg，多帧首帧 | 13 项 Swift 图片/几何与 4 项 Rust SVG 新回归，样本格式与限制见[图片预览](IMAGE_PREVIEW.md) | 未验证 |
 | 基础文本编辑 | 单击编辑、原生 TextKit 1、Rust 正式文本/修订、原生撤销、修改固定标签；默认 800 ms 自动保存及设置开关、⌘S、关闭保护 | 13 项 Swift 文本/保存测试、5 项 Rust 文本/FFI 测试及源码复核；Swift 文本测试 ASan 通过，非真实 IME/撤销验收 | 未验证 |
 | 编辑区反馈与菜单 | 独立高对比插入点、宽光标及对应重绘、当前行/活动选区/I-beam；工作台纯色圆角编辑菜单、分组与快捷键、关闭/事件生命周期 | 6 项颜色/几何/重绘/菜单选择及跨屏定位模型测试，编译和独立复核；未执行原生光标闪烁、IME、菜单点击或 VoiceOver | 未验证 |
-| 文档/项目搜索 | 未实现；目录表格及其文件名筛选已移除 | 无 | 未验证 |
+| 文档/项目搜索 | 原生当前文档/片段查找，大文件整文件字面查找；项目全文搜索未实现 | 生成样本跨块/编码/未保存 piece 回归及 GB CLI；[范围](LARGE_FILES.md) | 未验证 |
 | 行号与语法高亮 | 原生可见逻辑行号；Tree-sitter 增量着色，Dart/Web/C/C++/Rust 与 JSON/YAML/TOML，设置可关闭 | 新增 7 项 Swift 行索引/桥接测试与 5 项 Rust 语法测试；源码复核，详细预算见[高亮说明](SYNTAX.md) | 未验证 |
 | Dart / Flutter 结构与 LSP | SDK 诊断/悬浮/定义/引用、显式补全/格式化和文件符号；外部源码只读 | 16 项协议/进程/SDK/包模型及官方 Dart 3.11.5 临时样本 stdio 探针；见 [Dart/Flutter 工具](DART_FLUTTER.md) | 未验证 |
 | Dart 悬浮与导航反馈 | 紧凑签名/声明卡片、右下角菜单/展开说明、整词请求复用与有界缓存；确认定义后显示下划线/手形，中键/⌘点击/⌘B 导航 | 11 项解析/调度/语义失效/定位/桥接回归及 Swift ASan，真实 SDK 构造函数 hover 分节/范围探针；AppKit/SwiftUI 只编译 | 未验证 |
@@ -48,12 +48,28 @@ build 36 的 202 Swift（38 组）/ 19 Rust / 4 Node 静默检查、7 项配置/
 
 ## 文件与格式范围
 
-当前支持 UTF-8（可选 BOM）及带 BOM 的 UTF-16 LE/BE 基础文本编辑，保留原编码与换行；输入、解码后的 UTF-8 和保存编码均限制为 8 MiB。二进制、无效编码、符号链接、硬链接及特殊文件不编辑；详细范围和保存限制见[编辑说明](EDITING.md)。目录单次最多返回 20,000 项、检查 50,000 项，超限或跳过条目明确提示。文件保存会检查外部修改，但原生编辑缓冲尚无自动重载；新增文件监听只刷新语言分析；最近记录已持久化，可选书签恢复仅代码实现，尚未完成真实授权/失效场景验收。
+当前支持 UTF-8（可选 BOM）及带 BOM 的 UTF-16 LE/BE 基础文本编辑，保留原编码与换行；内存文档限 8 MiB，更大文件/长行采用[磁盘分段编辑](LARGE_FILES.md)，不按扩展名拒绝。二进制、无效编码、符号链接、硬链接及特殊文件不编辑；详细范围和保存限制见[编辑说明](EDITING.md)。目录单次最多返回 20,000 项、检查 50,000 项，超限或跳过条目明确提示。文件保存会检查外部修改，但原生编辑缓冲尚无自动重载；新增文件监听只刷新语言分析；最近记录已持久化，可选书签恢复仅代码实现，尚未完成真实授权/失效场景验收。
 
-图片现有范围见[只读预览](IMAGE_PREVIEW.md)，二进制图片不受上述文本编辑规则约束。后续规划包括语义高亮/高级编辑、Markdown/HTML 预览、PDF 和归档，分别验证引擎、许可、版本和资源边界。更广格式调研见[历史快照](history/2026-10-21-file-viewer/docs/FORMAT_SUPPORT.md)，不作为首版必须实现的清单。
+图片现有范围见[只读预览](IMAGE_PREVIEW.md)，二进制图片不受上述文本编辑规则约束。后续规划包括语义高亮/高级编辑、PDF 和归档，分别验证引擎、许可、版本和资源边界。更广格式调研见[历史快照](history/2026-10-21-file-viewer/docs/FORMAT_SUPPORT.md)，不作为首版必须实现的清单。
 
 ## 记录要求
 
 新增能力至少记录：操作与范围、源码入口、依赖固定版本和许可、平台/架构、可分发样本及哈希、命令与日期、后台/窗口分类、结果和限制。性能另记录启动、输入、内存、扫描/索引、取消与恢复；当前没有这些应用实测结果。
 
 仓库 MIT、贡献指南、ADR、文档检查、Issue/PR 模板属于基础设施。现有 GitHub `Documentation` 工作流仍只验证文档，不能将其结果作为新应用构建证据。
+
+## build 37：静态标记预览
+
+Markdown（md/markdown/mdown/mkd）及 HTML（html/htm）接入源码 / 左右 / 预览，未保存刷新、比例记忆、近似滚动联动，受限项目 CSS/图片。Markdown 的 GFM 常用结构和原始静态 HTML 由后台投影；脚本/远程/字体/媒体不运行。后台 6 Swift / 3 Rust 专项与 Swift ASan 通过，真实 WebKit/窗口/性能未验证，见[专题](MARKUP_PREVIEW.md)与[阶段证据](evidence/2026-10-23-build37-markup-preview.json)。
+
+## build 38：Swift / Java / SQL
+
+接入外部 SourceKit-LSP/JDT LS 与内置离线 SQL：高亮、诊断/统一问题面板、补全/说明/导航/结构与格式化；Swift/Java 文本动作沿用修改预览。SwiftPM、Xcode/BSP 及 Maven/Gradle 项目模型的信任、生命周期、SQL DDL 绑定、资源上限与验证限制见[原生语言](NATIVE_LANGUAGES.md)。真实工程、窗口和性能仍分别验收，不以语言服务接通宣称完整 IDEA 功能。
+
+后台验证为 217 Swift / 25 Rust / 4 Node；9 项原生语言 Swift ASan 通过。SourceKit SwiftPM/BSP fixture 与 JDT 独立文件/Maven 的生成样本通过，真实窗口、Gradle/Eclipse/实际 Xcode 工程和帧率未验证。
+
+build 39 修复 Markdown/HTML 离线规则编译失败（WKErrorDomain 6），以系统编译器的无 WebView CLI 复现旧失败/验证新规则；218 Swift / 25 Rust / 4 Node 通过。真实页面/窗口仍未验证，见[修复证据](evidence/2026-10-23-build39-markup-rules.json)。
+
+## build 40：大文件
+
+所有文本扩展名按大小/长行自动进入磁盘分段编辑。64 位字节导航、跨页历史、整文件查找与完整保存的预算、后台 GB 样本及窗口缺口见[专题](LARGE_FILES.md)。完整 HTML/Markdown 预览上限为 32 MiB 源 /64 MiB 输出，与 GB 文本编辑分开记录。

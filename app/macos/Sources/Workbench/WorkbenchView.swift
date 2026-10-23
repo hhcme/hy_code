@@ -66,7 +66,7 @@ struct WorkbenchView: View {
                 toolPanelHeader(.problems)
                 WorkbenchSeparator()
                 WorkspaceProblemsPanel(
-                    model: store.problems, analysis: store.web.projectAnalysis, dart: store.dart,
+                    model: store.problems, analysis: store.web.projectAnalysis, dart: store.dart, native: store.native,
                     controller: store.languageController, navigate: store.navigateSemantic)
             }
         case .structure:
@@ -352,7 +352,7 @@ struct WorkbenchView: View {
         HStack(spacing: 10) {
             if store.rootURL != nil {
                 WorkspaceProblemsSummary(
-                    model: store.problems, analysis: store.web.projectAnalysis, dart: store.dart,
+                    model: store.problems, analysis: store.web.projectAnalysis, dart: store.dart, native: store.native,
                     show: store.showProblems)
                 WorkbenchSeparator(vertical: true).frame(height: 12)
             }
@@ -390,6 +390,8 @@ struct WorkbenchView: View {
             } else {
                 Label("文本编辑", systemImage: "doc.text").fixedSize()
             }
+            WorkbenchSeparator(vertical: true).frame(height: 12)
+            WorkbenchResourceStatus(store: store).frame(maxWidth: 190)
         }
         .font(.system(size: WorkbenchMetrics.statusFontSize)).foregroundStyle(WorkbenchColors.secondary)
         .padding(.horizontal, 12).frame(height: WorkbenchMetrics.statusHeight)

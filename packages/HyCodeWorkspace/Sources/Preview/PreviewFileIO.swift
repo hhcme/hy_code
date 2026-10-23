@@ -16,7 +16,7 @@ enum PreviewFileIO {
     private static func failure(_ message: String) -> WorkspaceFailure {
         WorkspaceFailure(code: "image_read", message: message)
     }
-    static func read(root: URL, path: String) throws -> Data {
+    static func read(root: URL, path: String, limit: Int = maximumBytes) throws -> Data {
         try Task.checkCancellation()
         let parts = path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
         guard root.isFileURL, !root.path.contains("\0"), !parts.isEmpty,
@@ -34,7 +34,7 @@ enum PreviewFileIO {
         guard fstat(file.value, &before) == 0, before.st_mode & S_IFMT == S_IFREG else {
             throw failure("此条目不是普通图片文件")
         }
-        guard before.st_size >= 0, before.st_size <= maximumBytes else { throw failure("图片文件超过 64 MiB 预览上限") }
+        guard before.st_size >= 0, before.st_size <= limit else { throw failure("预览资源超过读取上限") }
         var result = Data()
         var chunk = [UInt8](repeating: 0, count: 64 * 1024)
         while true {
@@ -45,7 +45,7 @@ enum PreviewFileIO {
                 throw failure("读取图片失败")
             }
             if count == 0 { break }
-            guard result.count + count <= maximumBytes else { throw failure("图片文件超过 64 MiB 预览上限") }
+            guard result.count + count <= limit else { throw failure("预览资源超过读取上限") }
             result.append(contentsOf: chunk.prefix(count))
         }
         var after = stat()

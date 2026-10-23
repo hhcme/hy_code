@@ -5,6 +5,7 @@ struct WorkspaceProblemsSummary: View {
     let model: WorkspaceProblemsController
     let analysis: ProjectAnalysisController
     let dart: DartWorkspaceController
+    let native: NativeToolsController
     let show: (ProblemCategory?) -> Void
     var body: some View {
         HStack(spacing: 4) {
@@ -24,7 +25,9 @@ struct WorkspaceProblemsSummary: View {
             } label: {
                 Label("\(model.snapshot.suggestions)", systemImage: "lightbulb").foregroundStyle(.secondary)
             }.help("项目信息与建议")
-            if analysis.running || dart.analyzing { Text("分析中…").foregroundStyle(WorkbenchColors.secondary) }
+            if analysis.running || dart.analyzing || native.running || native.owners.contains(where: { $0.analyzing }) {
+                Text("分析中…").foregroundStyle(WorkbenchColors.secondary)
+            }
             if model.limited || analysis.limited || analysis.blockedVue > 0 || analysis.unreadable > 0
                 || analysis.watchUnavailable || analysis.skipped > 0
             {
@@ -38,6 +41,7 @@ struct WorkspaceProblemsPanel: View {
     @Bindable var model: WorkspaceProblemsController
     let analysis: ProjectAnalysisController
     let dart: DartWorkspaceController
+    let native: NativeToolsController
     let controller: any EditorLanguageController
     let navigate: (LSPLocation) -> Void
     var body: some View {
@@ -48,7 +52,12 @@ struct WorkspaceProblemsPanel: View {
                 filter("警告 \(model.snapshot.warnings)", category: .warning)
                 filter("建议 \(model.snapshot.suggestions)", category: .suggestion)
                 Spacer(minLength: 0)
-                WorkbenchIconButton(title: "重新检查", symbol: "arrow.clockwise", action: analysis.rescan)
+                WorkbenchIconButton(
+                    title: "重新检查", symbol: "arrow.clockwise",
+                    action: {
+                        analysis.rescan()
+                        native.rescan(force: true)
+                    })
             }.padding(.horizontal, 8).frame(height: 34)
             WorkbenchSeparator()
             ScrollView {
@@ -74,7 +83,11 @@ struct WorkspaceProblemsPanel: View {
                     }
                     Text(analysis.state).foregroundStyle(WorkbenchColors.secondary)
                     Text(dart.status).font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
-                    if controller is WebWorkspaceController {
+                    ForEach(native.owners.filter { $0.sourceCount > 0 }, id: \.language) { owner in
+                        Text(owner.status + (owner.analyzing ? " · 分析中…" : "")).font(.system(size: 12)).foregroundStyle(
+                            WorkbenchColors.secondary)
+                    }
+                    if !(controller is DartWorkspaceController) {
                         Text(controller.status).font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                     }
                     if model.limited || analysis.limited || analysis.skipped > 0 || analysis.blockedVue > 0

@@ -21,11 +21,57 @@ pub enum SyntaxLanguage {
     C,
     Cpp,
     Rust,
+    Swift,
+    Java,
+    Sql,
 }
 
 pub struct Grammar {
     pub language: Language,
     pub query: Query,
+}
+
+static CACHE: OnceLock<Mutex<HashMap<SyntaxLanguage, Arc<Grammar>>>> = OnceLock::new();
+
+/// Release only cache-owned grammars. Active parsers keep their Arc, avoiding
+/// cold compilation for the currently used language. Drop outside the lock.
+pub fn trim_cache(
+    path: &str,
+    token: Option<&crate::HyCodeCancellation>,
+) -> Result<usize, WorkspaceError> {
+    let Some(cache) = CACHE.get() else {
+        return Ok(0);
+    };
+    let mut cache = cache
+        .lock()
+        .map_err(|_| WorkspaceError::new("syntax_unavailable", "语法缓存不可用"))?;
+    if token.is_some_and(crate::HyCodeCancellation::is_cancelled) {
+        return Err(WorkspaceError::new("cancelled", "缓存清理已取消"));
+    }
+    let protected = SyntaxLanguage::for_path(path);
+    let keys: Vec<_> = cache
+        .iter()
+        .filter(|(kind, grammar)| {
+            // Fragment and embedded-language parsers are temporary; their query
+            // Arc may be cache-only even while this language is on screen.
+            let active = protected == Some(**kind)
+                || matches!(protected, Some(SyntaxLanguage::Html | SyntaxLanguage::Vue))
+                    && matches!(
+                        kind,
+                        SyntaxLanguage::JavaScript
+                            | SyntaxLanguage::TypeScript
+                            | SyntaxLanguage::Tsx
+                            | SyntaxLanguage::Css
+                    );
+            !active && Arc::strong_count(grammar) == 1
+        })
+        .map(|(kind, _)| *kind)
+        .collect();
+    let removed: Vec<_> = keys.iter().filter_map(|kind| cache.remove(kind)).collect();
+    drop(cache);
+    let count = removed.len();
+    drop(removed);
+    Ok(count)
 }
 
 impl SyntaxLanguage {
@@ -50,6 +96,9 @@ impl SyntaxLanguage {
                 "c" | "h" => Self::C,
                 "cc" | "cpp" | "cxx" | "hpp" | "hh" | "hxx" => Self::Cpp,
                 "rs" => Self::Rust,
+                "swift" => Self::Swift,
+                "java" => Self::Java,
+                "sql" => Self::Sql,
                 _ => return None,
             },
         )
@@ -69,10 +118,12 @@ impl SyntaxLanguage {
             Self::C => "C",
             Self::Cpp => "C++",
             Self::Rust => "Rust",
+            Self::Swift => "Swift",
+            Self::Java => "Java",
+            Self::Sql => "SQL",
         }
     }
     pub fn grammar(self) -> Result<Arc<Grammar>, WorkspaceError> {
-        static CACHE: OnceLock<Mutex<HashMap<SyntaxLanguage, Arc<Grammar>>>> = OnceLock::new();
         let mut cache = CACHE
             .get_or_init(Default::default)
             .lock()
@@ -151,6 +202,18 @@ impl SyntaxLanguage {
                     tree_sitter_cpp::HIGHLIGHT_QUERY
                 ),
             ),
+            Self::Swift => (
+                tree_sitter_swift::LANGUAGE.into(),
+                tree_sitter_swift::HIGHLIGHTS_QUERY.into(),
+            ),
+            Self::Java => (
+                tree_sitter_java::LANGUAGE.into(),
+                tree_sitter_java::HIGHLIGHTS_QUERY.into(),
+            ),
+            Self::Sql => (
+                tree_sitter_sequel::LANGUAGE.into(),
+                tree_sitter_sequel::HIGHLIGHTS_QUERY.into(),
+            ),
             Self::Rust => (
                 tree_sitter_rust::LANGUAGE.into(),
                 tree_sitter_rust::HIGHLIGHTS_QUERY.into(),
@@ -161,5 +224,46 @@ impl SyntaxLanguage {
         let grammar = Arc::new(Grammar { language, query });
         cache.insert(self, grammar.clone());
         Ok(grammar)
+    }
+}
+
+#[cfg(test)]
+mod cache_tests {
+    use super::*;
+    #[test]
+    fn active_grammars_remain_owned_and_unused_ones_can_be_rebuilt() {
+        let grammar = SyntaxLanguage::Dart.grammar().unwrap();
+        let weak = Arc::downgrade(&grammar);
+        trim_cache("", None).unwrap();
+        assert!(weak.upgrade().is_some());
+        assert!(Arc::ptr_eq(
+            &grammar,
+            &SyntaxLanguage::Dart.grammar().unwrap()
+        ));
+        drop(grammar);
+        trim_cache("active.dart", None).unwrap();
+        assert!(weak.upgrade().is_some());
+        assert!(trim_cache("", None).unwrap() >= 1);
+        assert!(weak.upgrade().is_none());
+        assert!(SyntaxLanguage::Dart.grammar().is_ok());
+    }
+
+    #[test]
+    fn fragment_and_embedded_queries_remain_warm_for_the_active_path() {
+        let languages = [
+            SyntaxLanguage::Vue,
+            SyntaxLanguage::JavaScript,
+            SyntaxLanguage::TypeScript,
+            SyntaxLanguage::Tsx,
+            SyntaxLanguage::Css,
+        ];
+        let weak: Vec<_> = languages
+            .into_iter()
+            .map(|kind| Arc::downgrade(&kind.grammar().unwrap()))
+            .collect();
+        trim_cache("active.vue", None).unwrap();
+        assert!(weak.iter().all(|item| item.upgrade().is_some()));
+        trim_cache("", None).unwrap();
+        assert!(weak.iter().all(|item| item.upgrade().is_none()));
     }
 }

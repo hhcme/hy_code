@@ -8,6 +8,7 @@ import Observation
     private(set) var documents: [String: EditorDocument] = [:]
     weak var language: DartWorkspaceController?
     weak var web: WebWorkspaceController?
+    weak var native: NativeToolsController?
     var packageToolRoot: URL?
     var preparingLanguageEdit = false
     var editPreview: LanguageEditPreview?
@@ -15,6 +16,7 @@ import Observation
     var isDocumentVisible: ((String) -> Bool)?
     var onLanguageFilesApplied: (([String]) -> Void)?
     private var pendingToolReload: [String: UUID] = [:]
+    @ObservationIgnored private var sharedCacheRelease: DocumentSaveCancellation?
     private func isManifest(_ document: EditorDocument) -> Bool {
         !document.readOnly
             && [
@@ -39,23 +41,27 @@ import Observation
             videos[path] = VideoPreviewDocument(path: path, access: access)
             return
         }
-        let document = EditorDocument(path: path, access: access, autoSave: autoSave, language: language, web: web)
+        let document = EditorDocument(
+            path: path, access: access, autoSave: autoSave, language: language, web: web, native: native)
         if packageToolRoot != nil && isManifest(document) { document.toolManaged = true }
         document.onEdit = { [weak self] in
             // Include buffers above the semantic size limit and other language
             // families in the fence used by unversioned workspace edit replies.
             self?.web?.invalidateEdits()
+            if let native = self?.native { for owner in native.owners { owner.invalidateEdits() } }
             onEdit()
         }
         documents[path] = document
     }
     func remove(_ path: String) {
         web?.invalidateEdits()
+        if let native { for owner in native.owners { owner.invalidateEdits() } }
         documents.removeValue(forKey: path)?.close()
         images.removeValue(forKey: path)?.suspend()
         videos.removeValue(forKey: path)?.suspend()
     }
     func reset() {
+        sharedCacheRelease?.cancel()
         editRequest = UUID()
         editPreview = nil
         preparingLanguageEdit = false
@@ -69,12 +75,35 @@ import Observation
         videos.removeAll()
     }
     func activatePreview(path: String?) {
+        sharedCacheRelease?.cancel()
+        if let path { documents[path]?.cancelCacheRelease() }
         for (key, video) in videos {
             if key == path { video.activate() } else { video.suspend() }
         }
         for (key, image) in images {
             if key == path { image.activate() } else { image.suspend() }
         }
+    }
+    func releaseInactiveCaches(activePath: () -> String?) async -> WorkbenchCacheCleanup {
+        var result = WorkbenchCacheCleanup()
+        let ticket = DocumentSaveCancellation()
+        sharedCacheRelease = ticket
+        defer { if sharedCacheRelease === ticket { sharedCacheRelease = nil } }
+        // Snapshot owners, not their text. No tabs are closed, native undo
+        // managers reset, buffers reloaded, tasks cancelled, or services stopped.
+        for document in Array(documents.values) where document.path != activePath() {
+            do {
+                if try await document.releaseRebuildableCaches() { result.documents += 1 }
+            } catch is CancellationError {
+                // A newly activated/closed document keeps its queued cache.
+            } catch { result.failures += 1 }
+        }
+        do {
+            result.grammars = try await NativeCacheMaintenance.shared.releaseUnusedSyntaxGrammars(
+                protecting: activePath(), cancellation: ticket)
+        } catch is CancellationError {
+        } catch { result.failures += 1 }
+        return result
     }
     func prune(keeping paths: Set<String>) {
         for path in videos.keys where !paths.contains(path) { remove(path) }
@@ -115,7 +144,7 @@ import Observation
             if reload, isClosing, !document.isDirty { pendingToolReload[path] = document.id }
             if reload, !isClosing, !document.isDirty {
                 document.close()
-                documents[path] = document.reloadedAfterTool(language: language, web: web)
+                documents[path] = document.reloadedAfterTool(language: language, web: web, native: native)
             }
         }
     }
@@ -151,7 +180,7 @@ import Observation
         for (path, id) in pending {
             if let document = documents[path], document.id == id, !document.isDirty {
                 document.close()
-                documents[path] = document.reloadedAfterTool(language: language, web: web)
+                documents[path] = document.reloadedAfterTool(language: language, web: web, native: native)
             }
         }
     }

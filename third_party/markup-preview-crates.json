@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "packages": [
+    {
+      "name": "pulldown-cmark",
+      "version": "0.13.5",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "278e9268c93b9e498a2da46c34d90ba93a3255eb99009646398f34bc73ab36eb",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/pulldown-cmark-0.13.5/LICENSE",
+          "sha256": "c4f10f55904bdb9f27d3fbf94c354926d6cfe8b982276e556238c258941b243b"
+        }
+      ],
+      "repository": "https://github.com/pulldown-cmark/pulldown-cmark",
+      "selected_license": "MIT"
+    },
+    {
+      "name": "pulldown-cmark-escape",
+      "version": "0.11.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "007d8adb5ddab6f8e3f491ac63566a7d5002cc7ed73901f72057943fa71ae1ae",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/pulldown-cmark-escape-0.11.0/LICENSE",
+          "sha256": "c4f10f55904bdb9f27d3fbf94c354926d6cfe8b982276e556238c258941b243b"
+        }
+      ],
+      "repository": "https://github.com/pulldown-cmark/pulldown-cmark",
+      "selected_license": "MIT"
+    },
+    {
+      "name": "unicase",
+      "version": "2.10.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "357cc3acc6a036009fd6c973ed009037c732d60d0b4f6c673e9041497482a28f",
+      "license": "MIT OR Apache-2.0",
+      "notices": [
+        {
+          "path": "third_party/licenses/unicase-2.10.0/LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "path": "third_party/licenses/unicase-2.10.0/LICENSE-MIT",
+          "sha256": "4f6bd11a0f17fe5b085ace1daaedb7b002a08316850dd9577c246c6a68a68e8c"
+        }
+      ],
+      "repository": "https://github.com/seanmonstar/unicase",
+      "selected_license": "MIT"
+    }
+  ]
+}

@@ -1,0 +1,284 @@
+{
+  "schema": 1,
+  "packages": [
+    {
+      "name": "ar_archive_writer",
+      "version": "0.5.3",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "73cd58deff2140a0a8eae87e417bd01db68a33e148aa93d1e8cd837e55e312b6",
+      "repository": "https://github.com/rust-lang/ar_archive_writer",
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "selected_license": "Apache-2.0 WITH LLVM-exception",
+      "notices": [
+        {
+          "path": "third_party/licenses/ar_archive_writer-0.5.3/LICENSE.txt",
+          "sha256": "f72b120d1385408e9e380acc020756eb6ba1b461d66c328ea67327ba08d7dcfd"
+        }
+      ]
+    },
+    {
+      "name": "cc",
+      "version": "1.2.67",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "e17dd265a7d0f31ef544e1b20e03add05d3b45b491b633b10d67145d2acc1a38",
+      "repository": "https://github.com/rust-lang/cc-rs",
+      "license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/cc-1.2.67/LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "path": "third_party/licenses/cc-1.2.67/LICENSE-MIT",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+        }
+      ],
+      "replaces": {
+        "version": "1.9.0",
+        "checksum": "877bf67ac8e52449eb2f9e98a344ea163beb70dd1f9eebe3cc5357dcfeaee4df",
+        "reason": "tree-sitter-sequel 0.3.11 requires cc ~1.2.1"
+      }
+    },
+    {
+      "name": "libc",
+      "version": "0.2.191",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "65cd87c9a6d60536580b316ad985726104730a5151c99845f2490428ef91240a",
+      "repository": "https://github.com/rust-lang/libc",
+      "license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/libc-0.2.191/LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "path": "third_party/licenses/libc-0.2.191/LICENSE-MIT",
+          "sha256": "123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e"
+        }
+      ]
+    },
+    {
+      "name": "object",
+      "version": "0.39.1",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "2e5a6c098c7a3b6547378093f5cc30bc54fd361ce711e05293a5cc589562739b",
+      "repository": "https://github.com/gimli-rs/object",
+      "license": "Apache-2.0 OR MIT",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/object-0.39.1/LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "path": "third_party/licenses/object-0.39.1/LICENSE-MIT",
+          "sha256": "0b74dfa0bcee5c420c6b7f67b4b2658f9ab8388c97b8e733975f2cecbdd668a6"
+        }
+      ]
+    },
+    {
+      "name": "psm",
+      "version": "0.1.32",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "4dcd034599e63b970727f70d79e02d62390a4a84f7c6b827c27c46d5ac3fa622",
+      "repository": "https://github.com/rust-lang/stacker/",
+      "license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/psm-0.1.32/LICENSE-APACHE",
+          "sha256": "965a63a81d9a2fbeb5f9096954dabb49690f9dffcdac9825f675b25c807252a2"
+        },
+        {
+          "path": "third_party/licenses/psm-0.1.32/LICENSE-MIT",
+          "sha256": "3e3714aa69bd874601741fd7d7ad5298740cece37778e279fc1ab4451c5a11af"
+        }
+      ]
+    },
+    {
+      "name": "recursive",
+      "version": "0.1.1",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "0786a43debb760f491b1bc0269fe5e84155353c67482b9e60d0cfb596054b43e",
+      "repository": "https://github.com/orlp/recursive",
+      "license": "MIT",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/recursive-0.1.1/LICENSE",
+          "sha256": "8ac0507577075ab0bd2463346d7786f69b5340c9cfb914d2c51d4e513f9b7d66"
+        }
+      ]
+    },
+    {
+      "name": "recursive-proc-macro-impl",
+      "version": "0.1.1",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "76009fbe0614077fc1a2ce255e3a1881a2e3a3527097d5dc6d8212c585e7e38b",
+      "repository": "https://github.com/orlp/recursive",
+      "license": "MIT",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/recursive-proc-macro-impl-0.1.1/LICENSE",
+          "sha256": "8ac0507577075ab0bd2463346d7786f69b5340c9cfb914d2c51d4e513f9b7d66"
+        }
+      ]
+    },
+    {
+      "name": "sqlparser",
+      "version": "0.63.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "3679862809bd1f92e563cf6fd820e28f39135303668001c10331d5027183e8b4",
+      "repository": "https://github.com/apache/datafusion-sqlparser-rs",
+      "license": "Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "notices": [
+        {
+          "path": "third_party/licenses/sqlparser-0.63.0/LICENSE.TXT",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        }
+      ]
+    },
+    {
+      "name": "sqlparser_derive",
+      "version": "0.6.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "2905ae8e8148d8f7f5748ea95d1e949fa4fc1d7f5161547b758ad118b2e4b0aa",
+      "repository": "https://github.com/sqlparser-rs/sqlparser-rs",
+      "license": "Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "notices": [
+        {
+          "path": "third_party/licenses/sqlparser_derive-0.6.0/LICENSE.TXT",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        }
+      ]
+    },
+    {
+      "name": "stacker",
+      "version": "0.1.25",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "707f49d46706bacf8a2b00d51dace3f9de527c13eec3778f570c411f89e69967",
+      "repository": "https://github.com/rust-lang/stacker",
+      "license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/stacker-0.1.25/LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "path": "third_party/licenses/stacker-0.1.25/LICENSE-MIT",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+        }
+      ]
+    },
+    {
+      "name": "syn",
+      "version": "2.0.119",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "872831b642d1a07999a962a351ed35b955ea2cfc8f3862091e2a240a84f17297",
+      "repository": "https://github.com/dtolnay/syn",
+      "license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/syn-2.0.119/LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "path": "third_party/licenses/syn-2.0.119/LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ]
+    },
+    {
+      "name": "tree-sitter-java",
+      "version": "0.23.5",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "0aa6cbcdc8c679b214e616fd3300da67da0e492e066df01bcf5a5921a71e90d6",
+      "repository": "https://github.com/tree-sitter/tree-sitter-java",
+      "license": "MIT",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/tree-sitter-java-0.23.5/LICENSE",
+          "sha256": "52ed137b039cd9c46409bc22e89938af911c95b157feae2d040b51e6084369a7"
+        }
+      ],
+      "notice_source": "https://raw.githubusercontent.com/tree-sitter/tree-sitter-java/94703d5a6bed02b98e438d7cad1136c01a60ba2c/LICENSE"
+    },
+    {
+      "name": "tree-sitter-sequel",
+      "version": "0.3.11",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "9d198ad3c319c02e43c21efa1ec796b837afcb96ffaef1a40c1978fbdcec7d17",
+      "repository": "https://github.com/derekstride/tree-sitter-sql.git",
+      "license": "MIT",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/tree-sitter-sequel-0.3.11/LICENSE",
+          "sha256": "3b3e4e4252d5d7d1c18e1257005f23242bf0580ad619204fd093c99b8c56748d"
+        }
+      ],
+      "notice_source": "https://raw.githubusercontent.com/derekstride/tree-sitter-sql/7b51ecda191d36b92f5a90a8d1bc3faef1c7b8b8/LICENSE"
+    },
+    {
+      "name": "tree-sitter-swift",
+      "version": "0.7.4",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "2688c06564afa397313e0db17d140a73e2c6a47f3884794614246167c9dd5dfd",
+      "repository": "https://github.com/alex-pinkus/tree-sitter-swift",
+      "license": "MIT",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/tree-sitter-swift-0.7.4/LICENSE",
+          "sha256": "3533cec129bb4bba015c0d61d86dd7c3b7e82110e4d2ff7837a01eff5bad5ccc"
+        }
+      ]
+    },
+    {
+      "name": "windows-link",
+      "version": "0.2.1",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/windows-link-0.2.1/license-apache-2.0",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+        },
+        {
+          "path": "third_party/licenses/windows-link-0.2.1/license-mit",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    },
+    {
+      "name": "windows-sys",
+      "version": "0.61.2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "notices": [
+        {
+          "path": "third_party/licenses/windows-sys-0.61.2/license-apache-2.0",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+        },
+        {
+          "path": "third_party/licenses/windows-sys-0.61.2/license-mit",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    }
+  ]
+}

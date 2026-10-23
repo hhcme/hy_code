@@ -65,3 +65,13 @@ FFI 契约需说明对象、句柄和字符串的所有权，长度与位置编�
 当前已把 Rust 内核、macOS 宿主、C 头文件、Swift 包、测试和工具分开组织，源码地图见[工作台说明](WORKBENCH.md)。基础编辑、保存与语法着色已接入，Dart LSP、依赖、问题和结构面板已接入；Flutter 运行/调试、测试/构建和基础 Inspector 首批工具采用独立运行所有者和 SDK DAP，见 [ADR 0006](adr/0006-flutter-runtime.md)；Git、终端仍为空入口，不代表对应功能已实现。实际依赖与候选按[依赖台账](DEPENDENCIES.md)分别管理。
 
 项目后台诊断的单所有者、后台扫描/监听、原生覆盖与服务缓存交接、依赖范围和 UI 快照预算见[项目后台诊断](PROJECT_ANALYSIS.md)。工作区原生缓冲不因分析器的文件监听自动重载。
+
+Markdown/HTML 使用同一正式文本的修订绑定只读投影；后台 Rust 渲染、原生受限资源 actor 与按活动标签拥有的 WebKit 预览分离。NSSplitView 直接布局，主工作台仍为原生界面。资源路径、网络阻断、隔离滚动桥及预算见[ADR 0011](adr/0011-markup-preview.md)。
+
+## build 38：Swift / Java / SQL
+
+接入外部 SourceKit-LSP/JDT LS 与内置离线 SQL：高亮、诊断/统一问题面板、补全/说明/导航/结构与格式化；Swift/Java 文本动作沿用修改预览。SwiftPM、Xcode/BSP 及 Maven/Gradle 项目模型的信任、生命周期、SQL DDL 绑定、资源上限与验证限制见[原生语言](NATIVE_LANGUAGES.md)。真实工程、窗口和性能仍分别验收，不以语言服务接通宣称完整 IDEA 功能。
+
+## build 40：磁盘文档与原生分段投影
+
+用户确认经常处理超过 1 GB 的文本；采用 Rust 磁盘 piece table、原生有界页、独占跨页历史和后台整文件查找/完整原子保存。所有扩展名共享大小/长行路由，局部页不得用于全文 LSP 修改。范围、资源预算、真实 GB 后台样本与连续滚动/全局行号/窗口性能缺口见[大文件专题](LARGE_FILES.md)和[ADR 0013](adr/0013-disk-backed-text.md)。

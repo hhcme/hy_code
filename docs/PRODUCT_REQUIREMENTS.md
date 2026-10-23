@@ -86,3 +86,15 @@ HyHub 的账号、设备互访、NAS、远控与其发布设施不自动纳入 H
 ## 待细化
 
 首批目标用户与语言、首个可交付版本范围、macOS 14 及后续系统运行覆盖、主题和快捷键、缓冲/大文件预算、工具链获取及应用分发渠道。仓库已指定为 `hhcme/hy_code`，项目许可为 MIT，贡献方式见[贡献指南](../CONTRIBUTING.md)。具体里程碑以[实施路线](ROADMAP.md)为准，不沿用原文件浏览器工期。
+
+## Markdown / HTML 与语言扩展
+
+同一文档默认左右显示源码和静态预览，也可仅源码或仅预览。原生编辑、撤销、自动保存不变；比例可拖动并记忆，未保存更改刷新，滚动联动可关闭。Markdown 支持常用块与项目图片，HTML 支持本地 CSS / 图片；脚本、远程和开发服务器不自动运行。当前限制与未验收项见[分屏预览](MARKUP_PREVIEW.md)。Java、SQL、Swift 语义与项目工具分开接入，完整目标见[语言扩展](LANGUAGE_EXPANSION_PLAN.md)。
+
+## build 38：Swift / Java / SQL
+
+接入外部 SourceKit-LSP/JDT LS 与内置离线 SQL：高亮、诊断/统一问题面板、补全/说明/导航/结构与格式化；Swift/Java 文本动作沿用修改预览。SwiftPM、Xcode/BSP 及 Maven/Gradle 项目模型的信任、生命周期、SQL DDL 绑定、资源上限与验证限制见[原生语言](NATIVE_LANGUAGES.md)。真实工程、窗口和性能仍分别验收，不以语言服务接通宣称完整 IDEA 功能。
+
+## build 40：跨格式大文件
+
+用户确认经常处理超过 1 GB 的文本；采用 Rust 磁盘 piece table、原生有界页、独占跨页历史和后台整文件查找/完整原子保存。所有扩展名共享大小/长行路由，局部页不得用于全文 LSP 修改。范围、资源预算、真实 GB 后台样本与连续滚动/全局行号/窗口性能缺口见[大文件专题](LARGE_FILES.md)和[ADR 0013](adr/0013-disk-backed-text.md)。

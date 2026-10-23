@@ -18,8 +18,12 @@
 | 品牌 | [品牌与应用图标](BRANDING.md) | 系列视觉、资源来源、图标导出及验证边界 |
 | 当前工程 | [文件浏览工作台](WORKBENCH.md) | 布局、交互、源码地图、构建与证据 |
 | 视觉 | [WebStorm 截图对齐](VISUAL_ALIGNMENT.md) | 像素采样、整体界面覆盖、共享控件与真实窗口验证缺口 |
+| 分屏预览 | [Markdown / HTML](MARKUP_PREVIEW.md) | 原生源码、静态预览、资源限制和滚动映射 |
+| 原生语言 | [Swift / Java / SQL](NATIVE_LANGUAGES.md) | 外部语义、项目模型、信任与离线 DDL |
+| 语言扩展 | [完整目标](LANGUAGE_EXPANSION_PLAN.md) | Swift、SQL、Java 与预览的实施和验收状态 |
 | 视频 | [简单只读预览](VIDEO_PREVIEW.md) | MP4/MOV/M4V、原生播放、分段读取、资源释放与验证 |
 | 图片 | [只读预览](IMAGE_PREVIEW.md) | 多格式、缩放/平移、解码与资源限制 |
+| 大文件 | [磁盘分段文本](LARGE_FILES.md) | GB 文本、字节导航、跨页撤销和完整保存 |
 | 基础编辑 | [编辑与保存](EDITING.md) | 单击编辑、自动保存开关、编码与安全写入 |
 | 着色与行号 | [行号与语法高亮](SYNTAX.md) | 首批语言、解析所有权、预算和验证 |
 | Dart / Flutter | [开发工具](DART_FLUTTER.md) | SDK、诊断/悬浮/引用、包依赖与任务生命周期 |
@@ -29,6 +33,7 @@
 | Web | [开发工具与完整范围](WEB_TOOLS.md) | JS/TS/Vue/HTML/CSS/JSON 服务、修改预览、依赖/脚本与剩余能力 |
 | 规划 | [实施路线](ROADMAP.md) | macOS 阶段及验收，不表示交付日期 |
 | 性能 | [性能设计与验收](PERFORMANCE.md) | 样本、测量口径和预算决策 |
+| 自身资源 | [底栏资源监控](PERFORMANCE_MONITOR.md) | 主进程内存/CPU、闲置缓存清理和保留项 |
 | 编辑与语言 | [编辑内核与语言服务](CODE_INTELLIGENCE.md) | 缓冲、语法与语义分层 |
 | 开源依赖 | [依赖与来源](DEPENDENCIES.md) | 候选、已采用组件及引入规则 |
 | 能力状态 | [能力与格式台账](FORMAT_SUPPORT.md) | 已实现、各类验证及限制 |

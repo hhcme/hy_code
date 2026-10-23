@@ -57,6 +57,7 @@ public actor StdioProtocolConnection {
     private var writer: LanguageServerWriter?
     private var configuration = JSONValue.null
     private var schemaRoot: URL?
+    private var workspaceRoot: URL?
     // Keep failed/missing dependencies as well: a full rescan must invalidate
     // the upstream cache after creation, deletion or watcher overflow.
     private var schemaURIs = Set<String>()
@@ -69,17 +70,18 @@ public actor StdioProtocolConnection {
     }
     public func start(
         executable: URL, arguments: [String], directory: URL, configuration: JSONValue = .null,
-        environment: [String: String] = [:], schemaRoot: URL? = nil
+        environment: [String: String] = [:], schemaRoot: URL? = nil, removingEnvironment: Set<String> = []
     ) throws {
         guard !started else { throw LanguageServiceFailure("此连接不能重复启动，请创建新连接") }
         started = true
         writer = LanguageServerWriter(input.fileHandleForWriting)
         self.configuration = configuration
         self.schemaRoot = schemaRoot
+        self.workspaceRoot = directory
         let child = try OwnedToolProcess.launch(
             executable: executable, arguments: arguments, directory: directory, input: input.fileHandleForReading,
             environment: environment.merging(["DASH__IDE_NAME": "HyCode", "DASH__IDE_VERSION": "0.1.0"]) { _, new in new
-            })
+            }, removingEnvironment: removingEnvironment)
         process = child
         try? input.fileHandleForReading.close()
         alive = true
@@ -284,6 +286,15 @@ public actor StdioProtocolConnection {
                     ]))
                 return
             }
+        case "workspace/workspaceFolders":
+            result =
+                workspaceRoot.map { JSONValue([["uri": $0.absoluteString, "name": $0.lastPathComponent]]) }
+                ?? .array([])
+        case "workspace/diagnostic/refresh":
+            emitter.yield(JSONValue(["method": "hycode/diagnosticRefresh"]))
+            result = .null
+        case "workspace/semanticTokens/refresh", "workspace/codeLens/refresh", "workspace/inlayHint/refresh":
+            result = .null
         case "client/registerCapability", "client/unregisterCapability", "window/workDoneProgress/create":
             result = .null
         case "workspace/applyEdit": result = JSONValue(["applied": false, "failureReason": "请使用编辑器中的显式编辑入口"])

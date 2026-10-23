@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "date": "2026-10-23",
+  "build": 39,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "3fe752fb628141a446cd649e3c29c123da4a744f",
+  "previous_local_build": 38,
+  "request": "Fix Markdown/HTML preview WKErrorDomain 6 reported in user screenshot",
+  "root_cause": "WebKit content-extension URL filters reject disjunction |; ICU regex coverage did not validate the native compiler subset",
+  "changes": [
+    "Five independent literal http/https/ws/wss/ftp prefix rules; no resource-type narrowing",
+    "Rule identifier v2; still compile and install before creating any WebView, no permissive fallback",
+    "Preserve native compiler reason from NSError helpAnchor; bound displayed text",
+    "Foundation-only compiler CLI uses owned temporary rule store, no NSApplication/WKWebView/page/network/default user rule cache; checks legacy rejection and current acceptance",
+    "Add real native compiler regression to check_native.sh"
+  ],
+  "checks": [
+    {
+      "command": "HyCodeMarkupRuleProbe",
+      "result": "pass",
+      "legacy": "System WebKit compiler reproduces WKErrorDomain 6 and reports unsupported disjunction",
+      "production": "Current five-rule production JSON compiles successfully",
+      "gui_created": false
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --disable-xctest --filter MarkupPreviewTests",
+      "result": "pass",
+      "tests": 7
+    },
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 218,
+      "swift_suites": 40,
+      "rust_tests": 25,
+      "node_tests": 4,
+      "native_rule_probe": "pass"
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "launched": false
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only",
+    "confirmed_unresolved_P1_P2": 0,
+    "scope": "This preview fix only; compiler CLI source and native API call path audited for silent behavior"
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "configuration": "release",
+    "version": "0.1.0",
+    "build": 39,
+    "architecture": "arm64",
+    "minimum_system": "14.0",
+    "executable_sha256": "0a71c83e47993f5194e17abbd13a8f2c99d6b2b29d7e2d50018c965cbf1a23b8",
+    "executable_bytes": 41369976,
+    "bundle_bytes": 183363123,
+    "launched": false,
+    "installed": false,
+    "published": false,
+    "signing": "unsigned local development build"
+  },
+  "not_verified": [
+    "Real WKWebView page render, resource matching, layout/scroll/keyboard/IME/focus and performance",
+    "No GUI, desktop capture, system clipboard, app launch/close/restart, sound, installation, publication or commit/push",
+    "Existing unrelated native-language/preview work remains uncommitted; build38 historical evidence preserved",
+    "No new sanitizer run: no ownership/ABI/raw-buffer changes; production framework compiler exercised separately without a WebView"
+  ],
+  "primary_sources": [
+    "https://github.com/WebKit/WebKit/blob/main/Source/WebCore/contentextensions/URLFilterParser.cpp",
+    "https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/API/APIContentRuleListStore.cpp",
+    "https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/API/Cocoa/WKContentRuleListStore.mm",
+    "https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/API/Cocoa/WKError.h"
+  ],
+  "previous_source_sha256": {
+    "AGENTS.md": "e571941feb2f19ba659b1ec3c829ebc2ba45ef846b41915f40cced3a30f8fa29",
+    "Package.swift": "023713215955ae696e67898bda38be9d0b707f7eb9b8d5f114aa08dc0ba3550b",
+    "app/macos/Resources/Info.plist": "6eb6d0070928f4efa1647c899ebbeb1bf17a6bc34d2661f3df1888a91d1dc3c1",
+    "app/macos/Sources/Markup/MarkupNetworkPolicy.swift": "eca6303b7bd983f0758d5e10b0e8cd3fdd73d9b6d17be5a63fed8537d5f6ecb4",
+    "app/macos/Sources/Markup/MarkupPreviewController.swift": "198b8c18001b7b4a068a99265a715f1adbeab56dbe07f35e7c472899582993e3",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupPage.swift": "91714680d109437b6cfb584b03bb8f75a5e85abb78682c5543462fde173bf9d6",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupPreviewContent.swift": "b424be72e9dc47a9f96bb15dbd5f106e1720d78b5953273a4ffefe330a7a260b",
+    "packages/HyCodeWorkspace/Tests/MarkupPreviewTests.swift": "3fbb24ee56406b5bd2d6ade6ef9e9d9ae971d2d216f4f07fcf5731d6f8fb4a9d",
+    "scripts/check_native.sh": "6c9a1cb39476c645b3bc83d6de1c30d53e7d6dc1ed0f0c0e9774aad983f55efd",
+    "docs/MARKUP_PREVIEW.md": "0f830777d8e877050f20a9874498fc90e839c58676b435ec6bcd9961e0b5cf5f",
+    "docs/DEVELOPMENT.md": "d04793a88b9afa6781a255442b13cd8d37305488836fb4f5c269a5caa8d545f7",
+    "docs/WORKBENCH.md": "63c5c422d5229663d7fa747793ffca63dca7ceea5234e6c1f74f53e9e33053bb",
+    "docs/FORMAT_SUPPORT.md": "aa6409dab9a6b3156c4f860d262ac145c1c1a1781023ac4cf6c0b48a2af9e460"
+  },
+  "source_sha256": {
+    "AGENTS.md": "49d63dc9ce2762f2732b88a92a4e960b0e45f8c83bafff9f608235c5becb0f3e",
+    "Package.swift": "9b5c00733d02f5986129e9417738c7b185bb4b2bd3bb68bcfc5a378e20343e29",
+    "app/macos/Resources/Info.plist": "cedc46b741fbbbebb619603eb6daa682e348bd69ae7de43ab25f95442bc3edec",
+    "app/macos/Sources/Markup/MarkupNetworkPolicy.swift": "186531eab9b3f28b4e9baa5cb450e613b65a407cefefe6fecafadee4243024c0",
+    "app/macos/Sources/Markup/MarkupPreviewController.swift": "1cb630a18b043006db25dcafb993cb61b343d081d25c000a273d373b76e733ed",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupPage.swift": "021aaca3edc441f3433022d4efabd87761703146267f47be1e6c89e137fabfcf",
+    "packages/HyCodeWorkspace/Sources/Markup/MarkupPreviewContent.swift": "5026640e378d6347204a6604af533be864727db6afcba845d1418c7002db2867",
+    "packages/HyCodeWorkspace/Tests/MarkupPreviewTests.swift": "e296ea05fee2231347ddb4afa72a2e049604125bc2ed88d701a2a97ac5ba1f79",
+    "tools/MarkupRuleProbe/main.swift": "3d5657da8c7ad8f5d05ec0dd9d4457395c4688c2fbc16cd0e14bffb286cdca38",
+    "scripts/check_native.sh": "a1939f38cddc980be6176bd8c6385b8ada0d586b5f4c80499f06d04ee4cdc250",
+    "docs/MARKUP_PREVIEW.md": "0e4a48a72df934feb9258cd535e4029c796b9334b46c99e588ebffa3feab3cab",
+    "docs/DEVELOPMENT.md": "a9185ddbd35383a0c1ce0a430daeb0b2c6fbadcda373145211c198d7ca47a2f6",
+    "docs/WORKBENCH.md": "c9a5d390a0bba53f0e3e82c64a20c889303dad84744c35f51347416a1d22553e",
+    "docs/FORMAT_SUPPORT.md": "d776b502e82ba88c627f5f2913b1b1d3c5f23fa968c580dd6ec87a2f594bb6cd"
+  },
+  "log_sha256": {
+    ".build/build39-rule-probe-build.log": "a6a0844e9f1b7a607c32bf83cf2bceabd4621bfa3122fda545bdc0ea246e046e",
+    ".build/build39-rule-compiler.log": "30f7713a67c7ece375dcad33cda93e2536409cc19f1478829ee1dd9142d946dc",
+    ".build/build39-markup-tests.log": "ded9a28f087bd832dfa91b869cea4aa99da361ca888fefeb9dd66b2025aeedbb",
+    ".build/build39-native-check.log": "bdb0fff2c2778b36e19d41b9d8e658bac6117196ac3fe6aceb32cd0b38a12223",
+    ".build/build39-release-build.log": "6bffec989f16eae71587bbc3b5a22025b9c221dbbe7cee8a79a1a3e295ed213b",
+    ".build/build39-package-inspection.json": "d16f54a154f4c4737769b57c209a7c89719b23a39e7863db9d50126b1aefa5dc"
+  }
+}

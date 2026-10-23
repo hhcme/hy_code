@@ -53,3 +53,11 @@ Windows、Linux 和移动端暂不排期，也不在首版工程中建立宿主�
 ## 下一步
 
 已接入行号、多语言高亮和 Dart 语义首批功能；Flutter 完整开发能力已确认为必做范围，按[九类能力清单](FLUTTER_PLAN.md)继续接入运行/调试、测试/Inspector、智能编辑/重构与项目模型。缩进、草稿和外部变更监听继续按需求安排。不能为评审自动启动 GUI，真实窗口验证保持未完成。实际状态以[能力台账](FORMAT_SUPPORT.md)为准。
+
+## 2026-10-23 语言扩展
+
+完整范围见[语言扩展目标](LANGUAGE_EXPANSION_PLAN.md)。build 37 已接入 Markdown/HTML 静态分屏及后台验证；Swift SourceKit-LSP、SQL 离线工具、Java JDT LS 依次继续，不把单个阶段当作全部目标完成。窗口与性能独立验收。
+
+## build 38：Swift / Java / SQL
+
+接入外部 SourceKit-LSP/JDT LS 与内置离线 SQL：高亮、诊断/统一问题面板、补全/说明/导航/结构与格式化；Swift/Java 文本动作沿用修改预览。SwiftPM、Xcode/BSP 及 Maven/Gradle 项目模型的信任、生命周期、SQL DDL 绑定、资源上限与验证限制见[原生语言](NATIVE_LANGUAGES.md)。真实工程、窗口和性能仍分别验收，不以语言服务接通宣称完整 IDEA 功能。

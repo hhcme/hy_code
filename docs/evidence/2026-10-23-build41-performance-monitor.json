@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "date": "2026-10-23",
+  "build": 41,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "3fe752fb628141a446cd649e3c29c123da4a744f",
+  "previous_local_build": 40,
+  "request": "Explain continuous whole-file scrolling/global line numbers; add self-memory/CPU footer and safe self-only cache cleanup",
+  "implemented": [
+    "2-second constant-space actor sampling of calling-process footprint, lifetime peak, RSS and delta CPU via getrusage seconds/microseconds",
+    "Isolated bottom status observation; stops polling outside active scene; first/resumed/failed CPU sample is unavailable rather than zero",
+    "Explicit cache cleanup of inactive document parser/tree and unused grammar queries; active path including HTML/Vue embedded query families protected",
+    "Per-document and shared cancellation tickets invalidate on activation/close/reset, checked at actor entry/cache commit and after shared lock wait",
+    "Current page, text, dirty input, revisions, undo/redo, disk files, child services, other applications and current parser owners preserved",
+    "Actual counts plus separate before/after footprint measurements; no claimed freed byte estimate or guaranteed footprint decrease",
+    "Additive ABI 1 with buffer ownership and token lifetime; query destruction outside mutex; no dependency additions"
+  ],
+  "not_implemented": [
+    "Continuous whole-file virtual scrolling and global line index remain planned; this batch explains the terms only",
+    "Aggregate child-service footprint or FPS monitor",
+    "Automatic system memory purge, allocator pressure, process termination/restart"
+  ],
+  "checks": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "log": ".build/build41-native-check-final.log",
+      "result": "pass",
+      "swift_tests": 232,
+      "swift_suites": 43,
+      "rust_tests": 37,
+      "node_tests": 4,
+      "native_rule_compiler": "pass",
+      "format_static_header_dependency_docs": "pass",
+      "initial_attempt": "Tests passed; document checker failed because new evidence target had not yet been created. Added target and reran full script successfully."
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --sanitize address --disable-xctest --filter '(ProcessResourceTests|MemoryCacheTests)'",
+      "log": ".build/build41-asan.log",
+      "result": "pass",
+      "tests": 5,
+      "coverage": "Swift self-process adapter/FFI lifetime/dirty buffer/save/large cross-page history; Rust static library and Apple frameworks not instrumented"
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "log": ".build/build41-release-build.log",
+      "result": "pass",
+      "launched": false
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only",
+    "unresolved_confirmed_P1_P2": 0,
+    "fixed": [
+      "Queued inactive cache release cancelled when target becomes active",
+      "Protect active fragment and embedded-language query caches",
+      "Unified language-apply tab activation and reset cancellation"
+    ],
+    "gui_tests": false
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "version": "0.1.0",
+    "build": "41",
+    "configuration": "release",
+    "signing": "local development build; no distribution signing or notarization",
+    "minimum_system_declared": "14.0",
+    "executable_sha256": "1051cb0f9ae620274ddd108530c02c538ed0d6d0ce22a5c5bde12ee72a71c69d",
+    "executable_bytes": 41946536,
+    "bundle_bytes": 183939683,
+    "architecture": "build/HyCode.app/Contents/MacOS/HyCode: Mach-O 64-bit executable arm64",
+    "mach_o_build": "      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform 1\n    minos 14.0\n      sdk 14.0",
+    "launched": false,
+    "installed": false,
+    "published": false
+  },
+  "environment": {
+    "os": "27.0.1",
+    "hardware": "Mac16,11",
+    "memory_bytes": 51539607552,
+    "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0",
+    "rust": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "jobs": 2,
+    "rust_test_threads": 1
+  },
+  "not_verified": [
+    "Real GUI footer/popover/hover/narrow-window layout and active-scene interaction",
+    "GUI process footprint change, recovery timing, sampler overhead and rendering/FPS; CLI self-read test is not GUI performance evidence",
+    "No repeated GB stress fixture in this batch; prior build40 generated sample remains separately recorded",
+    "Rust sanitizer not run; only stable toolchains available, no nightly installation",
+    "No application launch/close/restart, system input/clipboard/desktop capture/audio, user project mutation, install/distribution/release/commit/push"
+  ],
+  "source_sha256": {
+    "AGENTS.md": "39a5f46d33827cda950d31946c8a5deb6cefabf42b1f506dff65d1e569ef7a74",
+    "README.md": "d559d34b374f3b700ac04f3dc831c8eaa37ff27f344f986ba787e815822baca8",
+    "app/macos/Resources/Info.plist": "7dd981c9cace95ecc4f0b7415de21071019fd0508cf59f6a7121d18e1b1c1719",
+    "app/macos/Sources/Workbench/WorkbenchResourceMonitor.swift": "fed836f88fe61575c361ea29a0da47273c98a5d6c1b6faf99fb7a20a3095f4f1",
+    "app/macos/Sources/Workbench/WorkbenchResourceStatus.swift": "0bc3cc237b5174fda2b646740152b1ed03ed8352fee7c75abcf20e45648eaee6",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "9a25093b88fb8cba9f0d6034030334e97cd15aa6040f606f35946fda3cd3bbf8",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "fe99d203efba6d6187548db23b4fcabbb9c101cd06cf8b95bceac9416ac77422",
+    "app/macos/Sources/Editor/EditorDocument.swift": "81c5189a0355bcba778bd91690a94e5e50248e5b61f7c97c8a68775a3004a25f",
+    "app/macos/Sources/Editor/EditorWorkspace.swift": "b8f0c31da75e062fb39b789595625f5df936f01063a7e860f4299d7a7aee3977",
+    "bindings/CHyCodeCore/include/hycode_core.h": "57cc76b57248770bdf3879501479db3f9d5c2becffe2a29c6f65c38dbdcfd93b",
+    "crates/hycode-core/src/document.rs": "1536f0552acf408de6621459889814d66506e02495ad51c43e6208d541f916e6",
+    "crates/hycode-core/src/document_ffi.rs": "6db78d8475d244611306b0c6d4adbec8e6a2bc0d99b2ee0ff5fc5019a4101c16",
+    "crates/hycode-core/src/syntax_language.rs": "6f044b91e62f043375e28cd63ec18c9a139b67247a9c05abf436af312c716536",
+    "packages/HyCodeWorkspace/Sources/NativeTextDocument.swift": "e61196de2f838c5cf8b5782bf9034d5c9e5dd9b98afa96af56e43ff39e6b7426",
+    "packages/HyCodeWorkspace/Sources/Performance/ProcessResourceSampler.swift": "50a79917ed146487a7b3bbfb3a5a7b75bf354331d499a4fdc6d828877cc98b24",
+    "packages/HyCodeWorkspace/Sources/Performance/NativeCacheMaintenance.swift": "e39c764de4b2b9b692d8282fc7da79d19a7803b25f467a636e1df56874aa7252",
+    "packages/HyCodeWorkspace/Tests/MemoryCacheTests.swift": "d1369806d68b38ec1065576809896cd4521e680e45dde39ef1103aeed537fc29",
+    "packages/HyCodeWorkspace/Tests/ProcessResourceTests.swift": "836e31cdf1fdd3070df4b597d3ec4828aa161ab32037fd79a1663d0e306c8b67",
+    "docs/PERFORMANCE_MONITOR.md": "86c7e431a5748e0e7603ffd7a45bea76828fc34a883edc57034a1a951bceede0",
+    "docs/PERFORMANCE.md": "d181008720dcd7e678882cd8a1ed2392ca1826508a84776210f6692da0e04fcc",
+    "docs/WORKBENCH.md": "17055b297b4997811eea44adf67f0e06d724de56480b3a070bdf701b2c2d76bc",
+    "docs/LARGE_FILES.md": "7d41084f4cb0a15ca9c0efcd2cd344714e78284173513fd1d0c273bae6c53203",
+    "docs/README.md": "d1095dcf3909e7c28ba1b130f77189dd8b362d16be4bfc7596d74ebdfd1842ca",
+    "docs/DEVELOPMENT.md": "3a7b05b97f549cf16388e5634f0ce7fa8e1e82254f7a14b7f5be8ba394a5ce3f"
+  },
+  "log_sha256": {
+    ".build/build41-native-check-final.log": "82a4ef868474801d433bdf5c12a808f86ae61fdec21b108a4f564b8bd05ed798",
+    ".build/build41-asan.log": "524c99e67cffe885f18e3ceef13afd19161da14942468ac21286067406ba7202",
+    ".build/build41-release-build.log": "2eba4d1030fd79cc0268a8b0972d9651acd82d7be7d362e78508d6297cb6cde5",
+    ".build/build41-package-inspection.json": "b111edcaae945a252aa89188caa4f7001d2a1c9b5861d24a9f67f02c05555654"
+  }
+}

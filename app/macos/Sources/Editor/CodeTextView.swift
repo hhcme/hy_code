@@ -2,6 +2,8 @@ import AppKit
 import HyCodeWorkspace
 
 @MainActor final class CodeTextView: NSTextView {
+    var externalHistory: UndoManager?
+    override var undoManager: UndoManager? { externalHistory ?? super.undoManager }
     weak var semantic: EditorLanguageFeatures?
     private lazy var windowFeedback = EditorWindowFeedback(view: self)
     private var lastLineRect = NSRect.zero
@@ -159,6 +161,18 @@ import HyCodeWorkspace
     }
     override func otherMouseUp(with event: NSEvent) {
         if event.buttonNumber != 2 || semantic == nil { super.otherMouseUp(with: event) }
+    }
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        let modifiers = event.modifierFlags.intersection([.command, .control, .option, .shift])
+        if let externalHistory, event.charactersIgnoringModifiers == "z",
+            modifiers == .command || modifiers == [.command, .shift]
+        {
+            if isEditable, !hasMarkedText() {
+                if modifiers.contains(.shift) { externalHistory.redo() } else { externalHistory.undo() }
+            }
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
     }
     override func keyDown(with event: NSEvent) {
         contextMenu.hide()

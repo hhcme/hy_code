@@ -5,6 +5,9 @@
 - Web 多语言服务、修改预览和 package 工具的当前范围见 docs/WEB_TOOLS.md；需要外部 Node 22.22.2+，Vue 项目插件须显式工作区信任。Web 调试与框架专用工具尚未全部实现。
 - 2026-10-21 清理旧实现后，现已重新建立 macOS 文件工作台、原生基础编辑、Rust 文本/目录内核及后台测试。当前范围见 docs/WORKBENCH.md、docs/EDITING.md 和 docs/SYNTAX.md；行号/语法高亮已接入，Dart/Flutter 首批语义与 Pub 工具已接入，见 docs/DART_FLUTTER.md；Flutter 运行/调试、热更新、测试/构建及基础 Inspector 首批入口已接入，真实 Flutter/设备未验证；完整必做范围见 docs/FLUTTER_PLAN.md。旧源码和 docs/history/ 仅用于追溯，不据此恢复旧产品。
 - JSON/JSONC、YAML/YML 的语法/Schema 检查、格式化与补全见 docs/CONFIGURATION_TOOLS.md；仅使用固定离线 Schema 或原生授权根内的受限读取，不自动联网或加载项目格式化插件。
+- Markdown/HTML 同文档左右预览见 docs/MARKUP_PREVIEW.md；只允许授权根内的受限静态 CSS/图片，测试不得实例化 WebView；HyCodeMarkupRuleProbe 仅在自有临时存储运行固定 JSON 规则编译，不加载页面或创建应用宿主。Swift/Java/SQL 当前范围见 docs/NATIVE_LANGUAGES.md：外部 SourceKit/JDT 须工作区显式信任，SQL 为离线解析；完整目标见 docs/LANGUAGE_EXPANSION_PLAN.md，各阶段独立验收。
+- 所有文本格式的大文件/长行使用磁盘分段编辑，范围、64 位偏移、跨页历史、保存预算与静默 GB 探针见 docs/LARGE_FILES.md；局部页禁止作为全文用于 LSP 或跨文件修改。
+- 底栏自身内存/CPU 与闲置语法缓存清理见 docs/PERFORMANCE_MONITOR.md；只统计主进程，清理不动正文、未保存输入、撤销历史、活动缓存、子服务或其他应用。
 - 图片采用独立只读会话，支持缩放/平移；格式、ImageIO/resvg 预算、许可与验证限制见 docs/IMAGE_PREVIEW.md，不将图片交给文本自动保存。
 - 视频只读预览使用原生 AVFoundation，默认暂停、切走卸载播放器；格式、分段资源与静默验证限制见 docs/VIDEO_PREVIEW.md。测试不得实例化播放器或播放声音。
 - 自有代码与文档采用根 MIT LICENSE；可以采用官方或社区开源组件，接入前记录版本、来源、许可、通知与验证。候选和已采用依赖在 docs/DEPENDENCIES.md 分开登记。

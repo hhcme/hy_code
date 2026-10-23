@@ -294,13 +294,23 @@ pub fn snapshot(
     let Some(kind) = kind else {
         return Ok(result);
     };
-    if text.len() > MAX_SYNTAX_BYTES {
-        *state = None;
-        result.status = "size_limit";
-        return Ok(result);
-    }
     if end < start || end - start > MAX_WINDOW {
         return Err(failure("高亮范围无效或过大"));
+    }
+    if text.len() > MAX_SYNTAX_BYTES {
+        // Large in-memory documents still get bounded viewport syntax. No
+        // complete parse/tree; multiline context outside this fragment is not
+        // semantic analysis. GB documents use their already bounded page here.
+        let a = byte_at(text, start)?;
+        let b = byte_at(text, end)?;
+        let mut value = snapshot(&mut None, &text[a..b], path, 0, end - start)?;
+        value.start = start;
+        value.status = "windowed";
+        for span in &mut value.spans {
+            span.start += start;
+        }
+        *state = None;
+        return Ok(value);
     }
     if state.as_ref().is_none_or(|s| s.kind != kind) {
         *state = Some(SyntaxState::new(kind)?);

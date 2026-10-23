@@ -57,7 +57,7 @@ Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并�
 | `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `35`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `41`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
 
@@ -115,3 +115,21 @@ build 34 的图片只读预览、后台 ImageIO/resvg 与资源限制见[图片�
 build 35 新增[视频只读预览](VIDEO_PREVIEW.md)，196 Swift / 19 Rust、10 项视频 Swift ASan 与未启动的 Release 开发包见[证据](evidence/2026-10-23-build35-video-preview.json)。没有创建播放器测试实例、播放音频或执行 GUI；真实播放与性能仍待验收。
 
 build 36 增加[JSON/JSONC 与 YAML/YML 配置工具](CONFIGURATION_TOOLS.md)：202 Swift / 19 Rust / 4 Node、7 项配置/监听 Swift ASan、JSON/YAML 与完整 Web 真实服务临时样本验证见[证据](evidence/2026-10-23-build36-configuration-tools.json)。规则文件由原生授权读取，不自动联网或执行项目格式化配置；真实窗口/性能未验收。
+
+build 37 的 [Markdown/HTML 分屏预览](MARKUP_PREVIEW.md)使用 6 项无 GUI 模型/读取/FFI 测试与 3 项 Rust 回归，Swift ASan 同样不创建 WebView。全量 208 Swift / 22 Rust / 4 Node 检查通过；AppKit/WebKit 只参与编译，内容规则引擎、窗口布局/滚动、焦点与性能未验证。依赖检查新增 `python3 scripts/check_markup_dependencies.py`，阶段证据见[记录](evidence/2026-10-23-build37-markup-preview.json)。
+
+build 38 的 Swift/Java/SQL 使用外部 SourceKit/JDT 与内置 SQL，见[专题](NATIVE_LANGUAGES.md)。通用检查只运行生成样本和模型，不启动外部用户项目、应用或数据库；真实服务探针须单独显式运行，只创建自有临时项目与独立缓存。新增依赖检查 `python3 scripts/check_native_language_dependencies.py`。
+
+本批检查 217 Swift / 25 Rust / 4 Node 与 9 项原生语言 Swift ASan 通过；真实服务仅在自有生成样本运行，SwiftPM/BSP 编译选项与索引、JDT 独立文件/Maven 协议验证通过。Gradle/Eclipse 和实际 Xcode 工程、窗口/性能未验收。
+
+Release 0.1.0 / build 38 的本地未启动开发包、源码与日志哈希见[后台证据](evidence/2026-10-23-build38-native-languages.json)，正式应用分发仍未进行。
+
+build 39 修复 Markdown/HTML 内容规则的 WebKit 子集兼容性。通用检查新增 `HyCodeMarkupRuleProbe`：已检查系统 API 源码路径，Foundation CLI 只在自有临时规则存储编译固定 JSON，复现旧 WKErrorDomain 6 并断言生产规则可编译；不创建 NSApplication/WKWebView、不加载页面、不使用网络或用户默认缓存。它与实际 WebKit 资源阻断/页面/窗口验收分别记录，见[预览说明](MARKUP_PREVIEW.md)。
+
+本批 218 Swift / 25 Rust / 4 Node 和系统 WebKit 规则编译回归通过；本地未启动的 build 39 及源码/日志哈希见[修复证据](evidence/2026-10-23-build39-markup-rules.json)。规则编译 CLI 不能代替真实 WebView 页面验收。
+
+## build 40 大文件静默验证
+
+[大文件专题](LARGE_FILES.md)列出普通小型测试和独立 `HyCodeLargeFileProbe --gib1`。常规检查不反复写 GB 文件；手动探针使用自有临时 UTF-8 样本、taskpolicy 后台优先级、限速生成和固定缓冲，不创建 GUI。真实窗口、IME/撤销/批量替换和帧率仍未验证。
+
+本批 227 Swift /33 Rust /4 Node、9 项 Swift ASan 与真实生成的 1.08 GB 探针通过。Release 0.1.0 / build 40 已静默构建，未启动或安装；[证据](evidence/2026-10-23-build40-large-files.json)区分后台、窗口、sanitizer 与发布状态。

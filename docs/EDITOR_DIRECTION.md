@@ -34,6 +34,8 @@
 
 19. 2026-10-23 确认接入 JSON、YAML 等常用配置格式的语法检查、格式化与常用编辑工具；首批 JSON/JSONC、YAML/YML，范围与后续格式见[配置工具](CONFIGURATION_TOOLS.md)。
 
+20. 2026-10-23 确认扩展 Java、SQL、Swift，并增加 Markdown/HTML 左右预览；完整目标见[语言扩展](LANGUAGE_EXPANSION_PLAN.md)，当前分屏实现见[预览说明](MARKUP_PREVIEW.md)。
+
 ## 产品基线
 
 2026-10-22 用户要求 Web 相关能力全部纳入。语言、编辑与导航、依赖/脚本、质量、运行/调试和框架适配见 [Web 能力清单](WEB_TOOLS.md)；首批语言服务已接入，不等于全部 WebStorm 功能完成。
@@ -48,7 +50,7 @@
 
 ## 架构建议与待决事项
 
-当前工作台采用 SwiftUI、项目树采用 AppKit NSOutlineView，Rust 目录读取通过窄 C ABI 接入，见 [ADR 0002](adr/0002-file-workbench.md)。基础编辑采用 AppKit TextKit 1，Rust 管理正式文本/修订，原生 UndoManager 独占撤销历史，见 [ADR 0003](adr/0003-text-editing.md)。行号和 Tree-sitter 增量着色见 [ADR 0004](adr/0004-line-numbers-syntax.md)；Dart SDK 语义与 Pub 已采用，见 [ADR 0005](adr/0005-dart-tooling.md)；Ropey、SourceKit-LSP 尚未采用。原方向见 [ADR 0001](adr/0001-macos-swift-rust.md)。
+当前工作台采用 SwiftUI、项目树采用 AppKit NSOutlineView，Rust 目录读取通过窄 C ABI 接入，见 [ADR 0002](adr/0002-file-workbench.md)。基础编辑采用 AppKit TextKit 1，Rust 管理正式文本/修订，原生 UndoManager 独占撤销历史，见 [ADR 0003](adr/0003-text-editing.md)。行号和 Tree-sitter 增量着色见 [ADR 0004](adr/0004-line-numbers-syntax.md)；Dart SDK 语义与 Pub 已采用，见 [ADR 0005](adr/0005-dart-tooling.md)；Swift SourceKit-LSP、Java JDT LS 与离线 SQL 已接入，见[ADR 0012](adr/0012-native-languages.md)；Ropey 尚未采用。原方向见 [ADR 0001](adr/0001-macos-swift-rust.md)。
 
 尚待评审：首批目标用户和支持语言、首个可交付版本范围、高级编辑与大文件方案、旧系统运行覆盖、具体性能预算、主题/快捷键及应用分发方式。当前工程的工具链、部署目标和 Bundle ID 已记录在 ADR 0002，不代表完整编辑或发布方案已完成。
 
@@ -56,8 +58,12 @@
 
 Windows、Linux 和移动端不在首版范围，不设同步工程、兼容门槛或交付承诺；将来需要时另行立项。Swift/Rust 是产品实现语言，不限定用户可编辑的语言。
 
-图片只读预览已接入，采用 ImageIO 与受限 resvg，见 [ADR 0008](adr/0008-image-preview.md)；Markdown/HTML、PDF 和归档等配套能力继续分阶段评估。账号、同步、远控、云端转换及兼容 VSCode/IDEA 插件尚未列为首版要求。
+图片只读预览已接入，采用 ImageIO 与受限 resvg，见 [ADR 0008](adr/0008-image-preview.md)；Markdown/HTML 静态分屏预览已接入，见[预览说明](MARKUP_PREVIEW.md)；PDF 和归档继续分阶段评估。账号、同步、远控、云端转换及兼容 VSCode/IDEA 插件尚未列为首版要求。
 
 ## 当前状态
 
 旧实现已删除并保留在 Git 历史。现在已重新建立文件工作台、原生基础编辑、Rust 文本/目录内核、构建脚本和后台测试，详见[当前工作台](WORKBENCH.md)。真实窗口、性能、签名与应用发布尚未验证；本次没有恢复旧 ZIP 产品。
+
+## build 40：GB 级文本
+
+用户确认经常处理超过 1 GB 的文本；采用 Rust 磁盘 piece table、原生有界页、独占跨页历史和后台整文件查找/完整原子保存。所有扩展名共享大小/长行路由，局部页不得用于全文 LSP 修改。范围、资源预算、真实 GB 后台样本与连续滚动/全局行号/窗口性能缺口见[大文件专题](LARGE_FILES.md)和[ADR 0013](adr/0013-disk-backed-text.md)。

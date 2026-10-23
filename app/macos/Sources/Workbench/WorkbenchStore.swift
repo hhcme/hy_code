@@ -27,9 +27,21 @@ final class WorkbenchStore {
     let dart = DartWorkspaceController()
     let flutter = FlutterWorkspaceController()
     let web = WebWorkspaceController()
+    let native = NativeToolsController()
     let problems = WorkspaceProblemsController()
     var analysisLanguage = "dart"
-    var languageController: any EditorLanguageController { analysisLanguage == "web" ? web : dart }
+    var languageController: any EditorLanguageController {
+        switch analysisLanguage {
+        case "web": web
+        case "swift": native.swift
+        case "java": native.java
+        case "sql": native.sql
+        default: dart
+        }
+    }
+    private func selectLanguage(_ path: String) {
+        analysisLanguage = WebLanguage.detect(path) != nil ? "web" : NativeCodeLanguage.detect(path)?.rawValue ?? "dart"
+    }
     var autoSave: Bool {
         get { editing.autoSave }
         set { editing.autoSave = newValue }
@@ -113,6 +125,23 @@ final class WorkbenchStore {
         web.projectAnalysis.onDartProject = { [weak self] in self?.dart.startProjectAnalysis() }
         editing.language = dart
         editing.web = web
+        editing.native = native
+        for owner in native.owners {
+            owner.onDiagnosticsChanged = { [weak self, weak owner] values, limited in
+                guard let owner else { return }
+                self?.problems.update(owner.language.rawValue, values: values, limited: limited)
+            }
+            owner.onNavigate = { [weak self] in self?.navigateSemantic($0) }
+            owner.onShowResults = { [weak self, weak owner] in
+                guard let self, let owner else { return }
+                self.analysisLanguage = owner.language.rawValue
+                if !self.docking.isVisible(.problems) { self.docking.toggle(.problems) }
+            }
+            owner.onEditPreview = { [weak self] edit, feature, revision, title in
+                self?.editing.previewLanguageEdit(edit, feature: feature, revision: revision, title: title)
+            }
+        }
+        native.configure(access: access)
         editing.isDocumentVisible = { [weak self] path in self?.tabs.tabs.contains { $0.location.path == path } == true
         }
         editing.onLanguageFilesApplied = { [weak self] paths in
@@ -126,6 +155,7 @@ final class WorkbenchStore {
                             relativePath: path, kind: .file)), preview: false)
             }
             if let active { self.tabs.activate(active) }
+            self.editing.activatePreview(path: self.tabs.active?.location.path)
         }
         web.onEditPreview = { [weak self] edit, feature, revision, title in
             self?.editing.previewLanguageEdit(edit, feature: feature, revision: revision, title: title)
@@ -256,6 +286,7 @@ final class WorkbenchStore {
         await analysis.value
         await runtime.value
         await web.value
+        await native.stop()
     }
 
     func closeProject() {
@@ -277,6 +308,7 @@ final class WorkbenchStore {
         editing.reset()
         dart.configure(access: nil)
         web.configure(access: nil)
+        native.configure(access: nil)
         flutter.configure(access: nil)
         projectIntent = UUID()
         sessionID = UUID()
@@ -308,7 +340,7 @@ final class WorkbenchStore {
         if case .file(let entry) = resolved, !isReadOnlyPreview(entry.relativePath) {
             dart.refreshProject(path: entry.relativePath)
             web.refreshProject(path: entry.relativePath)
-            analysisLanguage = WebLanguage.detect(entry.relativePath) != nil ? "web" : "dart"
+            selectLanguage(entry.relativePath)
         }
         browsingLocation = resolved
         tabs.open(resolved, preview: preview)
@@ -348,7 +380,7 @@ final class WorkbenchStore {
         if !isReadOnlyPreview(active.location.path) {
             dart.refreshProject(path: active.location.path)
             web.refreshProject(path: active.location.path)
-            analysisLanguage = WebLanguage.detect(active.location.path) != nil ? "web" : "dart"
+            selectLanguage(active.location.path)
         }
         browsingLocation = active.location
         history.visit(active.location)
@@ -374,6 +406,7 @@ final class WorkbenchStore {
         if !isReadOnlyPreview(browsingLocation?.path ?? "") {
             dart.refreshProject(path: browsingLocation?.path ?? "")
             web.refreshProject(path: browsingLocation?.path ?? "")
+            selectLanguage(browsingLocation?.path ?? "")
         }
         if let location {
             history.visit(location)
