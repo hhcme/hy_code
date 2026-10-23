@@ -4,9 +4,15 @@ build 28 已增加 [Web 工作流](WEB_TOOLS.md)：代码菜单提供多语言�
 
 新增原生入口为 `app/macos/Sources/Language/EditorLanguageController.swift`、`EditorLanguageFeatures.swift`、`WebWorkspaceController.swift`、`EditorWebActions.swift`、`LanguageEditPreview.swift` 和 `WebToolPanels.swift`；无 GUI 模型/协议在 `packages/HyCodeWorkspace/Sources/Language/`，固定服务在 `tools/web-language-services/`，后台 fixture 在 `tools/WebProbe/`。
 
-更新：2026-10-22。当前按用户要求实现 IDEA / WebStorm 风格工作台、文件浏览和基础文本编辑，新增行号和基础多语言着色，Dart SDK 语义及 Pub 首批工具已接入，见 [Dart/Flutter 工具](DART_FLUTTER.md)。已有真实工程、Rust 文本/目录内核、构建与后台测试；真实窗口效果、交互和性能尚未验收。
+更新：2026-10-23。当前按用户要求实现 IDEA / WebStorm 风格工作台、文件浏览和基础文本编辑，新增行号和基础多语言着色，Dart SDK 语义及 Pub 首批工具已接入，见 [Dart/Flutter 工具](DART_FLUTTER.md)。已有真实工程、Rust 文本/目录内核、构建与后台测试；真实窗口效果、交互和性能尚未验收。
 
 ## 当前范围
+
+build 34 增加[图片只读预览](IMAGE_PREVIEW.md)：项目树单击图片进入独立标签，提供适应窗口、100%、缩放、拖动、背景与透明度查看；ImageIO 解码位图，Rust resvg 处理受限 SVG，多帧暂显示首帧。加载/解码在后台串行执行，非活动标签释放像素，固定尺寸原生画布只绘制已解码投影。图片不建立文本/撤销/自动保存或语言修改。实现决策见 [ADR 0008](adr/0008-image-preview.md)。
+
+build 34 完整静默检查为 186 项 Swift（34 组）、19 项 Rust；其中图片新增 13 项 Swift 和 4 项 Rust。13 项图片 Swift 测试另通过 ASan，Rust 静态库未插桩。Release 本地开发包为 0.1.0 / build 34、arm64、约 144.5 MiB，未启动、安装或发布；可执行文件 SHA-256：`3ffe52cc1b558b48f8726df5e9b1baccb3de2a59b853e17c837dd3dbf624a83b`。格式样本、许可、源码与日志哈希见[后台证据](evidence/2026-10-23-build34-image-preview.json)。当前 build 32–34 改动均未提交推送。
+
+build 33 已扩展到全部已有应用界面的共用样式：项目/菜单弹层、分析/依赖、调试/问题、配置/设置、重命名与保存确认。具体覆盖及未验证项见[整体清单](VISUAL_ALIGNMENT.md)，后台结果为 173 Swift / 15 Rust，新增 4 项弹层几何测试。32 项相关几何/交互用例与最终格式/Release 构建通过；本地开发包 0.1.0 / build 33、arm64、约 140.4 MiB，未启动、安装或发布。可执行文件 SHA-256：`dc5d3afaf4d2bfe9950140404cbbd70f21c4f0e1e9703c83a59fc054f50662e0`。源码、日志、审查修复及限制见[后台记录](evidence/2026-10-23-build33-full-workbench-style.json)。本批没有提交或推送。
 
 - 打开用户选择的本地目录，不复制入库、不修改文件。
 - 紧凑原生头部、双侧工具条、中央文件标签与内容区、面包屑和状态栏。
@@ -54,23 +60,23 @@ build 28 已增加 [Web 工作流](WEB_TOOLS.md)：代码菜单提供多语言�
 
 默认仅左上文件列表展开，其余工具面板隐藏，四角的入口按钮仍可见。尺寸、停靠顺序、显隐、目录展开与标签状态只保存在当前进程；折叠不主动销毁原生树，文件列表跨角移动复用同一个宿主。外观选择、自动保存偏好、启动项目与最多 30 条最近项目持久化，默认深色，可切换浅色或跟随系统。最近项保存标准化路径与可选访问书签；书签生成/解析离开主线程，启动默认恢复上次项目，最近路径不视为永久访问许可。当前每个工作台只有一个打开项目，不伪造多项目会话。
 
-## 样式与分区（build 23）
+## 样式与分区（build 33）
 
-用户进一步明确默认只有左上文件列表展开，工具按钮可以移动及排序，并指出分隔蓝线越过圆角、移出残留和偶发掉帧。本版保留纯色外框与四区布局，增加工具停靠并改进高亮和刷新路径。当前实现参数如下，不把这些参数称为 WebStorm 的实测值。
+用户进一步明确默认只有左上文件列表展开，工具按钮可以移动及排序，并指出分隔蓝线越过圆角、移出残留和偶发掉帧。本版保留纯色外框与四区布局，增加工具停靠并改进高亮和刷新路径。build 32 按用户已提供的 WebStorm Islands 截图作静态像素采样，并统一工作台尺寸；采样、推导与实际窗口验收分别记录，见[视觉对齐](VISUAL_ALIGNMENT.md)。
 
 | 区域 | 当前实现 |
 | --- | --- |
-| 窗口头部 | 44 pt 纯色深灰；项目、前进后退、刷新、打开和外观菜单；系统交通灯与原生拖动 |
-| 两侧工具条 | 各 40 pt，同一纯色外框；多个工具按钮按四角分组，可长按移动和排序 |
-| 工具区域 | 10 pt 圆角，6 pt 分隔带；顶部标题与中央标签条同为 40 pt，底部标题为 36 pt |
+| 窗口头部 | 43 pt 纯色深灰；项目、前进后退、刷新、打开和外观菜单；系统按钮保留原生大小/动作，沿头部居中对齐，全屏交给系统 |
+| 两侧工具条 | 各 40 pt，壳体左右各留 1 pt；30 pt 按钮按 40 pt 步进，首末按钮距工具条端部 3 pt；四角分组和拖放排序保留 |
+| 工具区域 | 10 pt 圆角、5 pt 分隔带；顶部/底部标题与中央标签条统一 40 pt，标题字号 13 pt |
 | 中央标签 | 仅文件创建 28 pt 活动胶囊标签；无文件时不显示标签条；边框和面板内部细线按显示缩放采用一个物理像素 |
 | 项目切换 | 520 pt 宽面板；顶部新建/打开/克隆操作区；打开/最近项目分组、徽标、名称与路径双行；新建/克隆置灰，仅打开/关闭/切换可用 |
-| 项目树行背景 | 悬停与选中使用相同可见整行、4 pt 圆角和上下 1 pt 间距；左右各离面板 12 pt，层级只缩进内容 |
+| 项目树行背景 | 悬停与选中使用相同可见整行、4 pt 圆角和上下 1 pt 间距；左右可见背景各离面板 16 pt，层级只缩进内容 |
 | 欢迎页 | 无项目时显示打开操作与最近项目；宽窗口并排、窄窗口上下排列，整体可纵向滚动 |
 | 控件反馈 | 按钮、项目行、标签和菜单入口区分悬停/按下/选中状态；可用入口使用手形光标，禁用态不响应悬停 |
-| 滚动条 | 应用内纵向及项目树横向固定保留 8 pt 槽、4 pt 滑块；透明轨道；树滚动区右侧再留 4 pt、底部留 8 pt，避开面板圆角 |
+| 滚动条 | 应用内纵向及项目树横向固定保留 8 pt 槽、4 pt 滑块；透明轨道；树滚动区右侧再留 8 pt、顶部留 5 pt、底部留 8 pt，避开面板圆角 |
 | 分隔带 | 默认与外框同色；悬停/拖动时显示一个物理像素的强调线，两端各缩进 10 pt；鼠标移出并结束拖动后隐藏，键盘焦点使用中性色 |
-| 状态栏 | 26 pt，项目路径、目录条目数或当前文件编码/换行及保存状态 |
+| 状态栏 | 36 pt，12 pt 字号，项目路径、目录条目数或当前文件编码/换行及保存状态 |
 | 深色配色 | 外框 `#26282C`、内容 `#191A1C`、文字 `#D1D3D9`；无渐变背景 |
 
 最小窗口仍为 860 × 540。双侧工具区域适应当前窗口并保留中央至少 360 × 220；底行同时显示两块时各至少 220 pt。窗口临时缩小或折叠不会覆盖用户尺寸偏好，放大后恢复；拖动以当前可见尺寸为基准，不混用适配前的另一侧宽度。小高度欢迎页可整体滚动，避免操作和最近项被截掉。
@@ -140,7 +146,7 @@ AppKit 容器是尺寸与拖动的唯一所有者；每个工具首次展开时�
 
 ## 控件反馈与最近项目首页（build 12）
 
-原项目弹层的悬停色与深色外框同为 `#26282C`，触发 hover 后也看不出变化；选中按钮此前没有独立按下色。现在共享控件表面区分普通和选中的悬停、按下状态，并为键盘焦点绘制细轮廓。禁用入口保持弱化，不显示悬停或可点击光标。原生菜单锚点只负责命中、键盘和 NSMenu，反馈绘制在 SwiftUI 标签下方，避免不透明覆盖图标文字。
+原项目弹层的悬停色与深色外框同为 `#26282C`，触发 hover 后也看不出变化；选中按钮此前没有独立按下色。现在共享控件表面区分普通和选中的悬停、按下状态，并为键盘焦点绘制细轮廓。禁用入口保持弱化，不显示悬停或可点击光标。原生菜单锚点负责命中与键盘激活，反馈绘制在 SwiftUI 标签下方；build 33 弹出内容改用共用工作台菜单，不再进入 NSMenu 跟踪。
 
 工具按钮扩展为六种有界缓存状态，保留蓝底白图标的选中语义；按下立即反馈，不等待长按阈值。项目树可见行新增本地悬停底色，标签激活区使用共用按钮反馈。光标使用所属原生视图的 cursor rect，不维护全局 NSCursor push/pop 栈。反馈只改变颜色和局部绘制，不添加缩放、几何动画、目录读取或拖动期间的全局观察状态。
 
@@ -152,7 +158,7 @@ AppKit 容器是尺寸与拖动的唯一所有者；每个工具首次展开时�
 
 此前无项目时左上角沿用应用名“HyCode”，容易被理解成项目名称。现在空状态明确显示“打开项目”；打开后，头部名称、徽标与“打开的项目”分组从同一当前目录身份派生，路径先标准化；悬停帮助和无障碍标签包含完整路径。“最近的项目”继续排除当前项，历史记录不自动成为当前项目。当前仍是单窗口、单项目，未新增多项目会话、新建或克隆操作，也未导入参考应用的历史数据。
 
-用户确认截图中尚未打开项目，需要调整下拉面板的分组与内容。顶部按参考排列“新建项目…”、“打开…”、“克隆仓库…”；新建和克隆尚未实现，明确置灰，不触发文件写入或进程。面板宽 520 pt，项目行统一 56 pt、分组标题 28 pt、操作行 26 pt；列表按实际条目高度收缩，上限 440 pt 后纵向滚动，消除旧固定容器的多余留白。继续使用系统 popover 的定位、退出与焦点生命周期，未改为自定义窗口；不是与参考截图完全一致的像素验收。
+用户确认截图中尚未打开项目，需要调整下拉面板的分组与内容。顶部按参考排列“新建项目…”、“打开…”、“克隆仓库…”；新建和克隆尚未实现，明确置灰，不触发文件写入或进程。build 33 面板宽 512 pt，项目行统一 52 pt、分组标题和操作行 28 pt；列表按实际条目高度收缩，上限 440 pt 后纵向滚动，消除旧固定容器的多余留白。build 33 改用无箭头的非 key 子面板，方向键/Tab/Home/End/Enter 选择和打开，Escape/窗口失焦/外部点击关闭；不是与参考截图完全一致的像素验收。
 
 ## 项目树整行高亮（build 14）
 
@@ -180,7 +186,7 @@ Rust 目录读取本来已在后台，但新节点的全部文件名测量原先
 
 根节点只显示项目名，移除名称后面的磁盘路径及其宽度计算；完整目录/文件名称仍可横向滚动。真实条目的整行和 cell 都提供完整文件路径提示，名称、信息面板和复制路径共用 file URL 生成方法，根相对路径复制为 `.`。拼接时显式传入已知目录类型，避免 Foundation 为推断类型同步查询磁盘元数据；不规范化或解析符号链接。
 
-目录/文件右键使用原生 NSMenu，提供文件打开或目录展开/折叠、在访达中显示、完整/相对路径及名称复制、文件信息、刷新当前目录或文件所在目录。目标来自右键点中的行，菜单捕获条目值与会话身份；旧项目菜单动作失效。各级菜单持有自己的 action target，闭包弱引用协调器。当前树菜单没有增加新建、剪切、粘贴、重命名或删除文件，不用空操作伪装可用功能；编辑区菜单自 build 30 改为工作台纯色圆角面板，见[编辑反馈](EDITING.md)。
+目录/文件右键自 build 33 使用共用工作台菜单，提供文件打开或目录展开/折叠、在访达中显示、完整/相对路径及名称复制、文件信息、刷新当前目录或文件所在目录。目标来自右键点中的行，菜单捕获条目值与会话身份；旧项目菜单动作失效。菜单命令闭包弱引用协调器；每条菜单链共用一个临时事件监听器，实时读取子菜单行的屏幕坐标，滚动时收起后续子级。当前树菜单没有增加新建、剪切、粘贴、重命名或删除文件，不用空操作伪装可用功能；编辑区菜单自 build 30 改为工作台纯色圆角面板，见[编辑反馈](EDITING.md)。
 
 右下方块位于双滚动槽交叉区域，不是业务按钮。上一版只覆盖父视图绘制仍不足以消除截图残留；本版清除无表头树的默认 table corner，并在公开 scroller frame 计算出的交叉区域使用同色、不可操作且无无障碍入口的角块覆盖层。只按实际交叉几何调整，不查询或修改 AppKit 私有子视图；初始零尺寸或空交集不赋无效 frame。槽和圆角留白继续固定保留。
 
@@ -224,7 +230,7 @@ Rust 目录读取本来已在后台，但新节点的全部文件名测量原先
 | [WorkbenchPaneSizes.swift](../packages/HyCodeWorkspace/Sources/WorkbenchPaneSizes.swift)、[WorkbenchLayoutTests.swift](../packages/HyCodeWorkspace/Tests/WorkbenchLayoutTests.swift) | 无 GUI 的四区约束、取整、尺寸恢复与动画中间态验证 |
 | [WorkbenchToolArtwork.swift](../app/macos/Sources/Workbench/WorkbenchToolArtwork.swift)、[WorkbenchToolTile.swift](../packages/HyCodeWorkspace/Sources/WorkbenchToolTile.swift)、[WorkbenchToolTileTests.swift](../packages/HyCodeWorkspace/Tests/WorkbenchToolTileTests.swift) | 按钮与预览共用位图、缩放/状态缓存、无 GUI 像素验证 |
 | [WorkbenchPerformance.swift](../app/macos/Sources/Workbench/WorkbenchPerformance.swift) | 可选性能区间，不记录项目数据或自动采集 |
-| [WorkbenchMenuButton.swift](../app/macos/Sources/Workbench/WorkbenchMenuButton.swift) | 自有紧凑标签、原生 NSButton 命中与 NSMenu 生命周期，避免额外菜单箭头和默认着色 |
+| [WorkbenchMenuButton.swift](../app/macos/Sources/Workbench/WorkbenchMenuButton.swift) | 自有紧凑标签、原生 NSButton 命中与共用弹层生命周期，避免额外菜单箭头和默认着色 |
 | [WorkbenchTheme.swift](../app/macos/Sources/Workbench/WorkbenchTheme.swift)、[WorkbenchTab.swift](../app/macos/Sources/Workbench/WorkbenchTab.swift) | 配色、尺寸、按钮及标签样式 |
 | [WorkbenchPointerRegion.swift](../app/macos/Sources/Workbench/WorkbenchPointerRegion.swift) | 不截获点击的原生光标区域，按可用状态注册手形 cursor rect |
 | [WorkbenchHeader.swift](../app/macos/Sources/Workbench/WorkbenchHeader.swift)、[WorkbenchWindowChrome.swift](../app/macos/Sources/Workbench/WorkbenchWindowChrome.swift) | 纯色头部及所属窗口外观/拖动适配，不激活窗口 |
@@ -233,7 +239,7 @@ Rust 目录读取本来已在后台，但新节点的全部文件名测量原先
 | [ProjectTreeOutline.swift](../app/macos/Sources/ProjectTree/ProjectTreeOutline.swift) | 原生树视口、完整列宽与 clip 观察生命周期 |
 | [ProjectTreeRowView.swift](../app/macos/Sources/ProjectTree/ProjectTreeRowView.swift) | 整行悬停/选中绘制、名称与图标 cell；与目录读取分离 |
 | [ProjectTreeScrollContainer.swift](../app/macos/Sources/ProjectTree/ProjectTreeScrollContainer.swift)、[ProjectTreeScrollAxis.swift](../packages/HyCodeWorkspace/Sources/ProjectTreeScrollAxis.swift)、[ProjectTreeScrollAxisTests.swift](../packages/HyCodeWorkspace/Tests/ProjectTreeScrollAxisTests.swift) | 原生内容滚动、独立双槽与滑块/偏移映射的后台测试 |
-| [ProjectTreeContextMenu.swift](../app/macos/Sources/ProjectTree/ProjectTreeContextMenu.swift)、[WorkspaceEntryPathTests.swift](../packages/HyCodeWorkspace/Tests/WorkspaceEntryPathTests.swift) | 原生右键菜单 action 生命周期；完整/相对路径与编码的后台验证 |
+| [WorkbenchContextMenu.swift](../app/macos/Sources/Workbench/WorkbenchContextMenu.swift)、[WorkspaceEntryPathTests.swift](../packages/HyCodeWorkspace/Tests/WorkspaceEntryPathTests.swift) | 共用右键菜单链与命令生命周期；完整/相对路径与编码的后台验证 |
 | [FileInformationView.swift](../app/macos/Sources/Workbench/FileInformationView.swift) | 只读文件元数据；无目录表格 |
 | [编辑专题](EDITING.md) | 原生文本视图、Rust 文本/修订、自动保存、关闭保护及完整源码地图 |
 | [WorkbenchProjectSwitcher.swift](../app/macos/Sources/Workbench/WorkbenchProjectSwitcher.swift)、[RecentProjects.swift](../packages/HyCodeWorkspace/Sources/RecentProjects.swift)、[RecentProjectTests.swift](../packages/HyCodeWorkspace/Tests/RecentProjectTests.swift) | 分组切换面板、本地最近记录、去重/上限/书签模型验证 |
@@ -262,7 +268,7 @@ nice -n 10 swift test --jobs 2 --disable-xctest --sanitize address
 产物 `build/HyCode.app`，Bundle ID `io.github.hhcme.hycode`，版本 `0.1.0` / build `30`。单独构建 Swift 包前先执行 `bash scripts/build_core.sh`。不运行 `swift run HyCode` 或 UI 测试宿主补验收；`HyCodeDirectoryProbe` 和显式 SDK 的 `HyCodeDartProbe` 均为无应用宿主的后台探针，后者不运行 Pub 或用户项目。macOS 27 的 host proc-macro 链接绕过仅限定在本项目 release build-override，见 [Rust #157750](https://github.com/rust-lang/rust/issues/157750)。
 
 - Rust 15 项单元测试通过，含新增 5 项语法/嵌入范围测试、既有 5 项文本/FFI 测试；格式、Clippy、C11/C++17 头文件检查通过。
-- 最新 build 31 全量 165 项 Swift 与 15 项 Rust 静默检查通过，本批新增 8 项 Dart 指令 URI/引用分节/注释边界/菜单宽度回归；build 30 新增 6 项编辑反馈/菜单回归；build 29 新增 8 项项目分析/监听/队列回归。项目行为与限制见[项目后台诊断](PROJECT_ANALYSIS.md)。此前 build 27 的 Swift 125 项后台测试通过；build 27 新增 3 项配置草稿/冲突/校验测试；此前 10 项 Flutter 配置/设备/状态/断点/test reporter/Inspector 与 stdio fixture 用例；此前 11 项悬浮解析/整词命中/缓存与取消/语义代次/屏幕定位/桥接回归，既有 16 项协议/进程/SDK/包模型、8 项视口调度/缓存/取消/远处高亮测试、3 项行号裁剪像素回归、7 项行索引/高亮桥接与 13 项增量文本/安全保存测试；其余 54 项：9 项工作区/桥接、11 项布局、6 项停靠状态、3 项预览像素合成、7 项最近记录/启动恢复、9 项分隔交互状态、4 项后台文字准备、2 项路径、3 项滚动偏移；覆盖 16 种显隐组合、全部组合间动画中间态不重叠、像素边界、小窗口尺寸、拖动及缩窗恢复。测试目标不链接 AppKit 窗口宿主。
+- build 32 当时全量 169 项 Swift 与 15 项 Rust 静默检查通过，本批新增 4 项共享样式/工具轨道/窗口按钮几何/最小工作区回归；build 31 新增 8 项 Dart 指令 URI/引用分节/注释边界/菜单宽度回归；build 30 新增 6 项编辑反馈/菜单回归；build 29 新增 8 项项目分析/监听/队列回归。项目行为与限制见[项目后台诊断](PROJECT_ANALYSIS.md)。此前 build 27 的 Swift 125 项后台测试通过；build 27 新增 3 项配置草稿/冲突/校验测试；此前 10 项 Flutter 配置/设备/状态/断点/test reporter/Inspector 与 stdio fixture 用例；此前 11 项悬浮解析/整词命中/缓存与取消/语义代次/屏幕定位/桥接回归，既有 16 项协议/进程/SDK/包模型、8 项视口调度/缓存/取消/远处高亮测试、3 项行号裁剪像素回归、7 项行索引/高亮桥接与 13 项增量文本/安全保存测试；其余 54 项：9 项工作区/桥接、11 项布局、6 项停靠状态、3 项预览像素合成、7 项最近记录/启动恢复、9 项分隔交互状态、4 项后台文字准备、2 项路径、3 项滚动偏移；覆盖 16 种显隐组合、全部组合间动画中间态不重叠、像素边界、小窗口尺寸、拖动及缩窗恢复。测试目标不链接 AppKit 窗口宿主。
 - build 26 的 10 项 Flutter 模型/stdio fixture 与既有 12 项协议/进程测试通过 Swift ASan（本轮未重跑 sanitizer）；此前 11 项悬浮模型测试、16 项 Dart 协议/进程/SDK/包模型测试、11 项视口/高亮测试、3 项行号裁剪像素回归、7 项行索引/高亮桥接测试、13 项 Swift 文本/保存测试分别通过 Address Sanitizer；原 7 项 Swift 工作区测试曾通过 ASan，未重跑全部几何测试的 sanitizer，也不推导 Rust 内部 sanitizer 已验证。
 - build 5 的窄窗尺寸跳动已保留回归；build 6 停靠、原生拖放、宿主复用、显示刷新及释放路径经独立只读复核，未发现可确认的阻断问题，仍不是实际窗口验收。
 - 当前项目诊断计数/点击定位及此前 build 27 的运行配置/断点弹层、自适应调试分区和 Flutter run/debug/热更新、设备、build/test、Inspector 及 Dart 紧凑悬浮/展开说明/候选菜单、中键/⌘点击/下划线清理、诊断/导航、结构、Pub 清单协调/网络/停止与 SDK 设置等端到端交互，以及原生行号/软换行、高亮/主题/开关、原生输入法、撤销/重做、设置/保存/关闭交互，以及既有项目树内边距/圆角高亮、当前项目标题、控件反馈/最近项目欢迎页、应用图标、完整树名称/路径、独立双槽与原生滚动同步、项目切换面板、真实启动恢复和书签权限恢复、滚动条占位/透明轨道、真实长按拖放、命中/排序、跨角滚动状态、分隔悬停清除、窗口视觉、动画、拖动性能、菜单/键盘/无障碍及焦点未验证。本轮没有启动或操作应用，没有使用剪贴板或模拟器。
@@ -333,3 +339,5 @@ build 26 的 DAP 模型/stdio fixture 通过与真实 SDK 分开记录：生成 
 2026-10-21 build 19 为用户授权的提交前整理：项目树拆分协调器、视口及行/cell 绘制，移除冗余 tracking 存储，交互保持 build 18。拆分前重构源码与 build 18 记录哈希完全一致，独立只读复核未发现可确认的 P1/P2。54 项 Swift、5 项 Rust 测试和全部静态/格式/头文件检查通过；从暂存树导出的干净副本也通过完整检查和 Release 构建。11 项 crate 与 Rust 标准库通知同本地上游原文逐字节一致。开发包约 5.7 MiB、arm64、版本 0.1.0，最低系统声明 macOS 14，可执行文件 SHA-256：`55e8801cd1bb25dc6e7448349eedc98424824f66c69351527055bdc7d7c42f3d`。源码和干净副本结果见[提交前证据](evidence/2026-10-21-build19-source-baseline.json)。本轮未启动应用、操作桌面或进行分发签名；源码提交推送与应用发布分开，原窗口及性能验证缺口继续保留。
 
 2026-10-22 build 31 按用户截图补全 Dart 导入 URI 的整段悬浮与链接：SDK 返回 library/Declared 分节，确认定义后画下划线并复用导航缓存；路径中的标点不再拆分请求。有界扫描覆盖普通多行/条件导入、注释与截断上下文，不解析磁盘或伪造未解析包的跳转。编辑菜单按内容测量收窄，分区改用可见主题细线，参数信息归入导航组。165 项 Swift、15 项 Rust 全量静默检查及 Dart 3.11.5 自建 package/SDK/相对 import 和注释边界探针通过；独立复核的三处注释识别问题已修复并复核。Release 开发包约 139.9 MiB、arm64、0.1.0 / build 31、最低系统声明 macOS 14；可执行文件 SHA-256：`a4668ee78dc6008c2e022e5d188da4534422e25ad3ccfdbfcedf0306aceafe90`。源码、检查和限制见[本轮证据](evidence/2026-10-22-build31-import-menu.json)、[Dart 工具](DART_FLUTTER.md)与[编辑菜单](EDITING.md)。没有启动或安装应用、执行 GUI/剪贴板操作、分发签名或提交推送；真实卡片/下划线/菜单效果与渲染性能未验收。
+
+2026-10-23 build 32 根据用户已提供的 2× WebStorm Islands 截图采样，统一 43 pt 头部、1 pt 左右壳体留白、5 pt 分隔、40 pt 面板标题/工具步进和 36 pt 状态栏；校齐项目树顶部/左右留白、标签/标题字体、原生编辑文本/行号/最小行高。原生系统按钮保留大小与动作，嵌套宿主不额外施加 safe-area，工具拖放标记与可见按钮共用轨道几何。169 Swift / 15 Rust 全量静默检查通过，4 项新增样式/轨道/按钮/最小尺寸回归，27 项相关布局/交互/预览用例通过，独立只读复核未发现确认 P1/P2。Release 开发包约 139.9 MiB、arm64、0.1.0 / build 32、最低系统声明 macOS 14；可执行文件 SHA-256：`6abe22c80755694039a96b87ff0039dbc94631fd3d6f1eaa4a6440bf99cb416e`。目标、推导和未验证项见[视觉说明](VISUAL_ALIGNMENT.md)与[后台记录](evidence/2026-10-23-build32-visual-alignment.json)。没有启动或操作应用/桌面，没有窗口逐像素差分、真实输入或帧率验收；未提交推送或发布。

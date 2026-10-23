@@ -30,6 +30,17 @@ struct HyCodeApplication: App {
                     .disabled(store.activeDocument == nil)
                 Button("全部保存", action: store.saveAllDocuments).keyboardShortcut("s", modifiers: [.command, .option])
             }
+            CommandMenu("图片") {
+                Button("放大") { store.activeImage?.zoom(by: 1.25) }.keyboardShortcut("=")
+                    .disabled(store.activeImage == nil)
+                Button("缩小") { store.activeImage?.zoom(by: 1 / 1.25) }.keyboardShortcut("-")
+                    .disabled(store.activeImage == nil)
+                Divider()
+                Button("适应窗口") { store.activeImage?.fit() }.keyboardShortcut("0", modifiers: [.command, .option])
+                    .disabled(store.activeImage == nil)
+                Button("原始尺寸") { store.activeImage?.zoom(to: 1) }.keyboardShortcut("1", modifiers: [.command, .option])
+                    .disabled(store.activeImage == nil)
+            }
             CommandMenu("浏览") {
                 Button("后退", action: store.goBack).keyboardShortcut("[", modifiers: .command).disabled(
                     !store.history.canGoBack)
@@ -136,6 +147,6 @@ struct HyCodeApplication: App {
                 Text("HyCode · 文件浏览工作台")
             }
         }
-        Settings { EditorSettingsView(store: store) }
+        Settings { EditorSettingsView(store: store).preferredColorScheme(appearance.colorScheme) }
     }
 }

@@ -13,17 +13,16 @@ struct DartAnalysisPanel: View {
                 }
                 if let sdk = controller.toolchain {
                     Text("Dart \(sdk.dartVersion)" + (sdk.flutterSDK == nil ? "" : " · Flutter SDK"))
-                    Text(sdk.flutterSDK?.path ?? sdk.dartSDK.path).font(.system(size: 11)).foregroundStyle(
+                    Text(sdk.flutterSDK?.path ?? sdk.dartSDK.path).font(.system(size: 12)).foregroundStyle(
                         WorkbenchColors.secondary
                     ).textSelection(.enabled)
                 }
-                Divider()
+                WorkbenchSeparator(visible: true)
                 if let project = controller.project {
                     Text(project.root.lastPathComponent).fontWeight(.semibold)
-                    HStack {
-                        Button("获取依赖") { controller.runPub("get") }
-                        Button("检查过期") { controller.runPub("outdated") }
-                        Button("升级依赖") { controller.runPub("upgrade") }
+                    ViewThatFits(in: .horizontal) {
+                        HStack { dependencyActions }
+                        VStack(alignment: .leading, spacing: 6) { dependencyActions }
                     }.disabled(
                         controller.toolRunning || controller.toolchain == nil || controller.flutter?.active == true
                             || controller.flutter?.commandRunning == true)
@@ -59,13 +58,17 @@ struct DartAnalysisPanel: View {
                 }
                 if controller.toolRunning { Button("停止工具任务", action: controller.cancelTool) }
                 if !controller.output.isEmpty {
-                    Divider()
-                    Text(controller.output).font(.system(size: 11, design: .monospaced)).textSelection(.enabled)
+                    WorkbenchSeparator(visible: true)
+                    Text(controller.output).font(.system(size: 12, design: .monospaced)).textSelection(.enabled)
                 }
             }.padding(12).frame(maxWidth: .infinity, alignment: .leading)
                 .background(WorkbenchScrollStyle())
-        }.buttonStyle(WorkbenchButtonStyle())
-            .foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.workbenchContentStyle()
+    }
+    @ViewBuilder private var dependencyActions: some View {
+        Button("获取依赖") { controller.runPub("get") }
+        Button("检查过期") { controller.runPub("outdated") }
+        Button("升级依赖") { controller.runPub("upgrade") }
     }
 }
 
@@ -84,7 +87,7 @@ struct DartProblemsPanel: View {
                     ForEach(controller.locations) { target in
                         location(target, title: URL(string: target.uri)?.lastPathComponent ?? target.uri)
                     }
-                    Divider()
+                    WorkbenchSeparator(visible: true)
                 }
                 let items = controller.diagnostics.sorted { $0.key < $1.key }
                 let count = items.reduce(0) { $0 + $1.value.count }
@@ -107,14 +110,14 @@ struct DartProblemsPanel: View {
                                     Text(
                                         "\(URL(string: uri)?.lastPathComponent ?? uri):\(diagnostic.range.start.line + 1):\(diagnostic.range.start.character + 1)"
                                     )
-                                    .font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                                    .font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                                 }
                                 Spacer(minLength: 0)
                             }.padding(6).frame(maxWidth: .infinity, alignment: .leading)
                         }.buttonStyle(WorkbenchButtonStyle())
                     }
                 }
-            }.font(.system(size: 12)).padding(10).frame(maxWidth: .infinity, alignment: .leading)
+            }.font(.system(size: 13)).padding(8).frame(maxWidth: .infinity, alignment: .leading)
                 .background(WorkbenchScrollStyle())
         }.foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
     }
@@ -177,6 +180,6 @@ struct DartStructurePanel: View {
                     }
                 }.background(WorkbenchScrollStyle())
             }
-        }.font(.system(size: 12)).foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.workbenchContentStyle()
     }
 }

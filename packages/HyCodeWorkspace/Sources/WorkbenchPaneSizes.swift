@@ -22,7 +22,7 @@ public enum WorkbenchDivider: CaseIterable, Sendable {
 /// The native canvas owns these in-process preferences. Window fitting and visibility
 /// never overwrite them. All adjacent edges use the same snapped coordinate.
 public struct WorkbenchPaneSizes: Equatable, Sendable {
-    public static let gutter: Double = 6
+    public static let gutter = Double(WorkbenchStyleMetrics.paneGap)
     public private(set) var projectWidth: Double
     public private(set) var informationWidth: Double
     public private(set) var bottomHeight: Double

@@ -81,8 +81,11 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         textView.isGrammarCheckingEnabled = false
         textView.isAutomaticLinkDetectionEnabled = false
         textView.smartInsertDeleteEnabled = false
-        textView.font = .monospacedSystemFont(ofSize: 13, weight: .regular)
-        textView.textContainerInset = NSSize(width: 14, height: 12)
+        textView.font = .monospacedSystemFont(ofSize: WorkbenchMetrics.editorFontSize, weight: .regular)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.minimumLineHeight = WorkbenchMetrics.editorLineHeight
+        textView.defaultParagraphStyle = paragraph
+        textView.textContainerInset = WorkbenchMetrics.editorInset
         textView.isVerticallyResizable = true
         textView.isHorizontallyResizable = false
         textView.autoresizingMask = [.width]
@@ -90,6 +93,8 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         container.widthTracksTextView = true
         textView.string = content.text
+        storage.addAttribute(.paragraphStyle, value: paragraph, range: NSRange(location: 0, length: storage.length))
+        textView.typingAttributes[.paragraphStyle] = paragraph
         undo.removeAllActions()
         storage.onReplace = { [weak document] range, text, removed in
             document?.replaced(range: range, text: text, removed: removed)

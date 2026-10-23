@@ -9,6 +9,8 @@ import SwiftUI
     private(set) var lines: TextLineIndex
     var version: Int { Int(document?.edits.revision ?? 0) }
     private var pending: (LSPRange, String)?
+    let semanticMenu = WorkbenchContextMenu()
+    let informationPopup = WorkbenchInformationPopup()
     private var underlines: [NSRange] = []
     private var diagnostics: [LSPDiagnostic] = []
     private var snippetSession = LSPSnippetSession(ranges: [])
@@ -22,6 +24,8 @@ import SwiftUI
         controller.opened(self, text: content.text)
     }
     func reopen() {
+        semanticMenu.hide()
+        informationPopup.hide()
         hoverInteraction.invalidate()
         guard let text = document?.editor?.textView.string else { return }
         clearDiagnostics()
@@ -33,6 +37,8 @@ import SwiftUI
         } else {
             snippetSession = LSPSnippetSession(ranges: [])
         }
+        semanticMenu.hide()
+        informationPopup.hide()
         hoverInteraction.invalidate()
         clearDiagnostics()
         pending = protocolChange.map {
@@ -47,6 +53,8 @@ import SwiftUI
         controller?.changed(uri: uri, range: pending.0, text: pending.1, version: version)
     }
     func close() {
+        semanticMenu.hide()
+        informationPopup.hide()
         hoverInteraction.invalidate()
         controller?.flutter?.sourceClosed(uri: uri)
         controller?.closed(uri: uri)
@@ -179,11 +187,10 @@ import SwiftUI
                     "textDocument/completion", feature: self, position: .at(selected.location, in: self.lines))
                 guard self.version == revision, view.window != nil, view.selectedRange() == selected else { return }
                 let values = result["items"].array.isEmpty ? result.array : result["items"].array
-                let menu = NSMenu()
-                var actions: [DartCompletionAction] = []
+                var items: [WorkbenchContextCommand] = []
                 for value in values.prefix(100) {
                     guard let label = value["label"].string else { continue }
-                    let action = DartCompletionAction { [weak self] in
+                    let action = { [weak self] in
                         guard let self, self.version == revision else { return }
                         Task {
                             do {
@@ -210,17 +217,13 @@ import SwiftUI
                             } catch { controller.report(error) }
                         }
                     }
-                    actions.append(action)
-                    let item = NSMenuItem(
-                        title: label, action: #selector(DartCompletionAction.chooseCompletion), keyEquivalent: "")
-                    item.target = action
-                    item.toolTip = value["detail"].string
-                    menu.addItem(item)
+                    items.append(
+                        WorkbenchContextCommand(title: label, help: value["detail"].string ?? "", action: action))
                 }
-                if menu.items.isEmpty { return }
+                guard !items.isEmpty else { return }
                 let rect = view.firstRect(forCharacterRange: selected, actualRange: nil)
-                let point = view.convert(view.window!.convertPoint(fromScreen: rect.origin), from: nil)
-                withExtendedLifetime(actions) { _ = menu.popUp(positioning: nil, at: point, in: view) }
+                semanticMenu.show(items, at: rect.origin, in: view)
+
             } catch { controller.report(error) }
         }
     }
@@ -257,10 +260,4 @@ import SwiftUI
         view.scrollRangeToVisible(selection)
         view.window?.makeFirstResponder(view)
     }
-}
-
-@MainActor private final class DartCompletionAction: NSObject {
-    let action: () -> Void
-    init(_ action: @escaping () -> Void) { self.action = action }
-    @objc func chooseCompletion() { action() }
 }

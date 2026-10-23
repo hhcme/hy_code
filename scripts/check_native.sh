@@ -11,6 +11,7 @@ cargo fmt --all -- --check
 xcrun swift-format lint --strict --recursive app/macos/Sources packages/HyCodeWorkspace tools/DirectoryProbe tools/DartProbe tools/DebugProbe tools/WebProbe Package.swift
 node --check scripts/web_tools.mjs
 node scripts/web_tools.mjs
+python3 scripts/check_image_dependencies.py
 xcrun clang -x c -std=c11 -fsyntax-only -Wall -Wextra -Werror bindings/CHyCodeCore/include/hycode_core.h
 xcrun clang++ -x c++ -std=c++17 -fsyntax-only -Wall -Wextra -Werror bindings/CHyCodeCore/include/hycode_core.h
 cargo clippy --locked --workspace --all-targets -- -D warnings

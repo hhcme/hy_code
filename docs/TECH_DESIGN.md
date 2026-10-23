@@ -1,6 +1,6 @@
 # HyCode 重写技术设计
 
-更新：2026-10-22。首版确定为 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。当前已有文件工作台、基础编辑、行号与后台增量着色，见[工作台](WORKBENCH.md)、[编辑](EDITING.md)、[高亮](SYNTAX.md)。Dart/Flutter 外部 SDK 服务与依赖工具见 [ADR 0005](adr/0005-dart-tooling.md)，Web 多服务与文本修改预览见 [ADR 0007](adr/0007-web-tooling.md)。其余语言语义、统一跨文件撤销和大文件模式仍待实现。
+更新：2026-10-23。首版确定为 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。当前已有文件工作台、基础编辑、行号与后台增量着色，见[工作台](WORKBENCH.md)、[编辑](EDITING.md)、[高亮](SYNTAX.md)。Dart/Flutter 外部 SDK 服务与依赖工具见 [ADR 0005](adr/0005-dart-tooling.md)，Web 多服务与文本修改预览见 [ADR 0007](adr/0007-web-tooling.md)。其余语言语义、统一跨文件撤销和大文件模式仍待实现。
 
 ## 分层与职责
 
@@ -16,6 +16,8 @@ Web 编辑请求绑定工作区编辑代次。`LSPWorkspaceEdits` 在后台校�
 | 引擎与服务 | 语法解析、LSP、Git、归档、调试适配 | 按需加载，可取消，可降级，独立记录许可与版本 |
 
 项目按能力逐步建模块；编辑、工作区、文件访问、后台任务和服务生命周期分别明确所有者，避免跨模块全局状态或 UI 直接调用解析器。
+
+图片由 `ImagePreviewDocument` 单独拥有只读会话，后台串行 actor 完成安全读取、ImageIO 解码或 Rust resvg 栅格化；主线程只绘制已解码像素和更新几何。非活动标签释放像素，取消/会话代次隔离旧结果；不建立文本、撤销或自动保存。预算、FFI 所有权和当前格式见[图片预览](IMAGE_PREVIEW.md)与 [ADR 0008](adr/0008-image-preview.md)。
 
 ## 文档、缓冲与撤销
 

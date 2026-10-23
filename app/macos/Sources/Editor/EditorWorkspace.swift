@@ -1,7 +1,9 @@
 import AppKit
+import HyCodeWorkspace
 import Observation
 
 @MainActor @Observable final class EditorWorkspace {
+    private(set) var images: [String: ImagePreviewDocument] = [:]
     private(set) var documents: [String: EditorDocument] = [:]
     weak var language: DartWorkspaceController?
     weak var web: WebWorkspaceController?
@@ -27,7 +29,11 @@ import Observation
     }
     private(set) var isClosing = false
     func open(path: String, access: WorkspaceAccess, onEdit: @escaping () -> Void) {
-        guard !isClosing, documents[path] == nil else { return }
+        guard !isClosing, documents[path] == nil, images[path] == nil else { return }
+        if ImagePreviewFormat.matches(path) {
+            images[path] = ImagePreviewDocument(path: path, access: access)
+            return
+        }
         let document = EditorDocument(path: path, access: access, autoSave: autoSave, language: language, web: web)
         if packageToolRoot != nil && isManifest(document) { document.toolManaged = true }
         document.onEdit = { [weak self] in
@@ -41,6 +47,7 @@ import Observation
     func remove(_ path: String) {
         web?.invalidateEdits()
         documents.removeValue(forKey: path)?.close()
+        images.removeValue(forKey: path)?.suspend()
     }
     func reset() {
         editRequest = UUID()
@@ -50,8 +57,16 @@ import Observation
         pendingToolReload.removeAll()
         for document in documents.values { document.close() }
         documents.removeAll()
+        for image in images.values { image.suspend() }
+        images.removeAll()
+    }
+    func activateImage(path: String?) {
+        for (key, image) in images {
+            if key == path { image.activate() } else { image.suspend() }
+        }
     }
     func prune(keeping paths: Set<String>) {
+        for path in images.keys where !paths.contains(path) { remove(path) }
         for (path, document) in documents where !paths.contains(path) && !document.isDirty { remove(path) }
     }
     func saveAll() async -> Bool {
@@ -132,18 +147,12 @@ import Observation
         _ dirty: [EditorDocument], candidates: [EditorDocument],
         protected: [EditorDocument], completion: @escaping (Bool) async -> Void
     ) {
-        let alert = NSAlert()
-        alert.messageText = dirty.count == 1 ? "保存对“\(dirty[0].path)”的更改？" : "保存 \(dirty.count) 个文件的更改？"
-        alert.informativeText = "保存失败或磁盘文件发生变化时会保留编辑内容。"
-        alert.addButton(withTitle: "保存")
-        alert.addButton(withTitle: "丢弃更改")
-        alert.addButton(withTitle: "取消")
-        let finish: (NSApplication.ModalResponse) -> Void = { [weak self] response in
+        let finish: (WorkbenchPromptResponse) -> Void = { [weak self] response in
             guard let self else {
                 Task { await completion(false) }
                 return
             }
-            if response == .alertFirstButtonReturn {
+            if response == .accept {
                 Task {
                     var allowed = true
                     for document in dirty { if !(await document.save(forClosing: true)) { allowed = false } }
@@ -153,14 +162,20 @@ import Observation
             } else {
                 Task {
                     await self.finishClosing(
-                        response == .alertSecondButtonReturn, protected: protected, completion: completion)
+                        response == .alternate, protected: protected, completion: completion)
                 }
             }
         }
         if let window = NSApp.mainWindow ?? NSApp.windows.first(where: { $0.isVisible }) {
-            alert.beginSheetModal(for: window, completionHandler: finish)
+            WorkbenchPrompt.present(
+                in: window,
+                title: dirty.count == 1 ? "保存对“\(dirty[0].path)”的更改？" : "保存 \(dirty.count) 个文件的更改？",
+                detail: "保存失败或磁盘文件发生变化时会保留编辑内容。", accept: "保存", alternate: "丢弃更改"
+            ) {
+                response, _ in finish(response)
+            }
         } else {
-            finish(alert.runModal())
+            finish(.cancel)
         }
     }
 }

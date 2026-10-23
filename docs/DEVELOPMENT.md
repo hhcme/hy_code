@@ -4,7 +4,7 @@ Web 固定运行资源另需外部 Node 22.22.2+ 与 npm。首次执行 `bash sc
 
 `swift run --jobs 2 HyCodeWebProbe /absolute/path/to/node tools/web-language-services` 仅用自建临时 fixture 检查 stdio、未保存分析、自动导入、Vue 桥接和不执行配置插件的 canary；不启动 AppKit、浏览器/dev server 或用户 scripts。完整边界见 [Web 工具](WEB_TOOLS.md)。
 
-更新：2026-10-22。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件工作台、原生基础编辑、Rust 文本/目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)和[编辑说明](EDITING.md)。
+更新：2026-10-23。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件工作台、原生基础编辑、Rust 文本/目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)和[编辑说明](EDITING.md)。
 
 ## 开始工作
 
@@ -28,7 +28,7 @@ git diff --check
 nice -n 10 swift run --jobs 2 HyCodeDirectoryProbe
 ```
 
-原生脚本最多使用两个构建任务；日常可用 `nice -n 10 bash scripts/check_native.sh` 降低优先级。`swift test --disable-xctest` 运行文本增量/编码/保存冲突/权限/取消、工作区、工具停靠/分隔交互状态及最近项目记录、CoreGraphics 几何/离屏像素合成、CoreText 后台文件名测量的 Swift Testing 命令行入口，不链接应用 target 为测试宿主，不启动 `NSApplication` 或创建窗口。AppKit/SwiftUI 只参与编译，没有 UI 自动化测试。
+原生脚本最多使用两个构建任务；日常可用 `nice -n 10 bash scripts/check_native.sh` 降低优先级。`swift test --disable-xctest` 运行文本增量/编码/保存冲突/权限/取消、工作区、工具停靠/分隔交互状态及最近项目记录、CoreGraphics 几何/离屏像素合成、CoreText 后台文件名测量的 Swift Testing 命令行入口，不链接应用 target 为测试宿主，不启动 `NSApplication` 或创建窗口。图片新增 ImageIO/CoreGraphics 的自有小样本解码与几何、受限 SVG 桥接测试，同样没有 AppKit 宿主；许可清单由 `python3 scripts/check_image_dependencies.py` 校验。AppKit/SwiftUI 只参与编译，没有 UI 自动化测试。
 
 Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并行高亮用例遇到既有 100 ms 后台预算超时，失败记录保留，未放宽生产预算或断言。降载后通过不能代替高亮实际延迟、冷缓存或前台帧率验收。
 
@@ -57,7 +57,7 @@ Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并�
 | `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `31`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `34`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
 
@@ -105,3 +105,7 @@ Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.
 保留无关改动；只有用户授权时才提交、推送或发布。默认分支为 `main`，新自动化工作分支使用 `codex/` 前缀。新应用 target、crate、CLI、Bundle ID 和数据目录围绕 HyCode 定义，不沿用旧产品标识。应用打包和发布另行授权，不由文档推送自动触发。
 
 项目后台诊断的 FSEvents 测试只监听生成的临时目录，在 utility 队列接收事件，不使用主 run loop 或 GUI 宿主；扫描/汇总/有序同步测试同样在命令行执行。真实外部 SDK/Node 探针仍需显式运行，不加入通用检查；入口及边界见[项目分析](PROJECT_ANALYSIS.md)。
+
+build 33 的整体界面样式覆盖、系统界面边界与未验证项见[视觉对齐](VISUAL_ALIGNMENT.md)；173 Swift / 15 Rust 后台检查与未启动的 Release 开发包记录见[证据](evidence/2026-10-23-build33-full-workbench-style.json)。窗口输入/菜单/sheet 只通过源码与编译检查，未作为测试宿主运行，不能据此宣称像素一致或性能验收。
+
+build 34 的图片只读预览、后台 ImageIO/resvg 与资源限制见[图片预览](IMAGE_PREVIEW.md)。全量 186 Swift / 19 Rust、13 项图片 Swift ASan 和未启动的 Release 本地包见[证据](evidence/2026-10-23-build34-image-preview.json)；Rust 静态库未插桩，真实图像方向/缩放/捏合/键鼠及帧率仍未窗口验证。

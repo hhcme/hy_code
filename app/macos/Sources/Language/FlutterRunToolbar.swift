@@ -46,7 +46,7 @@ struct FlutterRunToolbar: View {
             }
             FlutterActionButton(title: "停止会话或任务 ⌃.", symbol: "stop.fill", color: .red) { controller.stop() }
                 .disabled(!controller.active && !controller.commandRunning)
-        }.font(.system(size: 12)).fixedSize(horizontal: true, vertical: false)
+        }.font(.system(size: 13)).fixedSize(horizontal: true, vertical: false)
     }
     private var deviceName: String {
         controller.devices.first { $0.id == controller.launch.deviceID }?.name

@@ -16,6 +16,7 @@ if [[ ! -f tools/web-language-services/node_modules/typescript/lib/tsserver.js ]
     bash scripts/setup_web_tools.sh
 fi
 node scripts/web_tools.mjs
+python3 scripts/check_image_dependencies.py
 swift build --configuration "$configuration" --jobs 2 --product HyCode
 binary_dir="$(swift build --configuration "$configuration" --show-bin-path)"
 bash scripts/build_icons.sh
@@ -29,6 +30,7 @@ cp .build/icons/HyCode.icns "$app_dir/Contents/Resources/HyCode.icns"
 cp app/macos/Resources/brand/icon.png "$app_dir/Contents/Resources/HyCode.png"
 cp LICENSE THIRD_PARTY_NOTICES.md "$app_dir/Contents/Resources/"
 cp -R third_party/licenses "$app_dir/Contents/Resources/third_party/"
+cp third_party/image-preview-crates.json "$app_dir/Contents/Resources/third_party/"
 runtime_dir="$app_dir/Contents/Resources/web-language-services"
 runtime_stage="$(mktemp -d "$app_dir/Contents/Resources/.web-language-services.XXXXXX")"
 trap 'rm -rf "$runtime_stage"' EXIT

@@ -5,16 +5,16 @@ import SwiftUI
 extension WorkspaceEntry {
     var symbol: String {
         switch kind {
-        case .directory: "folder"
-        case .symlink: "link"
-        case .other: "questionmark.square.dashed"
+        case .directory: return "folder"
+        case .symlink: return "link"
+        case .other: return "questionmark.square.dashed"
         case .file:
-            switch (name as NSString).pathExtension.lowercased() {
+            if ImagePreviewFormat.matches(name) { return "photo" }
+            return switch (name as NSString).pathExtension.lowercased() {
             case "swift", "rs", "c", "h", "cpp", "m", "mm", "js", "ts", "py", "go", "dart":
                 "chevron.left.forwardslash.chevron.right"
             case "md", "txt", "log": "doc.text"
             case "json", "toml", "yaml", "yml", "plist": "slider.horizontal.3"
-            case "png", "jpg", "jpeg", "gif", "svg", "webp": "photo"
             default: "doc"
             }
         }

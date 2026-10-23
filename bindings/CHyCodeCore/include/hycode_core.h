@@ -59,6 +59,20 @@ HyCodeTextResult hycode_text_syntax(HyCodeTextDocument *document, uint64_t expec
                                   const uint8_t *path, size_t path_len, size_t start, size_t end);
 void hycode_text_free(HyCodeTextDocument *document);
 
+/* Additive ABI 1 image entry. Borrow UTF-8 SVG <=2 MiB, edge 1..4096.
+ * Returns premultiplied RGBA8 pixels, row stride width*4, or JSON error.
+ * Caller owns/frees BOTH buffers using hycode_buffer_free, including errors.
+ * No retained input, window, callbacks, or SVG resource file/network access.
+ * Background-only. system_fonts permits one cached platform font discovery.
+ * Host checks cancellation before/after this synchronous noninterruptible call.
+ */
+typedef struct {
+    HyCodeBuffer pixels; HyCodeBuffer error;
+    uint32_t width; uint32_t height;
+    double source_width; double source_height;
+} HyCodeImageResult;
+HyCodeImageResult hycode_svg_render(const uint8_t *data, size_t len, uint32_t edge, bool system_fonts);
+
 #ifdef __cplusplus
 }
 #endif

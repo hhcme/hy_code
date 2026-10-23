@@ -25,11 +25,9 @@ struct FlutterDebugPanel: View {
                     FlutterDebuggerControls(controller: controller)
                     WorkbenchSeparator(vertical: true).frame(height: 18).padding(.horizontal, 4)
                     ForEach(FlutterToolSection.allCases) { section in
-                        Button {
+                        WorkbenchSectionTab(title: section.title, active: controller.section == section) {
                             controller.section = section
-                        } label: {
-                            Text(section.title).padding(.horizontal, 8).frame(height: 26)
-                        }.buttonStyle(WorkbenchButtonStyle(active: controller.section == section))
+                        }
                     }
                 }.padding(.horizontal, 8).frame(height: 34)
             }.fixedSize(horizontal: false, vertical: true)
@@ -44,7 +42,7 @@ struct FlutterDebugPanel: View {
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
             WorkbenchSeparator()
             FlutterToolStatus(controller: controller)
-        }.font(.system(size: 12)).foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.workbenchContentStyle()
     }
 }
 
@@ -82,7 +80,7 @@ private struct FlutterToolStatus: View {
     @Bindable var controller: FlutterWorkspaceController
     var body: some View {
         Text(controller.status).lineLimit(1).help(controller.status)
-            .font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+            .font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
             .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 10).frame(height: 24)
     }
 }
@@ -92,7 +90,7 @@ private struct FlutterConsoleContent: View {
     var body: some View {
         ScrollView {
             Text(controller.output.isEmpty ? "运行后在此显示控制台输出" : controller.output)
-                .font(.system(size: 11, design: .monospaced))
+                .font(.system(size: 12, design: .monospaced))
                 .foregroundStyle(controller.output.isEmpty ? WorkbenchColors.secondary : WorkbenchColors.text)
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading).padding(10)
@@ -170,7 +168,7 @@ private struct FlutterTestContent: View {
         }
     }
     private var testPath: some View {
-        TextField("测试文件或目录，留空运行全部", text: $controller.testPath).textFieldStyle(.roundedBorder)
+        TextField("测试文件或目录，留空运行全部", text: $controller.testPath).textFieldStyle(WorkbenchTextFieldStyle())
             .frame(minWidth: 130).disabled(controller.active || controller.commandRunning)
     }
     private var testActions: some View {

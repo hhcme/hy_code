@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "date": "2026-10-23",
+  "build": 32,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "2f6ffb5728cd3446557cba5afbff9e77d9bb1625",
+  "working_tree": "Uncommitted visual alignment changes; no staging, commit or push.",
+  "environment": {
+    "architecture": "arm64",
+    "macos": "27.0.1",
+    "swift": "6.4",
+    "rust": "1.96.0",
+    "deployment_target": "14.0"
+  },
+  "reference": [
+    {
+      "label": "user-provided-WebStorm-Islands",
+      "sha256": "a91ecb204b62472980ba762613d05a19e49679e99258c0f11f761b8816f75dd6",
+      "pixels": [
+        3840,
+        1988
+      ],
+      "assumed_backing_scale": 2,
+      "source_copied_into_repository": false
+    },
+    {
+      "label": "user-provided-prior-HyCode",
+      "sha256": "3b839b91000bae15a1bae40d9d1f38dc46433598b5e35c3fcfed10ce7314384f",
+      "pixels": [
+        3840,
+        1988
+      ],
+      "assumed_backing_scale": 2,
+      "source_copied_into_repository": false
+    }
+  ],
+  "comparison_kind": "Static pixel sampling of supplied images and source geometry only; no new GUI capture or native-window pixel diff.",
+  "adopted_metrics_points": {
+    "header": 43,
+    "rail_width": 40,
+    "shell_horizontal_inset": 1,
+    "panel_gap": 5,
+    "panel_radius": 10,
+    "panel_and_tab_header": 40,
+    "status_height": 36,
+    "status_font": 12,
+    "tool_side": 30,
+    "tool_step": 40,
+    "rail_end_inset": 3,
+    "tree_top_inset": 5,
+    "tree_visible_row_gutter_each_side": 16,
+    "tree_row_height": 24,
+    "ui_font": 13,
+    "editor_font": 14,
+    "editor_minimum_line_height": 22,
+    "editor_inset": [
+      10,
+      8
+    ],
+    "line_number_font": 12,
+    "line_number_minimum_width": 52
+  },
+  "implementation": [
+    "Shared point metrics used by SwiftUI, native rail, pane geometry and editor typography; pure flat palette retained.",
+    "Standard native traffic lights keep original size/parent/action/accessibility and are repositioned through public coordinates; fullscreen skipped, layout/resize/backing/fullscreen-exit refresh.",
+    "Rail layout and insertion slots share one geometry model; end indicators remain within rail bounds.",
+    "Balanced project-tree row gutters, top spacing and explicit native clipping; full names and fixed transparent scrollbar slots retained.",
+    "Nested native hosting views do not add a separate safe-area inset.",
+    "Project/tab/tool headings use consistent typography; top project title matches Project tool label.",
+    "Editor line spacing and initial paragraph display attributes, matching empty-line fallback, gutter typography and insets; no text/revision/undo ownership change.",
+    "No IDE resources, fonts, icons or implementation copied; system fonts retained."
+  ],
+  "checks": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 169,
+      "rust_tests": 15,
+      "new_swift_tests": 4,
+      "scope": "format, Clippy, C/C++ headers, pinned Web notices, headless geometry/model/process tests, docs and diff"
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --disable-xctest --filter 'WorkbenchStyleTests|WorkbenchLayoutTests|WorkbenchResizeInteractionTests|WorkbenchToolTileTests'",
+      "result": "pass",
+      "tests": 27,
+      "suites": 4
+    },
+    {
+      "command": "nice -n 10 swift build --jobs 2 --product HyCode",
+      "result": "pass",
+      "scope": "Initial compile; final release build includes all later editor fallback/paragraph adjustments."
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "app_launched": false
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only-source-review",
+    "remaining_confirmed_p1_p2": 0,
+    "not_gui_verification": true,
+    "retained_window_validation_gate": "Actual system parent bounds, drawing/hit area and fullscreen/scale behavior of repositioned standard window buttons need native window validation."
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "version": "0.1.0",
+    "build": "32",
+    "architecture": "arm64",
+    "bundle_id": "io.github.hhcme.hycode",
+    "minimum_system": "14.0",
+    "binary_sha256": "6abe22c80755694039a96b87ff0039dbc94631fd3d6f1eaa4a6440bf99cb416e",
+    "bundle_bytes": 146691333,
+    "distribution_signed": false,
+    "launched": false,
+    "installed": false,
+    "published": false
+  },
+  "not_verified": [
+    "Pixel-for-pixel native application comparison with reference",
+    "Actual native control drawing/hit testing, fullscreen return, IME and VoiceOver",
+    "Real rendering FPS/latency or large-project performance",
+    "No new Dart/Web SDK probes or sanitizer run for this visual-only change",
+    "System font glyphs/antialiasing/ligatures are not asserted identical to reference application"
+  ],
+  "source_sha256": {
+    "app/macos/Resources/Info.plist": "c55ab6a977df6eca4fc548436b3449e9295b6538cb560130e3e664cd337824fa",
+    "app/macos/Sources/Editor/CodeTextView.swift": "acdcc2a5a721aec9ba7369213d0b5ada1926adda0c31579004aa45a1eff91ac3",
+    "app/macos/Sources/Editor/EditorLineRuler.swift": "db58682acbd17eba59520c13dd8dc64a8689b106dbb9aaa640180fdb7ee9bea0",
+    "app/macos/Sources/Editor/NativeTextEditor.swift": "04daf1660055c77450833598eb0879184a2bbde8bd8028714d51e19148e48486",
+    "app/macos/Sources/ProjectTree/ProjectTreeScrollContainer.swift": "65df87932196b03352c58a43288fc8478ef78f3de0985c32c49591cff777acb9",
+    "app/macos/Sources/Workbench/WorkbenchCanvas.swift": "b42d13e93a3b0d2c54d24130a60a0afda8652137fa28bc180f38d086a9095a34",
+    "app/macos/Sources/Workbench/WorkbenchHeader.swift": "81425a8c49487da91c0b2da555fca16ce78c8ee829877dc2000c9808f951612e",
+    "app/macos/Sources/Workbench/WorkbenchProjectSwitcher.swift": "cf7b01df07d5fca5f07312fb6b52e6df5ec3400b0fdfc4d8b29dcb6288d41c03",
+    "app/macos/Sources/Workbench/WorkbenchTab.swift": "dd629fc998e18a6f4626bb8079cbe029c62c71ea97f826d9ae557b550df44408",
+    "app/macos/Sources/Workbench/WorkbenchTheme.swift": "b6f1d6ce66d5e7f23c59e002ece38bf82d478e741ad0e3004b713995eba5b712",
+    "app/macos/Sources/Workbench/WorkbenchToolPresentation.swift": "c056b2b685c6eeb07d420ec71a1ae81b05f59c14389edfcb761614d685e816c1",
+    "app/macos/Sources/Workbench/WorkbenchToolRail.swift": "419cd4f46498026f15e207de007af1458c996e8f64597a01c6a6674d4230173a",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "2f1cefd776cb6cf8a83979f236ad1004dde819e68846b93ef1feaad01e0a0829",
+    "app/macos/Sources/Workbench/WorkbenchWindowChrome.swift": "bdc1de4b015ffedfab378a55a9435abb33e0b256293e3964be647a8cdd21d37a",
+    "packages/HyCodeWorkspace/Sources/WorkbenchPaneSizes.swift": "47b85c9db5737db3090434ee726f947263b8f80ee161907aa2dcabcbb238c604",
+    "packages/HyCodeWorkspace/Sources/WorkbenchStyleMetrics.swift": "ddacda684bfa1b7ec198cd2a15dc415688f2dda92e31c26bb85375aeef4f9013",
+    "packages/HyCodeWorkspace/Tests/WorkbenchStyleTests.swift": "c874ffff784af10529554010b7163ea0315c4d1a3be67ade299c2a3f470791c2"
+  },
+  "log_sha256": {
+    ".build/build32-check-native.log": "c7522dc6c98f32532c19d87ca9c308e567971fc65a087ad816b4f456aa9725ed",
+    ".build/build32-layout-tests.log": "1cc848c56fd8a9a917e2d17dc5b1e13b839d09fedaee33020c711bcd919e457e",
+    ".build/build32-compile.log": "2597c489953ee5730e4eb885bb69998ab6690f369e4d155d0c25122a666c3a67",
+    ".build/build32-release.log": "d87ea55b40b392640e70cb5b28010d2e9ae3bf8ddf1c53d87c3078d2ace66961",
+    ".build/build32-docs.log": "7d48d8e11a3a387a1c07c05fa06d360fd033fdf5fe14bdebd86446b44b7436be"
+  }
+}

@@ -3,21 +3,29 @@ import AppKit
 /// The document remains at least viewport-wide, but grows to the widest expanded
 /// row. Resizing the sidebar only applies cached width; it never remeasures names.
 @MainActor final class ProjectTreeOutline: NSOutlineView {
-    var makeContextMenu: ((Int) -> NSMenu?)?
+    var makeContextMenu: ((Int) -> [WorkbenchMenuItem]?)?
+    private let contextPopup = WorkbenchContextMenu()
     var contentWidth: CGFloat = 0 { didSet { fitContentWidth() } }
     private var applyingWidth = false
     private weak var observedClip: NSClipView?
     private var visibleX: CGFloat?
     private var visibleWidth: CGFloat?
 
-    override func menu(for event: NSEvent) -> NSMenu? {
+    override func menu(for event: NSEvent) -> NSMenu? { nil }
+    override func rightMouseDown(with event: NSEvent) { showContextMenu(event) }
+    override func mouseDown(with event: NSEvent) {
+        if event.modifierFlags.contains(.control) { showContextMenu(event) } else { super.mouseDown(with: event) }
+    }
+    private func showContextMenu(_ event: NSEvent) {
         let row = row(at: convert(event.locationInWindow, from: nil))
-        guard isEnabled, row >= 0 else { return nil }
-        return makeContextMenu?(row)
+        guard isEnabled, row >= 0, let items = makeContextMenu?(row), let window else { return }
+        contextPopup.show(
+            items.map(\.contextCommand), at: window.convertPoint(toScreen: event.locationInWindow), in: self)
     }
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if window == nil { contextPopup.hide() }
         let clip = window == nil ? nil : enclosingScrollView?.contentView
         guard observedClip !== clip else { return }
         if let observedClip {

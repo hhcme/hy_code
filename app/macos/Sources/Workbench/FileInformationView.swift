@@ -16,7 +16,7 @@ struct FileInformationView: View {
                             .foregroundStyle(Color(nsColor: entry.symbolColor))
                         VStack(alignment: .leading, spacing: 5) {
                             Text(entry.relativePath.isEmpty ? rootURL?.lastPathComponent ?? entry.name : entry.name)
-                                .font(.system(size: prominent ? 18 : 12, weight: .semibold))
+                                .font(.system(size: prominent ? 18 : 13, weight: .semibold))
                             if prominent {
                                 Text("文件信息").font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                             }
@@ -43,12 +43,12 @@ struct FileInformationView: View {
                         .foregroundStyle(WorkbenchColors.secondary)
                 }
             }
-            .padding(prominent ? 24 : 14)
+            .padding(prominent ? 24 : 12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(WorkbenchScrollStyle())
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .foregroundStyle(WorkbenchColors.text)
+        .font(.system(size: 13)).foregroundStyle(WorkbenchColors.text)
         .background(WorkbenchColors.canvas)
     }
 
@@ -59,7 +59,7 @@ struct FileInformationView: View {
 
     private func infoRow(_ title: String, value: String) -> some View {
         GridRow(alignment: .top) {
-            Text(title).foregroundStyle(WorkbenchColors.secondary).frame(width: 64, alignment: .leading)
+            Text(title).foregroundStyle(WorkbenchColors.secondary).frame(width: 76, alignment: .leading)
             Text(value).textSelection(.enabled).lineLimit(prominent ? nil : 3)
         }
     }

@@ -36,6 +36,9 @@ extension EditorWorkspace {
                 let changes = try await Task.detached(priority: .utility) {
                     try LSPWorkspaceEdits.parse(edit, root: root)
                 }.value
+                guard !changes.contains(where: { ImagePreviewFormat.matches($0.path) }) else {
+                    throw LanguageServiceFailure("图片只读预览不接受语义文本修改")
+                }
                 guard let self, self.editRequest == ticket, feature?.version == revision,
                     controller?.editRevision == workspaceRevision
                 else {
@@ -146,13 +149,14 @@ struct LanguageEditPreviewView: View {
     @State private var error = ""
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(preview.title + " · \(preview.files.count) 个文件").font(.headline).padding(16)
+            WorkbenchDialogHeader(
+                title: preview.title + " · \(preview.files.count) 个文件", symbol: "doc.text.magnifyingglass")
             WorkbenchSeparator()
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 12) {
                     ForEach(preview.files) { file in
                         DisclosureGroup(file.path) {
-                            Text(file.diff).textSelection(.enabled).font(.system(size: 11, design: .monospaced))
+                            Text(file.diff).textSelection(.enabled).font(.system(size: 12, design: .monospaced))
                         }.padding(8)
                     }
                     if !error.isEmpty { Text(error).foregroundStyle(.orange) }
@@ -160,13 +164,13 @@ struct LanguageEditPreviewView: View {
             }.frame(height: 340)
             WorkbenchSeparator()
             HStack {
-                Text("应用后沿用自动保存设置；每个文件可撤销").font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                Text("应用后沿用自动保存设置；每个文件可撤销").font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                 Spacer()
                 Button("取消", action: editing.cancelLanguagePreview).keyboardShortcut(.cancelAction)
                 Button("应用") {
                     do { try editing.applyLanguagePreview() } catch { self.error = error.localizedDescription }
-                }.keyboardShortcut(.defaultAction)
+                }.buttonStyle(WorkbenchActionButtonStyle(primary: true)).keyboardShortcut(.defaultAction)
             }.padding(12)
-        }.frame(width: 700).foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.frame(width: 700).workbenchContentStyle()
     }
 }

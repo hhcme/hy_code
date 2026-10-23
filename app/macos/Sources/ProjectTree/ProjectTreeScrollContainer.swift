@@ -10,6 +10,7 @@ import HyCodeWorkspace
 
     init(outline: ProjectTreeOutline) {
         super.init(frame: .zero)
+        clipsToBounds = true
         scroll.borderType = .noBorder
         scroll.drawsBackground = false
         scroll.hasVerticalScroller = false

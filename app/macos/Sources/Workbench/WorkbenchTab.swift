@@ -22,7 +22,7 @@ struct WorkbenchTab: View {
                         Image(systemName: "folder").foregroundStyle(Color(nsColor: WorkbenchColors.nativeFolder))
                     }
                     Text(tab.location.path.isEmpty ? projectName : tab.location.title)
-                        .font(.system(size: 12).italicIf(tab.isPreview))
+                        .font(.system(size: WorkbenchMetrics.uiFontSize).italicIf(tab.isPreview))
                         .lineLimit(1).frame(maxWidth: 190)
                     if dirty {
                         Circle().fill(WorkbenchColors.text).frame(width: 6, height: 6).accessibilityLabel("未保存")
@@ -53,10 +53,10 @@ struct WorkbenchTab: View {
         }
         .padding(.horizontal, 3).frame(height: WorkbenchMetrics.tabHeight)
         .onHover { hovering = $0 }
-        .contextMenu {
-            if tab.isPreview { Button("固定标签", action: pin) }
-            Button("关闭标签", action: close)
-        }
+        .workbenchContextMenu(
+            (tab.isPreview ? [WorkbenchMenuItem(title: "固定标签", action: pin), .separator] : [])
+                + [WorkbenchMenuItem(title: "关闭标签", action: close)]
+        )
         .help(tab.location.path.isEmpty ? projectName : tab.location.path)
     }
 }

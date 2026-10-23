@@ -72,6 +72,7 @@ final class NativeWorkbenchCanvas: NSView {
         wantsLayer = true
         layer?.masksToBounds = true
         editorHost.sizingOptions = []
+        editorHost.safeAreaRegions = []
         for pane in panes { addSubview(pane) }
         panes[1].mount(editorHost)
         for axis in WorkbenchDivider.allCases {
@@ -146,6 +147,7 @@ final class NativeWorkbenchCanvas: NSView {
         for tool in docking.active.values where toolHosts[tool] == nil {
             let host = NSHostingView(rootView: AnyView(EmptyView()))
             host.sizingOptions = []
+            host.safeAreaRegions = []
             toolHosts[tool] = host
         }
         for (tool, host) in toolHosts {

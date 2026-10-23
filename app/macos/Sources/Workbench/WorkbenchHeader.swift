@@ -8,7 +8,7 @@ struct WorkbenchHeader: View {
     var body: some View {
         HStack(spacing: 8) {
             // The system retains ownership of the traffic lights in this space.
-            Color.clear.frame(width: 76).accessibilityHidden(true)
+            Color.clear.frame(width: WorkbenchMetrics.trafficLightReserve).accessibilityHidden(true)
             WorkbenchProjectSwitcher(store: store)
             HStack(spacing: 2) {
                 WorkbenchIconButton(title: "后退 ⌘[", symbol: "arrow.left", action: store.goBack)
@@ -22,7 +22,8 @@ struct WorkbenchHeader: View {
             }
             if store.isLoading {
                 ProgressView().controlSize(.mini).frame(width: 16)
-                Text("正在读取目录").font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                Text("正在读取目录").font(.system(size: WorkbenchMetrics.statusFontSize)).foregroundStyle(
+                    WorkbenchColors.secondary)
                 WorkbenchIconButton(title: "取消目录读取", symbol: "stop", action: store.cancelReading)
             }
             WorkbenchIconButton(title: "刷新目录 ⌘R", symbol: "arrow.clockwise", action: store.refresh)

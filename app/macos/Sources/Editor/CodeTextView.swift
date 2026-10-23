@@ -52,7 +52,10 @@ import HyCodeWorkspace
             fragment = layout.lineFragmentRect(forGlyphAt: glyphs.location, effectiveRange: nil)
         } else {
             fragment = NSRect(
-                x: 0, y: 0, width: 0, height: layout.defaultLineHeight(for: font ?? .systemFont(ofSize: 13)))
+                x: 0, y: 0, width: 0,
+                height: max(
+                    WorkbenchMetrics.editorLineHeight,
+                    layout.defaultLineHeight(for: font ?? .systemFont(ofSize: WorkbenchMetrics.editorFontSize))))
         }
         return NSRect(
             x: visibleRect.minX, y: fragment.minY + textContainerOrigin.y,

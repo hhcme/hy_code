@@ -5,7 +5,7 @@ import HyCodeWorkspace
     weak var semantic: EditorLanguageFeatures?
     var lines: TextLineIndex
     private weak var editor: NSTextView?
-    private let numberFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular)
+    private let numberFont = NSFont.monospacedDigitSystemFont(ofSize: WorkbenchMetrics.gutterFontSize, weight: .regular)
     override var isFlipped: Bool { true }
     init(scroll: NSScrollView, textView: NSTextView, lines: TextLineIndex) {
         self.lines = lines
@@ -40,7 +40,7 @@ import HyCodeWorkspace
         needsDisplay = true
     }
     func updateThickness() {
-        let width = max(50, CGFloat(String(lines.count).count) * 7 + 30)
+        let width = max(52, CGFloat(String(lines.count).count) * 8 + 28)
         if ruleThickness != width { ruleThickness = width }
     }
     override func drawHashMarksAndLabels(in rect: NSRect) {
@@ -69,7 +69,11 @@ import HyCodeWorkspace
             if offset == length {
                 fragment =
                     layout.extraLineFragmentRect.isEmpty
-                    ? NSRect(x: 0, y: 0, width: 0, height: layout.defaultLineHeight(for: editor.font ?? numberFont))
+                    ? NSRect(
+                        x: 0, y: 0, width: 0,
+                        height: max(
+                            WorkbenchMetrics.editorLineHeight, layout.defaultLineHeight(for: editor.font ?? numberFont))
+                    )
                     : layout.extraLineFragmentRect
             } else {
                 let glyph = layout.glyphIndexForCharacter(at: offset)

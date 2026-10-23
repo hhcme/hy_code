@@ -1,6 +1,6 @@
 # HyCode 依赖与来源
 
-更新：2026-10-22。自有代码与文档采用 [MIT](../LICENSE)。当前应用为文件工作台与基础文本编辑；使用系统 TextKit 1 和 Tree-sitter 基础着色，无第三方编辑器框架；Dart 语义、Pub 与 Flutter DAP/工具命令使用用户安装的外部 SDK，不随应用分发。
+更新：2026-10-23。自有代码与文档采用 [MIT](../LICENSE)。当前应用为文件工作台与基础文本编辑；使用系统 TextKit 1 和 Tree-sitter 基础着色，无第三方编辑器框架；Dart 语义、Pub 与 Flutter DAP/工具命令使用用户安装的外部 SDK，不随应用分发。
 
 ## 已采用
 
@@ -13,17 +13,19 @@
 | Swift Testing | 验证环境随 Xcode 提供，不下载外部 Swift 包 | 工作区与几何数据模型的无 GUI 测试 |
 | Tree-sitter 与语法包 | 主库 0.27.1，12 个语法 crate 由 Cargo.toml/Cargo.lock 固定 | 增量树、可见范围高亮；Dart/Vue 为社区语法，版本/来源/许可见第三方通知及[高亮说明](SYNTAX.md) |
 | Dart Analysis Server / Dart Pub / Flutter CLI / SDK DAP | 外部 SDK，不在构建锁文件或应用内；语言 LSP 验证 Dart 3.11.5；DAP fixture 通过，当前 fork 真实控制台调试未通过；Flutter 安装元数据 3.41.10-ohos-0.0.2-beta | 官方 [Dart SDK](https://github.com/dart-lang/sdk/tree/3.11.5) / [Flutter](https://github.com/flutter/flutter)，上游均 BSD-3-Clause；仅调用已安装命令，未复制 SDK 或 IDE 插件；[Dart 许可](https://github.com/dart-lang/sdk/blob/3.11.5/LICENSE)、[Flutter 许可](https://github.com/flutter/flutter/blob/3.41.5/LICENSE)。此 fork 与其他版本兼容未完整验证，细节见 [Dart/Flutter 工具](DART_FLUTTER.md) |
+| ImageIO / CoreGraphics | macOS 系统框架；随系统版本变化 | 图片类型识别、首帧与方向处理、受限降采样和立即解码的只读 RGBA 投影；不分发第三方解码器 |
+| resvg / usvg / roxmltree | resvg/usvg 0.48.1，预检 roxmltree 0.21.1；Cargo.lock 固定 | Rust 后台 SVG 栅格化；禁用外部资源和嵌入图片，限制复杂效果；52 项新增 crate 的版本/许可/通知哈希见[机器台账](../third_party/image-preview-crates.json)与 [ADR 0008](adr/0008-image-preview.md) |
 | Python 标准库 | Python 3.9+ | 本地文档检查，无第三方 Python 包 |
 | Web 语言服务 | TypeScript 6.0.3、typescript-language-server 6.0.2、@vue/language-server 3.3.13、vscode-langservers-extracted 4.10.0 | npm 固定锁文件与 106 项传递依赖，来源/许可/校验见 [Web 工具](WEB_TOOLS.md) 和[第三方通知](../THIRD_PARTY_NOTICES.md)；外部 Node 22.22.2+ 不分发 |
 | GitHub Actions checkout | SHA 固定在[工作流](../.github/workflows/docs.yml) | 现有 CI 只检查文档，不进入应用分发 |
 
-Cargo 共 37 项直接/传递依赖，版本与源码校验值以 Cargo.lock 为准；运行时与构建时来源均记录在[第三方通知](../THIRD_PARTY_NOTICES.md)，并保留许可原文。双许可组件选择 MIT，foldhash 采用 Zlib，Unicode 数据和嵌入子组件另保留通知。没有复制第三方编辑器源码或从私有安装包提取组件，没有新增外部 Swift 包。
+Cargo 共 89 项直接/传递依赖（原 37 项加图片新增 52 项），版本与源码校验值以 Cargo.lock 为准；运行时与构建时来源均记录在[第三方通知](../THIRD_PARTY_NOTICES.md)，并保留许可原文。双许可组件选择 MIT，foldhash 采用 Zlib，Unicode 数据和嵌入子组件另保留通知。没有复制第三方编辑器源码或从私有安装包提取组件，没有新增外部 Swift 包。
 
 当前 Swift/Rust 桥接为仓库内窄 C ABI，未采用 UniFFI 或 cbindgen。文本与目录内核通过单元测试及 Swift 桥接/保存测试；系统 UI 的真实窗口、旧系统及应用分发仍未验证。
 
 ## 品牌素材与构建工具
 
-HyCode 应用图标由内置 imagegen 根据用户要求重新创作，HyHub 只作视觉参考，其原图和脚本未复制；图稿、提示词与来源边界见[品牌说明](BRANDING.md)。构建使用 macOS 自带 `sips` / `iconutil` 导出 ICNS，属于平台工具；应用运行不需要 imagegen 或额外图像库。
+HyCode 应用图标由内置 imagegen 根据用户要求重新创作，HyHub 只作视觉参考，其原图和脚本未复制；图稿、提示词与来源边界见[品牌说明](BRANDING.md)。构建使用 macOS 自带 `sips` / `iconutil` 导出 ICNS，属于平台工具；应用运行不需要 imagegen。图片预览新增的 Rust 图像依赖另列于已采用台账，不用于品牌图标生成。
 
 ## 研究候选，尚未采用
 

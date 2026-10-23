@@ -36,9 +36,9 @@ struct WorkbenchWelcomeView: View {
     private var actions: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(spacing: 12) {
-                HyCodeBrandIcon(size: 64)
+                HyCodeBrandIcon(size: 48)
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("HyCode").font(.system(size: 30, weight: .semibold))
+                    Text("HyCode").font(.system(size: 24, weight: .semibold))
                     Text("打开项目，继续工作").font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                 }
             }
@@ -80,7 +80,7 @@ struct WorkbenchWelcomeView: View {
                 }
                 .buttonStyle(WorkbenchButtonStyle(active: store.includeHidden))
             }
-            .font(.system(size: 12)).frame(width: 260)
+            .font(.system(size: 13)).frame(width: 260)
         }
     }
 

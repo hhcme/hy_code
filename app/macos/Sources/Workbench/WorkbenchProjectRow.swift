@@ -5,12 +5,13 @@ import SwiftUI
 struct WorkbenchProjectRow: View {
     let project: RecentProject
     var active = false
+    var highlighted = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(alignment: .top, spacing: 10) {
-                WorkbenchProjectBadge(project: project, size: 26).padding(.top, 2)
+                WorkbenchProjectBadge(project: project, size: 20).padding(.top, 2)
                 VStack(alignment: .leading, spacing: 5) {
                     Text(project.name).font(.system(size: 13, weight: .medium))
                         .lineLimit(1).truncationMode(.middle)
@@ -22,9 +23,10 @@ struct WorkbenchProjectRow: View {
                     Image(systemName: "checkmark").font(.system(size: 10)).foregroundStyle(WorkbenchColors.secondary)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading).frame(height: 56).padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, alignment: .leading).frame(height: WorkbenchMetrics.projectPopupRowHeight)
+            .padding(.horizontal, 12)
         }
-        .buttonStyle(WorkbenchButtonStyle(active: active))
+        .buttonStyle(WorkbenchButtonStyle(active: active || highlighted, neutral: !highlighted))
         .help(project.path).accessibilityLabel("\(project.name)，\(project.path)")
     }
 }

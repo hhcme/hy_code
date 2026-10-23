@@ -19,8 +19,7 @@ struct FlutterRunConfigurationEditor: View {
     }
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Label("运行 / 调试配置", systemImage: "chevron.left.forwardslash.chevron.right")
-                .font(.system(size: 14, weight: .semibold)).padding(16)
+            WorkbenchDialogHeader(title: "运行 / 调试配置", symbol: "chevron.left.forwardslash.chevron.right")
             WorkbenchSeparator()
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
@@ -34,11 +33,24 @@ struct FlutterRunConfigurationEditor: View {
                         }
                         GridRow {
                             Text("运行模式")
-                            Picker("运行模式", selection: $draft.value.mode) {
-                                ForEach(FlutterLaunchConfiguration.Mode.allCases, id: \.self) {
-                                    Text($0.rawValue).tag($0)
+                            WorkbenchMenuButton(
+                                title: "运行模式",
+                                items: FlutterLaunchConfiguration.Mode.allCases.map { mode in
+                                    WorkbenchMenuItem(title: mode.rawValue, checked: draft.value.mode == mode) {
+                                        draft.value.mode = mode
+                                    }
                                 }
-                            }.labelsHidden().frame(width: 160)
+                            ) {
+                                HStack {
+                                    Text(draft.value.mode.rawValue)
+                                    Spacer()
+                                    Image(systemName: "chevron.down").font(.system(size: 9))
+                                }.padding(.horizontal, 8).frame(width: 144, height: 28)
+                                    .background(WorkbenchColors.field, in: RoundedRectangle(cornerRadius: 4))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 4).strokeBorder(
+                                            WorkbenchColors.tabBorder, lineWidth: 0.5))
+                            }
                         }
                         GridRow {
                             Text("设备 ID")
@@ -56,7 +68,7 @@ struct FlutterRunConfigurationEditor: View {
                             Text("运行参数")
                             TextField("每行一项", text: $argumentsText, axis: .vertical).lineLimit(3...6)
                         }
-                    }.textFieldStyle(.roundedBorder)
+                    }.textFieldStyle(WorkbenchTextFieldStyle())
                     Toggle("Dart 文件保存成功后自动热重载", isOn: $draft.value.hotReloadOnSave).toggleStyle(.checkbox)
                     if !controller.available {
                         HStack {
@@ -78,9 +90,10 @@ struct FlutterRunConfigurationEditor: View {
                         try controller.applyConfiguration(draft)
                         dismiss()
                     } catch { self.error = error.localizedDescription }
-                }.keyboardShortcut(.defaultAction).disabled(!controller.canEditConfiguration)
+                }.buttonStyle(WorkbenchActionButtonStyle(primary: true)).keyboardShortcut(.defaultAction).disabled(
+                    !controller.canEditConfiguration)
             }.padding(12)
-        }.font(.system(size: 12)).foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.workbenchContentStyle()
             .frame(width: 600)
     }
 }
@@ -90,7 +103,7 @@ struct FlutterBreakpointsEditor: View {
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Label("断点", systemImage: "smallcircle.filled.circle").font(.system(size: 14, weight: .semibold)).padding(16)
+            WorkbenchDialogHeader(title: "断点", symbol: "smallcircle.filled.circle")
             WorkbenchSeparator()
             FlutterToolScroll {
                 if controller.breakpoints.values.allSatisfy(\.isEmpty) {
@@ -106,9 +119,10 @@ struct FlutterBreakpointsEditor: View {
             HStack {
                 Text("修改即时生效；实心断点表示适配器已确认").foregroundStyle(WorkbenchColors.secondary)
                 Spacer()
-                Button("完成") { dismiss() }.keyboardShortcut(.defaultAction)
+                Button("完成") { dismiss() }.buttonStyle(WorkbenchActionButtonStyle(primary: true)).keyboardShortcut(
+                    .defaultAction)
             }.padding(12)
-        }.font(.system(size: 12)).foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.workbenchContentStyle()
             .frame(width: 600)
     }
 }
@@ -138,7 +152,7 @@ private struct FlutterBreakpointRow: View {
             }.help(path)
             TextField("暂停条件，可留空", text: binding(\.condition))
             TextField("日志断点内容，可留空", text: binding(\.logMessage))
-        }.textFieldStyle(.roundedBorder).padding(8)
+        }.textFieldStyle(WorkbenchTextFieldStyle()).padding(8)
             .background(WorkbenchColors.tab, in: RoundedRectangle(cornerRadius: 4))
     }
 }

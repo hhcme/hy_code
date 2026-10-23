@@ -38,7 +38,7 @@ final class NativeToolRail: NSView {
     override var isFlipped: Bool { true }
     private var top: WorkbenchCorner { leading ? .topLeading : .topTrailing }
     private var bottom: WorkbenchCorner { leading ? .bottomLeading : .bottomTrailing }
-    private let step: CGFloat = 36
+    private let step = WorkbenchMetrics.toolStep
 
     init(leading: Bool, session: UUID) {
         self.leading = leading
@@ -78,9 +78,11 @@ final class NativeToolRail: NSView {
         super.layout()
         for corner in [top, bottom] {
             let tools = docking.groups[corner, default: []]
-            let start = corner.isTop ? 4 : max(4, bounds.height - 8 - CGFloat(tools.count) * step)
+            let start = WorkbenchRailGeometry.start(count: tools.count, top: corner.isTop, height: bounds.height)
             for (index, tool) in tools.enumerated() {
-                let frame = NSRect(x: 5, y: start + CGFloat(index) * step, width: 30, height: 30)
+                let side = WorkbenchMetrics.toolSide
+                let frame = NSRect(
+                    x: (bounds.width - side) / 2, y: start + CGFloat(index) * step, width: side, height: side)
                 if buttons[tool]?.frame != frame { buttons[tool]?.frame = frame }
             }
         }
@@ -93,13 +95,17 @@ final class NativeToolRail: NSView {
     private func locate(_ point: NSPoint) -> (corner: WorkbenchCorner, index: Int, y: CGFloat) {
         let upper = docking.groups[top, default: []]
         let lower = docking.groups[bottom, default: []]
-        let upperEnd = 4 + CGFloat(max(1, upper.count)) * step
-        let lowerStart = max(upperEnd, bounds.height - 8 - CGFloat(max(1, lower.count)) * step)
+        let upperEnd = WorkbenchMetrics.railEndInset + CGFloat(max(1, upper.count)) * step
+        let lowerStart = max(
+            upperEnd, WorkbenchRailGeometry.start(count: lower.count, top: false, height: bounds.height))
         let corner = point.y < (upperEnd + lowerStart) / 2 ? top : bottom
         let tools = docking.groups[corner, default: []]
-        let start = corner.isTop ? 4 : max(4, bounds.height - 8 - CGFloat(tools.count) * step)
-        let slot = min(tools.count, max(0, Int(((point.y - start) / step + 0.5).rounded(.down))))
-        return (corner, slot, tools.isEmpty && !corner.isTop ? bounds.height - 28 : start + CGFloat(slot) * step - 3)
+        let slot = WorkbenchRailGeometry.insertionIndex(
+            y: point.y, count: tools.count, top: corner.isTop, height: bounds.height)
+        return (
+            corner, slot,
+            WorkbenchRailGeometry.insertionY(index: slot, count: tools.count, top: corner.isTop, height: bounds.height)
+        )
     }
     override func wantsPeriodicDraggingUpdates() -> Bool { false }
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation { draggingUpdated(sender) }
@@ -165,7 +171,7 @@ private final class DockToolButton: NSButton, NSDraggingSource {
     private var dragging = false
     private var hovering = false
     private var tracking: NSTrackingArea?
-    private var menuTargets: [DockMenuAction] = []
+    private let contextPopup = WorkbenchContextMenu()
     private let artwork: WorkbenchToolArtwork
     private var preparedDragImage: NSImage?
 
@@ -190,6 +196,10 @@ private final class DockToolButton: NSButton, NSDraggingSource {
     @objc private func activateTool() { rail?.toggle(tool) }
 
     override func mouseDown(with event: NSEvent) {
+        if event.modifierFlags.contains(.control) {
+            showContextMenu(event)
+            return
+        }
         guard isEnabled, event.type == .leftMouseDown else { return }
         hovering = true
         needsDisplay = true
@@ -245,6 +255,7 @@ private final class DockToolButton: NSButton, NSDraggingSource {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         if window == nil {
+            contextPopup.hide()
             hovering = false
             resetPress()
         }
@@ -315,43 +326,33 @@ private final class DockToolButton: NSButton, NSDraggingSource {
             hints: nil)
     }
 
-    override func menu(for event: NSEvent) -> NSMenu? {
-        guard let rail, let corner = rail.docking.corner(of: tool),
+    override func menu(for event: NSEvent) -> NSMenu? { nil }
+    override func rightMouseDown(with event: NSEvent) { showContextMenu(event) }
+    private func showContextMenu(_ event: NSEvent) {
+        guard isEnabled, let window, let rail, let corner = rail.docking.corner(of: tool),
             let index = rail.docking.groups[corner]?.firstIndex(of: tool)
-        else { return nil }
-        let menu = NSMenu()
-        menu.autoenablesItems = false
-        menuTargets.removeAll()
-        func item(_ title: String, enabled: Bool = true, action: @escaping () -> Void) {
-            let target = DockMenuAction(action)
-            menuTargets.append(target)
-            let item = NSMenuItem(title: title, action: #selector(DockMenuAction.invoke), keyEquivalent: "")
-            item.target = target
-            item.isEnabled = enabled
-            menu.addItem(item)
-        }
+        else { return }
+        var items: [WorkbenchMenuItem] = []
         for destination in WorkbenchCorner.allCases {
-            item("移动到\(destination.title)", enabled: destination != corner) { [weak self] in
-                guard let self, let rail = self.rail else { return }
-                rail.move(self.tool, destination, rail.docking.groups[destination, default: []].count)
-            }
+            items.append(
+                WorkbenchMenuItem(title: "移动到\(destination.title)", enabled: destination != corner) { [weak self] in
+                    guard let self, let rail = self.rail else { return }
+                    rail.move(self.tool, destination, rail.docking.groups[destination, default: []].count)
+                })
         }
-        menu.addItem(.separator())
-        item("向前排列", enabled: index > 0) { [weak self] in
-            guard let self else { return }
-            self.rail?.move(self.tool, corner, index - 1)
-        }
-        item("向后排列", enabled: index + 1 < rail.docking.groups[corner, default: []].count) { [weak self] in
-            guard let self else { return }
-            self.rail?.move(self.tool, corner, index + 2)
-        }
-        return menu
+        items.append(.separator)
+        items.append(
+            WorkbenchMenuItem(title: "向前排列", enabled: index > 0) { [weak self] in
+                guard let self else { return }
+                self.rail?.move(self.tool, corner, index - 1)
+            })
+        items.append(
+            WorkbenchMenuItem(title: "向后排列", enabled: index + 1 < rail.docking.groups[corner, default: []].count) {
+                [weak self] in
+                guard let self else { return }
+                self.rail?.move(self.tool, corner, index + 2)
+            })
+        contextPopup.show(
+            items.map(\.contextCommand), at: window.convertPoint(toScreen: event.locationInWindow), in: self)
     }
-}
-
-@MainActor
-private final class DockMenuAction: NSObject {
-    let action: () -> Void
-    init(_ action: @escaping () -> Void) { self.action = action }
-    @objc func invoke() { action() }
 }

@@ -18,6 +18,7 @@ struct WorkbenchView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 toolRail(leading: false)
             }
+            .padding(.horizontal, WorkbenchMetrics.shellInset)
             statusBar
         }
         .font(.system(size: 13))
@@ -95,7 +96,7 @@ struct WorkbenchView: View {
             HStack(spacing: 4) {
                 WorkbenchMenuButton(title: "项目菜单", items: projectMenu) {
                     HStack(spacing: 5) {
-                        Text("文件列表").font(.system(size: 12, weight: .semibold))
+                        Text("项目").font(.system(size: WorkbenchMetrics.uiFontSize, weight: .semibold))
                         Image(systemName: "chevron.down").font(.system(size: 8))
                     }
                     .frame(height: 26)
@@ -139,6 +140,7 @@ struct WorkbenchView: View {
                 // vertical scrollbar. Keep the bottom lane inside the island.
                 .padding(.leading, WorkbenchMetrics.treeOuterInset + WorkbenchMetrics.scrollerWidth)
                 .padding(.trailing, WorkbenchMetrics.treeOuterInset)
+                .padding(.top, WorkbenchMetrics.treeTopInset)
                 .padding(.bottom, WorkbenchMetrics.scrollerWidth)
             }
         }
@@ -177,7 +179,7 @@ struct WorkbenchView: View {
                 HStack(spacing: 0) {
                     if store.rootURL == nil {
                         Label("欢迎", systemImage: "square.grid.2x2")
-                            .font(.system(size: 12)).padding(.horizontal, 12).frame(height: 28)
+                            .font(.system(size: WorkbenchMetrics.uiFontSize)).padding(.horizontal, 12).frame(height: 28)
                             .foregroundStyle(WorkbenchColors.text)
                             .background(WorkbenchColors.tab, in: RoundedRectangle(cornerRadius: 5))
                             .overlay {
@@ -218,7 +220,9 @@ struct WorkbenchView: View {
         if store.rootURL == nil {
             welcome
         } else if let tab = store.tabs.active, case .file(let entry) = tab.location {
-            if let document = store.editing.documents[entry.relativePath] {
+            if let image = store.editing.images[entry.relativePath] {
+                ImagePreviewPanel(document: image).id(image.id)
+            } else if let document = store.editing.documents[entry.relativePath] {
                 EditorPanel(document: document, reload: store.reloadActiveDocument)
             }
         } else {
@@ -267,6 +271,7 @@ struct WorkbenchView: View {
                 }
             }
         }
+        .font(.system(size: WorkbenchMetrics.uiFontSize))
         .foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
     }
 
@@ -286,7 +291,9 @@ struct WorkbenchView: View {
                         .foregroundStyle(WorkbenchColors.secondary)
                         Label("文本编辑", systemImage: "doc.text").foregroundStyle(WorkbenchColors.secondary)
                     }
-                    .font(.system(size: 12)).padding(14).frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.system(size: WorkbenchMetrics.uiFontSize)).padding(12).frame(
+                        maxWidth: .infinity, alignment: .leading
+                    )
                     .background(WorkbenchScrollStyle())
                 }
             } else {
@@ -302,7 +309,7 @@ struct WorkbenchView: View {
 
     private func toolPanelHeader(_ tool: WorkbenchTool) -> some View {
         HStack {
-            Text(tool.title).font(.system(size: 12, weight: .semibold))
+            Text(tool.title).font(.system(size: WorkbenchMetrics.uiFontSize, weight: .semibold))
             Spacer(minLength: 4)
             WorkbenchIconButton(title: "隐藏\(tool.title)", symbol: "minus", size: 24) { store.docking.hide(tool) }
         }
@@ -317,7 +324,7 @@ struct WorkbenchView: View {
                 Text(title)
                 Spacer(minLength: 0)
             }
-            .font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary).padding(14)
+            .font(.system(size: WorkbenchMetrics.uiFontSize)).foregroundStyle(WorkbenchColors.secondary).padding(12)
             Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -367,11 +374,17 @@ struct WorkbenchView: View {
                 if !document.syntaxLanguage.isEmpty {
                     Text(document.syntaxLanguage).help(document.syntaxNotice ?? "语法高亮")
                 }
+            } else if let image = store.activeImage {
+                Text(image.status).fixedSize()
+                if !image.format.isEmpty { Text(image.format) }
+                if image.byteCount > 0 {
+                    Text(ByteCountFormatter.string(fromByteCount: Int64(image.byteCount), countStyle: .file))
+                }
             } else {
                 Label("文本编辑", systemImage: "doc.text").fixedSize()
             }
         }
-        .font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+        .font(.system(size: WorkbenchMetrics.statusFontSize)).foregroundStyle(WorkbenchColors.secondary)
         .padding(.horizontal, 12).frame(height: WorkbenchMetrics.statusHeight)
         .background(WorkbenchColors.chrome)
     }

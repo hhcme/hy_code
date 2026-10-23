@@ -34,6 +34,7 @@ final class WorkbenchStore {
         get { editing.autoSave }
         set { editing.autoSave = newValue }
     }
+    var activeImage: ImagePreviewDocument? { tabs.active.flatMap { editing.images[$0.location.path] } }
     var activeDocument: EditorDocument? { tabs.active.flatMap { editing.documents[$0.location.path] } }
     @ObservationIgnored let dockingSession = UUID()
     var includeHidden = false { didSet { if oldValue != includeHidden { refresh() } } }
@@ -299,7 +300,7 @@ final class WorkbenchStore {
         guard rootURL != nil, !editing.isClosing else { return }
         let currentEntries = snapshots[location.parentDirectory ?? ""]?.entries ?? []
         let resolved = location.resolvingFile(in: currentEntries)
-        if case .file(let entry) = resolved {
+        if case .file(let entry) = resolved, !ImagePreviewFormat.matches(entry.relativePath) {
             dart.refreshProject(path: entry.relativePath)
             web.refreshProject(path: entry.relativePath)
             analysisLanguage = WebLanguage.detect(entry.relativePath) != nil ? "web" : "dart"
@@ -316,6 +317,7 @@ final class WorkbenchStore {
             }
         }
         editing.prune(keeping: Set(tabs.tabs.map { $0.location.path }))
+        editing.activateImage(path: tabs.active?.location.path)
         if recordHistory { history.visit(resolved) }
         if case .file(let entry) = resolved {
             selectedEntry = entry
@@ -336,10 +338,13 @@ final class WorkbenchStore {
     func activateTab(_ id: UUID) {
         guard !editing.isClosing else { return }
         tabs.activate(id)
+        editing.activateImage(path: tabs.active?.location.path)
         guard let active = tabs.active else { return }
-        dart.refreshProject(path: active.location.path)
-        web.refreshProject(path: active.location.path)
-        analysisLanguage = WebLanguage.detect(active.location.path) != nil ? "web" : "dart"
+        if !ImagePreviewFormat.matches(active.location.path) {
+            dart.refreshProject(path: active.location.path)
+            web.refreshProject(path: active.location.path)
+            analysisLanguage = WebLanguage.detect(active.location.path) != nil ? "web" : "dart"
+        }
         browsingLocation = active.location
         history.visit(active.location)
         if case .file(let entry) = active.location { selectedEntry = entry }
@@ -358,10 +363,13 @@ final class WorkbenchStore {
     private func removeTab(_ id: UUID, path: String) {
         editing.remove(path)
         tabs.close(id)
+        editing.activateImage(path: tabs.active?.location.path)
         selectedEntry = nil
         browsingLocation = tabs.active?.location ?? .directory(currentDirectory)
-        dart.refreshProject(path: browsingLocation?.path ?? "")
-        web.refreshProject(path: browsingLocation?.path ?? "")
+        if !ImagePreviewFormat.matches(browsingLocation?.path ?? "") {
+            dart.refreshProject(path: browsingLocation?.path ?? "")
+            web.refreshProject(path: browsingLocation?.path ?? "")
+        }
         if let location {
             history.visit(location)
             requestDirectory(currentDirectory)

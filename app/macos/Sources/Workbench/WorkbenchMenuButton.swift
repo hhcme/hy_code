@@ -11,7 +11,7 @@ struct WorkbenchMenuItem {
     static var separator: Self { Self(title: "-") }
 }
 
-/// Draw the label ourselves; NSMenu owns popup interaction, keyboard and accessibility.
+/// Shared label and popup chrome; a native anchor owns keyboard activation.
 /// A transparent native button avoids NSPopUpButton's extra chevron, tint and label sizing.
 struct WorkbenchMenuButton<Label: View>: View {
     let title: String
@@ -63,7 +63,7 @@ private struct WorkbenchMenuAnchor: NSViewRepresentable {
 
     final class MenuButton: NSButton {
         var items: [WorkbenchMenuItem] = []
-        private var actions: [MenuAction] = []
+        private let popup = WorkbenchContextMenu()
         var updatingFromSwiftUI = false
         var interactionChanged: (WorkbenchMenuInteraction) -> Void = { _ in }
         private var interaction = WorkbenchMenuInteraction()
@@ -72,6 +72,7 @@ private struct WorkbenchMenuAnchor: NSViewRepresentable {
         override var isEnabled: Bool {
             didSet {
                 guard oldValue != isEnabled else { return }
+                if !isEnabled { popup.hide() }
                 interaction = WorkbenchMenuInteraction()
                 lastPublished = nil
                 window?.invalidateCursorRects(for: self)
@@ -102,7 +103,7 @@ private struct WorkbenchMenuAnchor: NSViewRepresentable {
         }
         required init?(coder: NSCoder) { nil }
         // SwiftUI draws the shared feedback underneath the label; this native
-        // overlay owns hit testing, keyboard behavior and NSMenu tracking only.
+        // overlay owns hit testing and keyboard activation only.
         override func draw(_ dirtyRect: NSRect) {}
         override func resetCursorRects() {
             super.resetCursorRects()
@@ -151,42 +152,27 @@ private struct WorkbenchMenuAnchor: NSViewRepresentable {
             lastPublished = interaction
             interactionChanged(interaction)
         }
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            if window == nil { popup.hide() }
+        }
         @objc private func showMenu() {
-            guard isEnabled else { return }
+            guard isEnabled, let window else { return }
             interaction.open = true
             publishInteraction()
-            defer {
+            popup.onClose = { [weak self] in
+                guard let self else { return }
                 interaction.open = false
                 interaction.hovering = false
-                publishInteraction()
-                actions.removeAll()
+                publishInteractionLater()
             }
-            actions.removeAll()
-            let menu = buildMenu(items)
-            let y = isFlipped ? bounds.maxY + 3 : bounds.minY - 3
-            menu.popUp(positioning: nil, at: NSPoint(x: 0, y: y), in: self)
-        }
-        private func buildMenu(_ items: [WorkbenchMenuItem]) -> NSMenu {
-            let menu = NSMenu()
-            menu.autoenablesItems = false
-            for item in items {
-                if item.title == "-" {
-                    menu.addItem(.separator())
-                    continue
-                }
-                let entry = NSMenuItem(title: item.title, action: nil, keyEquivalent: "")
-                entry.isEnabled = item.enabled
-                if let checked = item.checked { entry.state = checked ? .on : .off }
-                if !item.children.isEmpty { entry.submenu = buildMenu(item.children) }
-                if let action = item.action {
-                    let target = MenuAction(action)
-                    actions.append(target)
-                    entry.target = target
-                    entry.action = #selector(MenuAction.invokeAction)
-                }
-                menu.addItem(entry)
+            popup.show(
+                items.map(\.contextCommand), at: window.convertPoint(toScreen: convert(.zero, to: nil)),
+                in: self, dropdown: true)
+            if !popup.isVisible {
+                interaction.open = false
+                publishInteractionLater()
             }
-            return menu
         }
     }
 
@@ -199,13 +185,6 @@ private struct WorkbenchMenuAnchor: NSViewRepresentable {
             highlightChanged(flag)
         }
     }
-}
-
-@MainActor
-private final class MenuAction: NSObject {
-    let action: () -> Void
-    init(_ action: @escaping () -> Void) { self.action = action }
-    @objc func invokeAction() { action() }
 }
 
 extension WorkbenchAppearance {

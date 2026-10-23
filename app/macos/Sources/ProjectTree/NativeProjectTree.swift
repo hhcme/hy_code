@@ -310,7 +310,7 @@ struct NativeProjectTree: NSViewRepresentable {
             return item.entry.url(relativeTo: root).path
         }
 
-        func contextMenu(for row: Int) -> NSMenu? {
+        func contextMenu(for row: Int) -> [WorkbenchMenuItem]? {
             guard let outline, let item = outline.item(atRow: row) as? Node,
                 item.statusParent == nil, let root = store.rootURL
             else { return nil }
@@ -383,7 +383,7 @@ struct NativeProjectTree: NSViewRepresentable {
                                 .dropLast().joined(separator: "/")
                         owner.store.requestDirectory(directory, force: true)
                     }))
-            return ProjectTreeContextMenu.make(items)
+            return items
         }
         private static func copy(_ value: String) {
             // Only reached from the user's explicit native-menu action.

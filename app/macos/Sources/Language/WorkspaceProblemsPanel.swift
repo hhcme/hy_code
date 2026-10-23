@@ -30,7 +30,7 @@ struct WorkspaceProblemsSummary: View {
             {
                 Image(systemName: "ellipsis.circle").help("部分检查范围不可用，查看问题面板")
             }
-        }.buttonStyle(WorkbenchButtonStyle()).help(analysis.state).fixedSize()
+        }.buttonStyle(WorkbenchStatusButtonStyle()).help(analysis.state).fixedSize()
     }
 }
 
@@ -48,8 +48,8 @@ struct WorkspaceProblemsPanel: View {
                 filter("警告 \(model.snapshot.warnings)", category: .warning)
                 filter("建议 \(model.snapshot.suggestions)", category: .suggestion)
                 Spacer(minLength: 0)
-                Button("重新检查", action: analysis.rescan)
-            }.padding(.horizontal, 10).frame(height: 32)
+                WorkbenchIconButton(title: "重新检查", symbol: "arrow.clockwise", action: analysis.rescan)
+            }.padding(.horizontal, 8).frame(height: 34)
             WorkbenchSeparator()
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 4) {
@@ -73,9 +73,9 @@ struct WorkspaceProblemsPanel: View {
                         WorkbenchSeparator()
                     }
                     Text(analysis.state).foregroundStyle(WorkbenchColors.secondary)
-                    Text(dart.status).font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                    Text(dart.status).font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                     if controller is WebWorkspaceController {
-                        Text(controller.status).font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                        Text(controller.status).font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                     }
                     if model.limited || analysis.limited || analysis.skipped > 0 || analysis.blockedVue > 0
                         || analysis.unreadable > 0 || analysis.watchUnavailable
@@ -109,7 +109,7 @@ struct WorkspaceProblemsPanel: View {
                                             "\(item.target.range.start.line + 1):\(item.target.range.start.character + 1) · "
                                                 + item.source
                                         )
-                                        .font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                                        .font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                                     }
                                     Spacer(minLength: 0)
                                 }.padding(6).frame(maxWidth: .infinity, alignment: .leading)
@@ -118,11 +118,10 @@ struct WorkspaceProblemsPanel: View {
                     }
                 }.padding(10).frame(maxWidth: .infinity, alignment: .leading).background(WorkbenchScrollStyle())
             }
-        }.font(.system(size: 12)).foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.font(.system(size: 13)).foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
             .buttonStyle(WorkbenchButtonStyle())
     }
     private func filter(_ title: String, category: ProblemCategory?) -> some View {
-        Button(title) { model.category = category }.buttonStyle(
-            WorkbenchButtonStyle(active: model.category == category))
+        WorkbenchSectionTab(title: title, active: model.category == category) { model.category = category }
     }
 }

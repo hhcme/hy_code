@@ -42,6 +42,8 @@ enum WorkbenchColors {
     static let toolSelection = Color(nsColor: nativeToolSelection)
     static let selection = Color(nsColor: nativeSelection)
     static let accent = Color(nsColor: nativeAccent)
+    static let field = Color(nsColor: adaptive(light: 0xFFFFFF, dark: 0x1F2023))
+    static let separator = Color(nsColor: adaptive(light: 0xCED0D6, dark: 0x393B40))
 
     static let nativeCanvas = adaptive(light: 0xFFFFFF, dark: 0x191A1C)
     static let nativePanel = adaptive(light: 0xFFFFFF, dark: 0x191A1C)
@@ -80,23 +82,14 @@ enum WorkbenchColors {
     }
 }
 
-enum WorkbenchMetrics {
-    static let headerHeight: CGFloat = 44
-    static let stripeWidth: CGFloat = 40
-    static let tabHeight: CGFloat = 40
-    static let panelHeaderHeight: CGFloat = 36
-    static let rowHeight: CGFloat = 24
-    static let scrollerWidth: CGFloat = 8
-    static let treeOuterInset: CGFloat = 4
-    static let statusHeight: CGFloat = 26
-    static let islandRadius: CGFloat = 10
-}
+typealias WorkbenchMetrics = WorkbenchStyleMetrics
 
 struct WorkbenchSeparator: View {
     var vertical = false
+    var visible = false
     @Environment(\.displayScale) private var scale
     var body: some View {
-        Rectangle().fill(WorkbenchColors.border)
+        Rectangle().fill(visible ? WorkbenchColors.separator : WorkbenchColors.border)
             .frame(width: vertical ? 1 / scale : nil, height: vertical ? nil : 1 / scale)
             .accessibilityHidden(true)
     }
@@ -105,6 +98,7 @@ struct WorkbenchSeparator: View {
 /// Shared fill/focus policy for SwiftUI buttons and native menu anchors.
 struct WorkbenchControlSurface: ViewModifier {
     var active = false
+    var neutral = false
     var hovering = false
     var pressed = false
     var focused = false
@@ -112,10 +106,10 @@ struct WorkbenchControlSurface: ViewModifier {
     @Environment(\.displayScale) private var scale
 
     private var fill: Color {
-        guard enabled else { return active ? WorkbenchColors.selection : .clear }
-        if pressed { return active ? WorkbenchColors.selectedPressed : WorkbenchColors.controlPressed }
-        if hovering { return active ? WorkbenchColors.selectedHover : WorkbenchColors.controlHover }
-        return active ? WorkbenchColors.selection : .clear
+        guard enabled else { return active ? (neutral ? WorkbenchColors.tab : WorkbenchColors.selection) : .clear }
+        if pressed { return active && !neutral ? WorkbenchColors.selectedPressed : WorkbenchColors.controlPressed }
+        if hovering { return active && !neutral ? WorkbenchColors.selectedHover : WorkbenchColors.controlHover }
+        return active ? (neutral ? WorkbenchColors.tab : WorkbenchColors.selection) : .clear
     }
     func body(content: Content) -> some View {
         content
@@ -133,14 +127,16 @@ struct WorkbenchControlSurface: ViewModifier {
 
 struct WorkbenchButtonStyle: ButtonStyle {
     var active = false
+    var neutral = false
 
     func makeBody(configuration: Configuration) -> some View {
-        Surface(configuration: configuration, active: active)
+        Surface(configuration: configuration, active: active, neutral: neutral)
     }
 
     private struct Surface: View {
         let configuration: ButtonStyleConfiguration
         let active: Bool
+        let neutral: Bool
         @Environment(\.isEnabled) private var isEnabled
         @Environment(\.isFocused) private var focused
         @State private var hovering = false
@@ -150,7 +146,8 @@ struct WorkbenchButtonStyle: ButtonStyle {
                 .foregroundStyle(WorkbenchColors.text)
                 .modifier(
                     WorkbenchControlSurface(
-                        active: active, hovering: hovering, pressed: configuration.isPressed, focused: focused)
+                        active: active, neutral: neutral, hovering: hovering, pressed: configuration.isPressed,
+                        focused: focused)
                 )
                 .background(WorkbenchPointerRegion(enabled: isEnabled))
                 .onHover { hovering = isEnabled && $0 }

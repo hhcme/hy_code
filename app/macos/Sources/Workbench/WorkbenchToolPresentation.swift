@@ -14,7 +14,7 @@ extension WorkbenchCorner {
 extension WorkbenchTool {
     var title: String {
         switch self {
-        case .project: "文件列表"
+        case .project: "项目"
         case .search: "搜索"
         case .structure: "结构"
         case .git: "Git"

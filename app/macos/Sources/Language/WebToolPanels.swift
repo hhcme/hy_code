@@ -7,12 +7,9 @@ struct LanguageAnalysisPanel: View {
         VStack(spacing: 0) {
             HStack {
                 ForEach([("dart", "Dart / Flutter"), ("web", "Web")], id: \.0) { key, title in
-                    Button {
+                    WorkbenchSectionTab(title: title, active: store.analysisLanguage == key) {
                         store.analysisLanguage = key
-                    } label: {
-                        Text(title).padding(6)
                     }
-                    .buttonStyle(WorkbenchButtonStyle(active: store.analysisLanguage == key))
                 }
                 Spacer(minLength: 0)
             }.padding(.horizontal, 8).frame(height: 34)
@@ -39,7 +36,7 @@ private struct WebAnalysisPanel: View {
                     SettingsLink { Text("配置 Node…") }
                 }
                 if let tools = controller.toolchain {
-                    Text(tools.node.path).font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                    Text(tools.node.path).font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                         .textSelection(.enabled)
                 }
                 WorkbenchSeparator()
@@ -50,24 +47,24 @@ private struct WebAnalysisPanel: View {
                 )
                 .toggleStyle(.checkbox).disabled(controller.toolRunning)
                 Text("Vue 分析可能执行配置中的插件。仅为可信项目开启；关闭时 JS/TS 等基础分析仍可用。")
-                    .font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                    .font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                 if let project = controller.project {
                     Text(project.name + " · " + project.manager.rawValue).fontWeight(.semibold)
-                    Text(project.root.path).font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary)
+                    Text(project.root.path).font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary)
                         .textSelection(.enabled)
                     ViewThatFits(in: .horizontal) {
                         HStack { dependencyActions }
                         VStack(alignment: .leading, spacing: 6) { dependencyActions }
                     }.disabled(!controller.canRunTool)
                     HStack {
-                        TextField("包名或 包名@版本", text: $controller.packageName).textFieldStyle(.roundedBorder)
+                        TextField("包名或 包名@版本", text: $controller.packageName).textFieldStyle(WorkbenchTextFieldStyle())
                         Button("添加") { controller.run("add") }
                         Button("移除") { controller.run("remove") }
                     }.disabled(!controller.canRunTool)
                     Toggle("添加为开发依赖", isOn: $controller.addDevDependency).toggleStyle(.checkbox)
                         .disabled(controller.toolRunning)
                     Text("依赖操作默认禁用生命周期脚本；运行清单脚本会执行项目代码。")
-                        .foregroundStyle(WorkbenchColors.secondary).font(.system(size: 11))
+                        .foregroundStyle(WorkbenchColors.secondary).font(.system(size: 12))
                     Text("脚本").fontWeight(.semibold)
                     if project.scripts.isEmpty {
                         Text("package.json 没有 scripts").foregroundStyle(WorkbenchColors.secondary)
@@ -79,7 +76,7 @@ private struct WebAnalysisPanel: View {
                             }.disabled(!controller.canRunTool)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(name).fontWeight(.medium)
-                                Text(project.scripts[name] ?? "").font(.system(size: 11, design: .monospaced))
+                                Text(project.scripts[name] ?? "").font(.system(size: 12, design: .monospaced))
                                     .foregroundStyle(WorkbenchColors.secondary).lineLimit(2)
                             }
                             Spacer(minLength: 0)
@@ -103,11 +100,10 @@ private struct WebAnalysisPanel: View {
                 if controller.toolRunning { Button("停止任务", action: controller.cancelTool) }
                 if !controller.output.isEmpty {
                     WorkbenchSeparator()
-                    Text(controller.output).font(.system(size: 11, design: .monospaced)).textSelection(.enabled)
+                    Text(controller.output).font(.system(size: 12, design: .monospaced)).textSelection(.enabled)
                 }
             }.padding(12).frame(maxWidth: .infinity, alignment: .leading).background(WorkbenchScrollStyle())
-        }.font(.system(size: 12)).buttonStyle(WorkbenchButtonStyle())
-            .foregroundStyle(WorkbenchColors.text).background(WorkbenchColors.panel)
+        }.workbenchContentStyle()
     }
     @ViewBuilder private var dependencyActions: some View {
         Button("安装依赖") { controller.run("install") }

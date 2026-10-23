@@ -84,7 +84,7 @@ private struct FlutterStackRows: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(frame["name"].string ?? "栈帧").lineLimit(1)
                             Text("\(frame["source"]["name"].string ?? ""): \(frame["line"].int ?? 0)")
-                                .font(.system(size: 11)).foregroundStyle(WorkbenchColors.secondary).lineLimit(1)
+                                .font(.system(size: 12)).foregroundStyle(WorkbenchColors.secondary).lineLimit(1)
                         }
                         Spacer(minLength: 0)
                     }.padding(.horizontal, 6).padding(.vertical, 4).frame(maxWidth: .infinity, alignment: .leading)
@@ -145,7 +145,7 @@ private struct FlutterVariableRows: View {
             Text("=").foregroundStyle(WorkbenchColors.secondary)
             Text(String((value["value"].string ?? "").prefix(4_000))).textSelection(.enabled)
             Spacer(minLength: 0)
-        }.font(.system(size: 11, design: .monospaced)).padding(.horizontal, 4).padding(.vertical, 3)
+        }.font(.system(size: 12, design: .monospaced)).padding(.horizontal, 4).padding(.vertical, 3)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -155,7 +155,7 @@ private struct FlutterEvaluationContent: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 4) {
                 TextField("求值表达式（可执行代码）", text: $controller.expression)
-                    .textFieldStyle(.plain).onSubmit(controller.evaluate)
+                    .textFieldStyle(WorkbenchTextFieldStyle()).onSubmit(controller.evaluate)
                 WorkbenchIconButton(title: "求值表达式", symbol: "return", size: 24, action: controller.evaluate)
             }.disabled(controller.state.phase != .paused)
         }.padding(.horizontal, 10).padding(.vertical, 6)
@@ -166,7 +166,7 @@ private struct FlutterEvaluationResult: View {
     @Bindable var controller: FlutterWorkspaceController
     var body: some View {
         if !controller.evaluation.isEmpty {
-            Text(controller.evaluation).font(.system(size: 11, design: .monospaced))
+            Text(controller.evaluation).font(.system(size: 12, design: .monospaced))
                 .textSelection(.enabled).padding(8)
         }
     }

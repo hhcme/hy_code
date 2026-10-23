@@ -7,156 +7,186 @@ import SwiftUI
     var title: String
     var symbol = ""
     var shortcut = ""
+    var help = ""
     var enabled = true
+    var checked: Bool?
+    var children: [Self] = []
     var action: (() -> Void)?
-    var isSeparator: Bool { action == nil && title.isEmpty }
+    var isSeparator: Bool { action == nil && children.isEmpty && title.isEmpty }
     static var separator: Self { Self(title: "", enabled: false) }
 }
-
+extension WorkbenchMenuItem {
+    var contextCommand: WorkbenchContextCommand {
+        if title == "-" { return .separator }
+        return WorkbenchContextCommand(
+            title: title, enabled: enabled, checked: checked,
+            children: children.map(\.contextCommand), action: action)
+    }
+}
 @MainActor @Observable private final class ContextMenuModel {
     let items: [WorkbenchContextCommand]
     var selection: ContextMenuSelection
     let choose: (Int) -> Void
-    init(items: [WorkbenchContextCommand], choose: @escaping (Int) -> Void) {
+    let hover: (Int) -> Void
+    let rowFrame: (Int, NSView) -> Void
+    init(
+        items: [WorkbenchContextCommand], choose: @escaping (Int) -> Void,
+        hover: @escaping (Int) -> Void, rowFrame: @escaping (Int, NSView) -> Void
+    ) {
         self.items = items
         selection = ContextMenuSelection(enabled: items.map { $0.enabled && !$0.isSeparator })
         self.choose = choose
+        self.hover = hover
+        self.rowFrame = rowFrame
     }
 }
 
-/// A non-key child panel: the editor remains the text-input owner. Its local
-/// event monitor exists only while the menu is open and never consumes clicks
-/// outside the menu, text input or events belonging to another window.
-@MainActor final class WorkbenchContextMenu: NSObject {
-    private var panel: ContextPanel?
-    private var model: ContextMenuModel?
-    private weak var owner: NSView?
-    private weak var parent: NSWindow?
-    private var monitor: Any?
-    func show(_ items: [WorkbenchContextCommand], at anchor: NSPoint, in view: NSView) {
+/// All app-owned menus share one non-key popup chain. Editor input keeps its
+/// responder; outside clicks pass through and keyboard commands remain scoped
+/// to the parent window. Commands retain their existing revision/safety guards.
+@MainActor final class WorkbenchContextMenu {
+    private let session = WorkbenchPopupSession()
+    private struct Level {
+        let model: ContextMenuModel
+        let frame: CGRect
+        var rows: [Int: MenuRowReference] = [:]
+        var expanded: Int?
+    }
+    private var levels: [Level] = []
+    private var screen = CGRect.zero
+    var onClose: () -> Void = {}
+    var isVisible: Bool { session.isVisible }
+    func show(
+        _ items: [WorkbenchContextCommand], at anchor: NSPoint, in view: NSView,
+        dropdown: Bool = false
+    ) {
         hide()
-        guard let parent = view.window, parent.isKeyWindow, !items.isEmpty else { return }
-        owner = view
-        self.parent = parent
-        let model = ContextMenuModel(items: items) { [weak self] in self?.choose($0) }
-        self.model = model
-        let panel = ContextPanel(
-            contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
-        self.panel = panel
-        panel.isOpaque = false
-        panel.backgroundColor = .clear
-        panel.hasShadow = true
-        panel.hidesOnDeactivate = true
-        panel.isReleasedWhenClosed = false
-        panel.level = parent.level
-        panel.appearance = view.effectiveAppearance
-        let screen =
+        guard !items.isEmpty, session.begin(in: view, consumeAnchorClick: dropdown) else { return }
+        session.onClose = { [weak self] in
+            guard let self else { return }
+            levels.removeAll()
+            onClose()
+        }
+        session.keyDown = { [weak self] event in self?.keyDown(event) ?? false }
+        session.scrolled = { [weak self] depth in
+            guard let self, levels.indices.contains(depth) else { return }
+            trim(after: depth)
+            levels[depth].expanded = nil
+        }
+        screen =
             NSScreen.screens.first(where: { $0.frame.contains(anchor) })?.visibleFrame
-            ?? parent.screen?.visibleFrame ?? parent.frame
-        let font = NSFont.systemFont(ofSize: 12.5)
-        let contentWidth =
-            items.filter { !$0.isSeparator }.map { item in
-                (item.title as NSString).size(withAttributes: [.font: font]).width
-                    + (item.shortcut as NSString).size(withAttributes: [.font: font]).width
-            }.max() ?? 0
-        let width = ContextMenuMetrics.width(contentWidth: contentWidth, screenWidth: screen.width)
-        let naturalHeight = CGFloat(items.reduce(12) { $0 + ($1.isSeparator ? 9 : 28) })
-        let frame = ContextMenuPlacement.frame(
-            anchor: anchor, size: NSSize(width: width, height: naturalHeight), screen: screen)
-        let dark = view.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-        let host = ContextHost(
-            rootView: ContextMenuContent(model: model).environment(\.colorScheme, dark ? .dark : .light))
-        host.sizingOptions = []
-        host.setAccessibilityRole(.menu)
-        host.setAccessibilityLabel("编辑菜单")
-        panel.contentView = host
-        panel.setFrame(frame, display: false)
-        parent.addChildWindow(panel, ordered: .above)
-        panel.orderFront(nil)
-        for name in [
-            NSWindow.didResignKeyNotification, NSWindow.willCloseNotification,
-            NSWindow.willMoveNotification, NSWindow.didResizeNotification,
-        ] {
-            NotificationCenter.default.addObserver(self, selector: #selector(dismiss), name: name, object: parent)
-        }
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(dismiss), name: NSApplication.didResignActiveNotification, object: nil)
-        monitor = NSEvent.addLocalMonitorForEvents(matching: [
-            .leftMouseDown, .rightMouseDown, .otherMouseDown, .scrollWheel, .keyDown,
-        ]) { [weak self] event in
-            let consumed = MainActor.assumeIsolated {
-                guard let self else { return false }
-                return self.receive(event) == nil
-            }
-            return consumed ? nil : event
-        }
+            ?? view.window?.screen?.visibleFrame ?? view.window!.frame
+        let size = menuSize(items)
+        let frame =
+            dropdown
+            ? WorkbenchPopupPlacement.dropdown(
+                anchor: view.window!.convertToScreen(view.convert(view.bounds, to: nil)),
+                size: size, screen: screen)
+            : ContextMenuPlacement.frame(anchor: anchor, size: size, screen: screen)
+        append(items, frame: frame)
     }
-    @objc private func dismiss(_ notification: Notification) { hide() }
     func hide() {
-        if let monitor { NSEvent.removeMonitor(monitor) }
-        monitor = nil
-        NotificationCenter.default.removeObserver(self)
-        if let panel { panel.parent?.removeChildWindow(panel) }
-        panel?.orderOut(nil)
-        panel?.contentView = nil
-        panel = nil
-        model = nil
-        owner = nil
-        parent = nil
+        session.close()
+        levels.removeAll()
     }
-    private func choose(_ index: Int) {
-        guard let model, model.items.indices.contains(index), model.items[index].enabled,
-            let owner, let parent, owner.window === parent, parent.isKeyWindow
+    private func menuSize(_ items: [WorkbenchContextCommand]) -> CGSize {
+        let font = NSFont.systemFont(ofSize: 13)
+        let contentWidth =
+            items.filter { !$0.isSeparator }.map {
+                ($0.title as NSString).size(withAttributes: [.font: font]).width
+                    + ($0.shortcut as NSString).size(withAttributes: [.font: font]).width
+            }.max() ?? 0
+        return CGSize(
+            width: ContextMenuMetrics.width(contentWidth: contentWidth, screenWidth: screen.width),
+            height: CGFloat(items.reduce(12) { $0 + ($1.isSeparator ? 9 : 28) }))
+    }
+    private func append(_ source: [WorkbenchContextCommand], frame: CGRect) {
+        let depth = levels.count
+        let model = ContextMenuModel(
+            items: Array(source.prefix(200)),
+            choose: { [weak self] in self?.choose($0, depth: depth) },
+            hover: { [weak self] in self?.hover($0, depth: depth) },
+            rowFrame: { [weak self] index, view in
+                guard let self, levels.indices.contains(depth) else { return }
+                levels[depth].rows[index] = MenuRowReference(view)
+            })
+        levels.append(Level(model: model, frame: frame))
+        if session.append(ContextMenuContent(model: model), frame: frame, label: "菜单") == nil { hide() }
+    }
+    private func trim(after depth: Int) {
+        guard levels.count > depth + 1 else { return }
+        levels.removeLast(levels.count - depth - 1)
+        session.trim(to: depth + 1)
+    }
+    private func hover(_ index: Int, depth: Int) {
+        guard levels.indices.contains(depth) else { return }
+        levels[depth].model.selection.select(index)
+        guard levels[depth].expanded != index else { return }
+        trim(after: depth)
+        levels[depth].expanded = nil
+        open(index, depth: depth)
+    }
+    private func open(_ index: Int, depth: Int) {
+        guard levels.indices.contains(depth), depth < 7,
+            levels[depth].model.items.indices.contains(index)
+        else { return }
+        let item = levels[depth].model.items[index]
+        guard item.enabled, !item.children.isEmpty else { return }
+        trim(after: depth)
+        levels[depth].expanded = index
+        let parent = levels[depth].frame
+        let above = levels[depth].model.items.prefix(index).reduce(6) { $0 + ($1.isSeparator ? 9 : 28) }
+        let row =
+            levels[depth].rows[index]?.screenFrame
+            ?? CGRect(x: parent.minX + 6, y: parent.maxY - CGFloat(above) - 28, width: parent.width - 12, height: 28)
+        append(
+            item.children,
+            frame: WorkbenchPopupPlacement.submenu(
+                parent: parent, row: row,
+                size: menuSize(item.children), screen: screen))
+    }
+    private func choose(_ index: Int, depth: Int) {
+        guard session.isVisible, let owner = session.owner, owner.window === session.parent,
+            session.parent?.isKeyWindow == true, levels.indices.contains(depth),
+            levels[depth].model.items.indices.contains(index)
         else {
             hide()
             return
         }
-        let action = model.items[index].action
+        let item = levels[depth].model.items[index]
+        guard item.enabled else { return }
+        if !item.children.isEmpty {
+            open(index, depth: depth)
+            return
+        }
         hide()
-        action?()
+        item.action?()
     }
-    private func receive(_ event: NSEvent) -> NSEvent? {
-        guard let panel, let model, let owner, owner.window === parent, panel.isVisible else {
-            hide()
-            return event
-        }
-        if event.type != .keyDown {
-            if event.window !== panel { hide() }
-            return event
-        }
-        guard event.window === parent else {
-            hide()
-            return event
-        }
-        guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty else {
-            hide()
-            return event
-        }
+    private func keyDown(_ event: NSEvent) -> Bool {
+        guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty,
+            let model = levels.last?.model
+        else { return false }
+        let depth = levels.count - 1
         switch event.keyCode {
-        case 53: hide()
+        case 48: model.selection.move(forward: !event.modifierFlags.contains(.shift))
         case 125: model.selection.move(forward: true)
         case 126: model.selection.move(forward: false)
         case 115: model.selection.edge(last: false)
         case 119: model.selection.edge(last: true)
-        case 36, 76: if let index = model.selection.index { choose(index) }
-        default:
-            hide()
-            return event
+        case 124: if let index = model.selection.index { open(index, depth: depth) }
+        case 123:
+            if depth > 0 {
+                trim(after: depth - 1)
+                levels[depth - 1].expanded = nil
+            }
+        case 36, 76: if let index = model.selection.index { choose(index, depth: depth) }
+        default: return false
         }
-        return nil
+        return true
     }
-}
-
-private final class ContextPanel: NSPanel {
-    override var canBecomeKey: Bool { false }
-    override var canBecomeMain: Bool { false }
-}
-private final class ContextHost<Content: View>: NSHostingView<Content> {
-    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 }
 private struct ContextMenuContent: View {
     @Bindable var model: ContextMenuModel
-    @Environment(\.displayScale) private var scale
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -164,41 +194,53 @@ private struct ContextMenuContent: View {
                     ForEach(model.items.indices, id: \.self) { index in
                         let item = model.items[index]
                         if item.isSeparator {
-                            Rectangle().fill(WorkbenchColors.tabBorder).frame(height: 1 / scale)
-                                .padding(.horizontal, 8).frame(height: 9)
+                            WorkbenchSeparator(visible: true).padding(.horizontal, 8).frame(height: 9)
                         } else {
                             Button {
                                 model.choose(index)
                             } label: {
                                 HStack(spacing: 8) {
-                                    Image(systemName: item.symbol.isEmpty ? "circle" : item.symbol)
-                                        .opacity(item.symbol.isEmpty ? 0 : 1).frame(width: 16)
+                                    Image(
+                                        systemName: item.checked == true
+                                            ? "checkmark" : (item.symbol.isEmpty ? "circle" : item.symbol)
+                                    )
+                                    .opacity(item.checked == true || !item.symbol.isEmpty ? 1 : 0).frame(width: 16)
                                     Text(item.title).lineLimit(1)
-                                    Spacer(minLength: 20)
+                                    Spacer(minLength: 16)
                                     Text(item.shortcut).foregroundStyle(WorkbenchColors.secondary)
                                         .fixedSize(horizontal: true, vertical: false)
-                                }.font(.system(size: 12.5)).padding(.horizontal, 8).frame(height: 28)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(
-                                        model.selection.index == index ? WorkbenchColors.selection : .clear,
-                                        in: RoundedRectangle(cornerRadius: 4)
-                                    )
-                                    .contentShape(Rectangle())
+                                    if !item.children.isEmpty {
+                                        Image(systemName: "chevron.right").font(.system(size: 9)).frame(width: 10)
+                                    }
+                                }.font(.system(size: 13)).padding(.horizontal, 8).frame(height: 28)
+                                    .frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
                             }.buttonStyle(WorkbenchButtonStyle(active: model.selection.index == index))
                                 .disabled(!item.enabled)
-                                .onHover { over in if over { model.selection.select(index) } }
-                                .accessibilityLabel(item.title).accessibilityHint(item.shortcut).id(index)
+                                .onHover { if $0 { model.hover(index) } }
+                                .background(MenuRowAnchor { model.rowFrame(index, $0) })
+                                .help(item.help).accessibilityLabel(item.title).accessibilityHint(item.shortcut).id(
+                                    index)
                         }
                     }
                 }.padding(6)
             }.scrollIndicators(.hidden)
                 .onChange(of: model.selection.index) { _, value in if let value { proxy.scrollTo(value) } }
-        }.foregroundStyle(WorkbenchColors.text)
-            .background(WorkbenchColors.chrome, in: RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8).strokeBorder(WorkbenchColors.tabBorder, lineWidth: 1 / scale)
-                    .allowsHitTesting(false)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }.foregroundStyle(WorkbenchColors.text).workbenchPopupSurface()
+    }
+}
+@MainActor private final class MenuRowReference {
+    weak var view: NSView?
+    init(_ view: NSView) { self.view = view }
+    var screenFrame: CGRect? {
+        guard let view, let window = view.window else { return nil }
+        return window.convertToScreen(view.convert(view.bounds, to: nil))
+    }
+}
+private struct MenuRowAnchor: NSViewRepresentable {
+    let frameChanged: (NSView) -> Void
+    func makeNSView(context: Context) -> Marker { Marker() }
+    func updateNSView(_ view: Marker, context: Context) { frameChanged(view) }
+    final class Marker: NSView {
+        override func hitTest(_ point: NSPoint) -> NSView? { nil }
     }
 }

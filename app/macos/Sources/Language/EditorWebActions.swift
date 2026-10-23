@@ -11,22 +11,17 @@ extension EditorLanguageFeatures {
         dismissHover()
         let selected = view.selectedRange()
         let revision = version
-        let alert = NSAlert()
-        alert.messageText = "重命名符号"
-        alert.informativeText = "输入新名称，下一步查看涉及文件的修改预览。"
-        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
+        var initialName = ""
         if let range = DartHoverTarget.range(at: selected.location, in: view.string as NSString) {
-            field.stringValue = (view.string as NSString).substring(with: range)
+            initialName = (view.string as NSString).substring(with: range)
         }
-        alert.accessoryView = field
-        alert.addButton(withTitle: "预览")
-        alert.addButton(withTitle: "取消")
-        alert.window.initialFirstResponder = field
-        alert.beginSheetModal(for: window) { [weak self] response in
-            guard response == .alertFirstButtonReturn, let self, self.version == revision,
-                !field.stringValue.isEmpty, field.stringValue.count <= 256, !field.stringValue.contains("\0")
+        WorkbenchPrompt.present(
+            in: window, title: "重命名符号", detail: "输入新名称，下一步查看涉及文件的修改预览。",
+            initialValue: initialName, accept: "预览"
+        ) { [weak self] response, name in
+            guard response == .accept, let self, self.version == revision,
+                !name.isEmpty, name.count <= 256, !name.contains("\0")
             else { return }
-            let name = field.stringValue
             Task {
                 do {
                     let value = try await controller.query(
@@ -63,11 +58,10 @@ extension EditorLanguageFeatures {
                 guard self.version == revision, controller.editRevision == workspaceRevision,
                     view.selectedRange() == selection, view.window != nil
                 else { return }
-                var actions: [WebMenuAction] = []
-                let menu = NSMenu()
+                var items: [WorkbenchContextCommand] = []
                 for value in result.array.prefix(100) {
                     guard let title = value["title"].string else { continue }
-                    let action = WebMenuAction { [weak self] in
+                    let action = { [weak self] in
                         guard let self, self.version == revision, controller.editRevision == workspaceRevision else {
                             return
                         }
@@ -93,20 +87,16 @@ extension EditorLanguageFeatures {
                             } catch { controller.report(error) }
                         }
                     }
-                    actions.append(action)
-                    let item = NSMenuItem(title: title, action: #selector(WebMenuAction.choose), keyEquivalent: "")
-                    item.target = action
-                    item.isEnabled = value["disabled"] == .null
-                    menu.addItem(item)
+                    items.append(
+                        WorkbenchContextCommand(title: title, enabled: value["disabled"] == .null, action: action))
                 }
-                guard !menu.items.isEmpty else {
+                guard !items.isEmpty else {
                     controller.report(LanguageServiceFailure("当前位置没有可用的代码动作"))
                     return
                 }
-                menu.autoenablesItems = false
                 let rect = view.firstRect(forCharacterRange: selection, actualRange: nil)
-                let point = view.convert(view.window!.convertPoint(fromScreen: rect.origin), from: nil)
-                withExtendedLifetime(actions) { _ = menu.popUp(positioning: nil, at: point, in: view) }
+                semanticMenu.show(items, at: rect.origin, in: view)
+
             } catch { controller.report(error) }
         }
     }
@@ -121,27 +111,15 @@ extension EditorLanguageFeatures {
                     "textDocument/signatureHelp", feature: self,
                     position: .at(selection.location, in: self.lines))
                 guard self.version == revision, view.selectedRange() == selection, view.window != nil else { return }
-                let menu = NSMenu()
-                menu.autoenablesItems = false
-                for signature in result["signatures"].array.prefix(20) {
-                    let item = NSMenuItem(
-                        title: String((signature["label"].string ?? "").prefix(1_000)), action: nil, keyEquivalent: "")
-                    item.isEnabled = false
-                    menu.addItem(item)
+                let items = result["signatures"].array.prefix(20).compactMap { signature in
+                    signature["label"].string.map { String($0.prefix(1_000)) }
                 }
-                if !menu.items.isEmpty {
+                if !items.isEmpty {
                     let rect = view.firstRect(forCharacterRange: selection, actualRange: nil)
-                    _ = menu.popUp(
-                        positioning: nil,
-                        at: view.convert(view.window!.convertPoint(fromScreen: rect.origin), from: nil), in: view)
+                    informationPopup.show(items, at: rect.origin, in: view)
                 }
+
             } catch { controller.report(error) }
         }
     }
-}
-
-@MainActor private final class WebMenuAction: NSObject {
-    let action: () -> Void
-    init(_ action: @escaping () -> Void) { self.action = action }
-    @objc func choose() { action() }
 }

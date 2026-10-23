@@ -25,16 +25,15 @@ private struct DartHoverCard: View {
                 details
             }
         }
-        .font(.system(size: 12)).foregroundStyle(WorkbenchColors.text)
+        .font(.system(size: 13)).foregroundStyle(WorkbenchColors.text)
         .padding(.trailing, 18).padding(12).frame(width: width, alignment: .leading)
         .fixedSize(horizontal: false, vertical: true)
-        .background(RoundedRectangle(cornerRadius: 8).fill(WorkbenchColors.chrome))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(WorkbenchColors.tabBorder, lineWidth: 1))
+        .workbenchPopupSurface()
         .overlay(alignment: .bottomTrailing) {
             Button(action: more) {
                 Image(systemName: "ellipsis").rotationEffect(.degrees(90)).frame(width: 14, height: 16)
             }
-            .buttonStyle(.plain).foregroundStyle(WorkbenchColors.secondary).padding(10)
+            .buttonStyle(WorkbenchButtonStyle()).foregroundStyle(WorkbenchColors.secondary).padding(10)
             .help("跳转定义：中键 / ⌘点击 / ⌘B；查找引用：⇧⌘B")
         }
     }
@@ -117,12 +116,6 @@ private struct DartHoverCard: View {
     override func mouseEntered(with event: NSEvent) { entered?() }
     override func mouseExited(with event: NSEvent) { exited?() }
 }
-@MainActor private final class HoverAction: NSObject {
-    let action: () -> Void
-    init(_ action: @escaping () -> Void) { self.action = action }
-    @objc func invoke() { action() }
-}
-
 /// A compact child panel with intrinsic height and an optional expanded document
 /// scroller. No arrow, opening animation or focus request. Constructed only by
 /// the running editor, never by a test host; the feature owns its lifetime.
@@ -131,6 +124,8 @@ private struct DartHoverCard: View {
     var exited: (() -> Void)?
     private var panel: HoverPanel?
     private var menuOpen = false
+    private let menu = WorkbenchContextMenu()
+    private weak var editor: NSTextView?
     private var anchor = NSRect.zero
     private var expanded = false
     private var expansion: (() -> Void)?
@@ -141,6 +136,8 @@ private struct DartHoverCard: View {
             || DartHoverPlacement.isInBridge(panel.convertPoint(toScreen: point), anchor: anchor, panel: panel.frame)
     }
     func hide() {
+        menu.hide()
+        editor = nil
         expanded = false
         expansion = nil
         guard let panel else { return }
@@ -153,6 +150,7 @@ private struct DartHoverCard: View {
         canNavigate: Bool, definition: @escaping () -> Void, references: @escaping () -> Void
     ) {
         guard let parent = view.window else { return }
+        editor = view
         let panel =
             self.panel
             ?? HoverPanel(
@@ -209,28 +207,23 @@ private struct DartHoverCard: View {
         panel.orderFront(nil)
     }
     private func showMenu(canNavigate: Bool, definition: @escaping () -> Void, references: @escaping () -> Void) {
-        guard let host = panel?.contentView else { return }
+        guard let host = panel?.contentView, let window = host.window, let editor else { return }
         menuOpen = true
-        defer {
-            menuOpen = false
-            exited?()
+        menu.onClose = { [weak self] in
+            self?.menuOpen = false
+            self?.exited?()
         }
-        let menu = NSMenu()
-        menu.autoenablesItems = false
-        var titles = ["跳转定义  ⌘B / 中键", "查找引用  ⇧⌘B"]
-        var actions = [HoverAction(definition), HoverAction(references)]
+        var items: [WorkbenchContextCommand] = [
+            .init(
+                title: "跳转定义", symbol: "arrow.turn.down.right", shortcut: "⌘B", enabled: canNavigate, action: definition
+            ),
+            .init(title: "查找引用", symbol: "magnifyingglass", shortcut: "⇧⌘B", action: references),
+        ]
         if let expansion {
-            titles.append(expanded ? "收起说明" : "展开说明")
-            actions.append(HoverAction(expansion))
+            items += [.separator, .init(title: expanded ? "收起说明" : "展开说明", action: expansion)]
         }
-        for (index, title) in titles.enumerated() {
-            let item = NSMenuItem(title: title, action: #selector(HoverAction.invoke), keyEquivalent: "")
-            item.target = actions[index]
-            item.isEnabled = index != 0 || canNavigate
-            menu.addItem(item)
-        }
-        withExtendedLifetime(actions) {
-            _ = menu.popUp(positioning: nil, at: NSPoint(x: host.bounds.maxX - 20, y: host.bounds.maxY - 20), in: host)
-        }
+        let y = host.isFlipped ? host.bounds.maxY - 20 : host.bounds.minY + 20
+        let point = window.convertPoint(toScreen: host.convert(NSPoint(x: host.bounds.maxX - 20, y: y), to: nil))
+        menu.show(items, at: point, in: editor)
     }
 }
