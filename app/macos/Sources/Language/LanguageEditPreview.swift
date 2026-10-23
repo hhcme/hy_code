@@ -36,8 +36,12 @@ extension EditorWorkspace {
                 let changes = try await Task.detached(priority: .utility) {
                     try LSPWorkspaceEdits.parse(edit, root: root)
                 }.value
-                guard !changes.contains(where: { ImagePreviewFormat.matches($0.path) }) else {
-                    throw LanguageServiceFailure("图片只读预览不接受语义文本修改")
+                guard
+                    !changes.contains(where: {
+                        ImagePreviewFormat.matches($0.path) || VideoPreviewFormat.matches($0.path)
+                    })
+                else {
+                    throw LanguageServiceFailure("图片/视频只读预览不接受语义文本修改")
                 }
                 guard let self, self.editRequest == ticket, feature?.version == revision,
                     controller?.editRevision == workspaceRevision

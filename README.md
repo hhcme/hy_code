@@ -24,7 +24,7 @@ Web 已接入 JS/TS/JSX/TSX、Vue、HTML/CSS/SCSS/LESS、JSON/JSONC 的按需语
 - **复用开源生态**：允许采用官方和社区的开源组件，按职责、维护情况、性能和许可选择；不要求所有依赖均由 Rust 实现。
 - **完整开源**：原生界面、核心、桥接、构建和文档均纳入公开源码，不依赖私有编辑内核或必须登录的后台。
 
-高亮、补全、导航、Git、终端与任务逐阶段增加；首批语言和首个可交付版本的具体范围仍需评审。其他平台属于未来议题，不纳入首版计划。图片已接入只读预览，支持缩放、适应窗口、原始尺寸与拖动；常见位图使用 ImageIO，SVG 使用受限的 Rust resvg。多帧首帧、格式与资源限制见[图片预览](docs/IMAGE_PREVIEW.md)。Markdown/HTML、PDF 与归档仍为后续配套能力。
+高亮、补全、导航、Git、终端与任务逐阶段增加；首批语言和首个可交付版本的具体范围仍需评审。其他平台属于未来议题，不纳入首版计划。图片已接入只读预览，支持缩放、适应窗口、原始尺寸与拖动；常见位图使用 ImageIO，SVG 使用受限的 Rust resvg。多帧首帧、格式与资源限制见[图片预览](docs/IMAGE_PREVIEW.md)。本地 MP4/MOV/M4V 已接入简单只读视频预览，默认暂停，提供播放、进度和音量，范围见[视频预览](docs/VIDEO_PREVIEW.md)。Markdown/HTML、PDF 与归档仍为后续配套能力。
 
 ## 文档导航
 
@@ -38,6 +38,7 @@ Web 已接入 JS/TS/JSX/TSX、Vue、HTML/CSS/SCSS/LESS、JSON/JSONC 的按需语
 | [开发约定](docs/DEVELOPMENT.md) | 开发入口、真实命令、验证与证据规则 |
 | [品牌与应用图标](docs/BRANDING.md) | 同系列设计、资源、提示词与打包 |
 | [当前文件工作台](docs/WORKBENCH.md) | 布局、交互、源码地图、构建及验证边界 |
+| [视频只读预览](docs/VIDEO_PREVIEW.md) | 原生播放、进度/音量、按需读取和验证边界 |
 | [图片只读预览](docs/IMAGE_PREVIEW.md) | 多格式、缩放/平移、资源与验证边界 |
 | [基础编辑与保存](docs/EDITING.md) | 单击编辑、自动保存开关、文档所有权与安全写入 |
 | [行号与语法高亮](docs/SYNTAX.md) | 语言范围、增量解析、可见行及资源边界 |

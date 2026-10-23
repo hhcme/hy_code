@@ -8,9 +8,13 @@ build 28 已增加 [Web 工作流](WEB_TOOLS.md)：代码菜单提供多语言�
 
 ## 当前范围
 
+build 35 增加[简单视频只读预览](VIDEO_PREVIEW.md)：本地 MP4/MOV/M4V 单击进入标签，默认暂停、播放/暂停、进度/音量、自动适应画面；切标签卸载播放器并保留进度。源视频按固定描述符分段读取，元数据异步加载；无文本缓冲、保存或新增第三方解码器。真实窗口/声音/播放仍未验收。
+
+完整静默检查为 196 项 Swift（37 组）与 19 项 Rust，新增 10 项视频回归另通过 Swift ASan；Rust 静态库和 Apple 框架未插桩。Release 本地开发包 0.1.0 / build 35、arm64、约 144.8 MiB；未启动、安装或发布。可执行文件 SHA-256：`532158c714fe60302d949cd38757228440c33b5ba0610aa342334022dff7ff60`。源码、日志、独立审查与验证边界见[后台证据](evidence/2026-10-23-build35-video-preview.json)。本批未提交推送。
+
 build 34 增加[图片只读预览](IMAGE_PREVIEW.md)：项目树单击图片进入独立标签，提供适应窗口、100%、缩放、拖动、背景与透明度查看；ImageIO 解码位图，Rust resvg 处理受限 SVG，多帧暂显示首帧。加载/解码在后台串行执行，非活动标签释放像素，固定尺寸原生画布只绘制已解码投影。图片不建立文本/撤销/自动保存或语言修改。实现决策见 [ADR 0008](adr/0008-image-preview.md)。
 
-build 34 完整静默检查为 186 项 Swift（34 组）、19 项 Rust；其中图片新增 13 项 Swift 和 4 项 Rust。13 项图片 Swift 测试另通过 ASan，Rust 静态库未插桩。Release 本地开发包为 0.1.0 / build 34、arm64、约 144.5 MiB，未启动、安装或发布；可执行文件 SHA-256：`3ffe52cc1b558b48f8726df5e9b1baccb3de2a59b853e17c837dd3dbf624a83b`。格式样本、许可、源码与日志哈希见[后台证据](evidence/2026-10-23-build34-image-preview.json)。当前 build 32–34 改动均未提交推送。
+build 34 完整静默检查为 186 项 Swift（34 组）、19 项 Rust；其中图片新增 13 项 Swift 和 4 项 Rust。13 项图片 Swift 测试另通过 ASan，Rust 静态库未插桩。Release 本地开发包为 0.1.0 / build 34、arm64、约 144.5 MiB，未启动、安装或发布；可执行文件 SHA-256：`3ffe52cc1b558b48f8726df5e9b1baccb3de2a59b853e17c837dd3dbf624a83b`。格式样本、许可、源码与日志哈希见[后台证据](evidence/2026-10-23-build34-image-preview.json)。该后台记录形成时 build 32–34 尚未提交推送；随后已提交至 `325be52`。
 
 build 33 已扩展到全部已有应用界面的共用样式：项目/菜单弹层、分析/依赖、调试/问题、配置/设置、重命名与保存确认。具体覆盖及未验证项见[整体清单](VISUAL_ALIGNMENT.md)，后台结果为 173 Swift / 15 Rust，新增 4 项弹层几何测试。32 项相关几何/交互用例与最终格式/Release 构建通过；本地开发包 0.1.0 / build 33、arm64、约 140.4 MiB，未启动、安装或发布。可执行文件 SHA-256：`dc5d3afaf4d2bfe9950140404cbbd70f21c4f0e1e9703c83a59fc054f50662e0`。源码、日志、审查修复及限制见[后台记录](evidence/2026-10-23-build33-full-workbench-style.json)。本批没有提交或推送。
 

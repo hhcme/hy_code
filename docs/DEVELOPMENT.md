@@ -57,7 +57,7 @@ Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并�
 | `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `34`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `35`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
 
@@ -78,6 +78,8 @@ Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.
 真实交互与后台证据仍分开命名和报告。保留真实窗口、IME、焦点与键盘等验收目标，不通过删除断言或用后台替身结果宣称真实交互已通过；本规则下不能执行的部分记录为验证缺口。历史文档中的交互测试许可不覆盖当前静默约束。
 
 2026-10-21 本轮用户明确授权操作 WebStorm 记录布局行为；该例外仅用于指定参考应用的工具窗口切换，已结束并恢复原展开状态。未由此授权启动 HyCode 或其他 GUI 测试。操作与证据边界见[工作台记录](WORKBENCH.md)。后续默认仍按上述静默规则执行。
+
+视频静默测试仅使用 AVAssetWriter 生成 32 × 32 无音轨短样本、AVURLAsset 属性和 AVAssetImageGenerator 离屏单帧；不创建 AVPlayer、AVPlayerLayer 或音频轨，不进行播放。工作台播放器仅参与编译，声音/真实播放及窗口仍未验证，见[视频预览](VIDEO_PREVIEW.md)。
 
 ## 架构与数据
 
@@ -109,3 +111,5 @@ Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.
 build 33 的整体界面样式覆盖、系统界面边界与未验证项见[视觉对齐](VISUAL_ALIGNMENT.md)；173 Swift / 15 Rust 后台检查与未启动的 Release 开发包记录见[证据](evidence/2026-10-23-build33-full-workbench-style.json)。窗口输入/菜单/sheet 只通过源码与编译检查，未作为测试宿主运行，不能据此宣称像素一致或性能验收。
 
 build 34 的图片只读预览、后台 ImageIO/resvg 与资源限制见[图片预览](IMAGE_PREVIEW.md)。全量 186 Swift / 19 Rust、13 项图片 Swift ASan 和未启动的 Release 本地包见[证据](evidence/2026-10-23-build34-image-preview.json)；Rust 静态库未插桩，真实图像方向/缩放/捏合/键鼠及帧率仍未窗口验证。
+
+build 35 新增[视频只读预览](VIDEO_PREVIEW.md)，196 Swift / 19 Rust、10 项视频 Swift ASan 与未启动的 Release 开发包见[证据](evidence/2026-10-23-build35-video-preview.json)。没有创建播放器测试实例、播放音频或执行 GUI；真实播放与性能仍待验收。

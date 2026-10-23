@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "date": "2026-10-23",
+  "build": 35,
+  "status": "headless-verified-local-development-build",
+  "base_commit": "325be5239b0d8766590c48f9cdb073d329153bba",
+  "working_tree": "Uncommitted build35 video preview, documentation and tests; no staging, commit or push.",
+  "environment": {
+    "architecture": "arm64",
+    "macos": "27.0.1",
+    "swift": "6.4",
+    "rust": "1.96.0",
+    "deployment_target": "14.0"
+  },
+  "request": "Simple local video preview is sufficient. Native read-only playback with pause/play, progress, volume and aspect fit.",
+  "scope": [
+    "MP4/MOV/M4V suffix dispatch before text decoding; separate video document ownership, no text buffer/undo/autosave/semantic text edits.",
+    "Paused initial item; user action starts playback. Canvas focus enables Space and Left/Right five-second jumps; controls include volume/mute and current/total time.",
+    "Native AVPlayerLayer aspect-fit rendering; SwiftUI owns only workbench controls and low-frequency transport state. Narrow panels use a two-row control layout.",
+    "Tab changes/close/workspace reset pause, remove KVO/periodic/end observers, cancel seek, detach item and cancel loader. Retain only position/volume metadata while inactive.",
+    "Background pinned descriptor and security-scoped access lease; exact private scheme URL, forbidden external references, utility-queue range service with no full-file copy.",
+    "One seek in flight plus latest pending target, obsolete asynchronous completions fenced by active/generation; no recreated player on progress updates."
+  ],
+  "budgets": {
+    "maximum_file_bytes": 68719476736,
+    "maximum_read_chunk_bytes": 262144,
+    "maximum_active_requests": 8,
+    "source_maximum_edge": 8192,
+    "source_maximum_pixels": 36000000,
+    "preferred_buffer_seconds": 2,
+    "transport_interval_seconds": 0.25,
+    "limits": "AVFoundation buffering preference and input limits are not hard decoder CPU/memory bounds. Synchronous I/O/framework calls cannot be forcibly interrupted; cancellation is cooperative. No real-time performance claim."
+  },
+  "format_samples": {
+    "owned_generated_and_single_frame_decoded": [
+      "MOV/JPEG",
+      "MP4/H.264",
+      "M4V/H.264"
+    ],
+    "fixture": "32x32, two frames, one second, no audio tracks, own temporary files",
+    "scope": "AVAssetWriter, asynchronous AVURLAsset metadata and AVAssetImageGenerator; no AVPlayer/AVPlayerLayer or application host created. Container suffix is not a promise for every codec."
+  },
+  "checks": [
+    {
+      "command": "nice -n 10 bash scripts/check_native.sh",
+      "result": "pass",
+      "swift_tests": 196,
+      "swift_suites": 37,
+      "rust_tests": 19,
+      "new_swift_tests": 10,
+      "scope": "Format, Clippy, Rust, C/C++ headers, locked notices, headless Swift models/processes/offscreen images and no-audio video samples, docs, diff."
+    },
+    {
+      "command": "nice -n 10 swift test --jobs 2 --disable-xctest --sanitize address --filter 'VideoPreview'",
+      "result": "pass",
+      "tests": 10,
+      "suites": 3,
+      "scope": "Suffix, seek coalescing/clamp/time labels, secure bounded ranges, invalid/special/link/oversized files, cancellation, lease release, three containers, corrupt metadata and single-frame decoding.",
+      "limits": "Swift boundary only; Rust static library and Apple frameworks not instrumented. No player or audio playback."
+    },
+    {
+      "command": "nice -n 10 bash scripts/build_macos.sh release",
+      "result": "pass",
+      "app_launched": false,
+      "scope": "Final app target compile and package; no final warnings/errors. Packaged notices and image dependency manifest bytes match source."
+    }
+  ],
+  "review": {
+    "kind": "independent-read-only-source-review",
+    "confirmed_unresolved_P1_P2": 0,
+    "scope": "Generation/seek callbacks, observer cleanup, tab close/reset, descriptor/access lease, private URL ranges and SDK request semantics. Follow-up reviewed stable layer player binding and narrow layout.",
+    "limit": "Source review only; no GUI/player execution."
+  },
+  "dependencies": {
+    "new_external_packages": 0,
+    "platform_frameworks": [
+      "AVFoundation",
+      "CoreMedia",
+      "CoreVideo"
+    ],
+    "rust_abi_changed": false,
+    "third_party_codecs_bundled": false,
+    "cargo_lock_sha256": "2b88d8b920d484652541223584cd9ac0db949b4d0f7877479a4d5ce02012bec7",
+    "image_inventory_sha256": "4cd8fb3413a018319f8a7dbfbaf948feed23a64ba94a830cef6ce6b7488664af"
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "configuration": "release",
+    "version": "0.1.0",
+    "build": 35,
+    "minimum_system": "14.0",
+    "architecture": "arm64",
+    "executable_bytes": 25186728,
+    "bundle_bytes": 151795132,
+    "executable_sha256": "532158c714fe60302d949cd38757228440c33b5ba0610aa342334022dff7ff60",
+    "launched": false,
+    "installed": false,
+    "published": false,
+    "signing": "Local development build; no distribution signing or notarization performed."
+  },
+  "not_verified": [
+    "Actual player first frame, colors/orientation/HDR/subtitles, video/audio playback and runtime decoder failures",
+    "Real controls, focus/Space/arrows, scrubbing, tab switching silence, narrow layout, VoiceOver and background behavior",
+    "macOS 14 or older OS codec support, additional codecs, large files, long videos, CPU/memory peaks and FPS",
+    "Network streams, MKV/WebM/AVI, speed/loop, subtitle/multitrack selection, video editing/export (not implemented)",
+    "No application launch, installation, distribution signing, notarization, publication, commit or push in this feature turn"
+  ],
+  "source_sha256": {
+    "AGENTS.md": "5d675d919b852db9169272126e08ae20281d2e87a1dc14b6185b975be7a1a4db",
+    "README.md": "f09a0c6ccac8b291149924f04127fff3497acce43a9376d414054a56ec0a0b8a",
+    "app/macos/Resources/Info.plist": "353cd32f5cd911570bbecd3d7c3dc98338c1ff51ff64361903947670ce285670",
+    "app/macos/Sources/Editor/EditorWorkspace.swift": "63e02907834e041412236141e592e5f164c157946eb6695123c8a823cb1dd5bd",
+    "app/macos/Sources/Language/LanguageEditPreview.swift": "30de4aae28a2424832565dfc12513f8ca384107cd76494f34c8fcb4ba68a3a36",
+    "app/macos/Sources/Video/VideoPreviewDocument.swift": "8f68e7d8ba7f0c33346f4cb9c476b1d99f580ae5e29872ac2b1ed7280459c078",
+    "app/macos/Sources/Video/VideoPreviewPanel.swift": "72d203f3ec6990b8c148a0637d3b6bb6c1c70886bcc21d0b2c7b5f81e5e223be",
+    "app/macos/Sources/Workbench/FilePresentation.swift": "3c5a1843ec82889997c9eb04c111eb49a2c21dc1e5bd29a4bce27e57d5489495",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "6b25c8ca9599e62d108f806bbd67a6b5a9f46bd1a34517c54d12803add396927",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "5a35d5c21928ed9c2c28430a490f3b53ee58b27ad9ff2928e9f3dba6f7f3127b",
+    "docs/DEPENDENCIES.md": "34f7558a74d4c7d58a6c74b8a0362c79606e5428025ddcf583956bda04e89dfe",
+    "docs/DEVELOPMENT.md": "ccda608d9ff79df519aa9d66219e562ed66a804d177b77ae4f9a4d0c1a4cfe05",
+    "docs/EDITING.md": "974b88e0d30aad5750cb802390fcc7b46701b36b3abf228a52558e75c9441b8e",
+    "docs/EDITOR_DIRECTION.md": "14b879f9913171cb0cda98daba7465618d8a889c68143e2fcbe9602016e43098",
+    "docs/FORMAT_SUPPORT.md": "7c553078c64f2241b38a6e773205ca6cb9908b8ae7aebfa264522465c5dbe318",
+    "docs/PRODUCT_REQUIREMENTS.md": "1ceb3f303ef54de79fe0a8b3c510ded18ab7d0b0d5a79ed73554a79584b2d963",
+    "docs/README.md": "05ece99738b831891a1d2c2592ed9a5d4990b967d758ed41ce79585787021d9e",
+    "docs/TECH_DESIGN.md": "340f1f2f5c17330bdfb1b48fe54fb21675005b99840f8da181103f0434217166",
+    "docs/VIDEO_PREVIEW.md": "f5e393b4e67b2f7ecc742173c96cddc5d5098a1995377eaffb7cc1a4cd0050b3",
+    "docs/WORKBENCH.md": "790b1ba3d0ce126b3ad0d0dbc42bcf47cb97d4cdd65c9ad81c45c9a3917b1580",
+    "docs/adr/0009-video-preview.md": "215bd04b4c0f0ab41899c0cf973bb064838beaa6ab6c8145317c88e5937915a3",
+    "docs/adr/README.md": "73639fa40a945ae4008946df4bc5a427d48d851cb05ebf8b2114dc78e1bdf50e",
+    "packages/HyCodeWorkspace/Sources/Video/VideoPreviewFile.swift": "8a8aa4d73160806d6fc7a085876f27b96021f43f96ca4c81050548d18758b487",
+    "packages/HyCodeWorkspace/Sources/Video/VideoPreviewResource.swift": "27c51a18e8eceb8b0c0031ec48464b65d5bff3de7c4b5747fa16a954fd66b91b",
+    "packages/HyCodeWorkspace/Sources/Video/VideoPreviewState.swift": "ac64313f1c06ad7a39c3ba3ce19d7c38c72e63a7a8ac1f88e99b21ce44de2c4d",
+    "packages/HyCodeWorkspace/Tests/VideoPreviewTests.swift": "2447bd44cea4ffd7254fecb193246034418a8dda38d8d9b03c41ce4e3f426849"
+  },
+  "log_sha256": {
+    ".build/build35-check-native.log": "8d235608c3ff6919cfe81b2ba5c12ea57a451da20295efb2aac27a14057bb02c",
+    ".build/build35-video-asan.log": "0af0b1bba4635bc2ee2dbf8cb2e22193354bf6477f6fd856b3fbbc9a4badd51c",
+    ".build/build35-release.log": "f103ca6288f538e78fab07021e187302e95db09e60e279a09243e099c9065ba2",
+    ".build/build35-compile.log": "fa20f7a0a2cbf8856f78af6390af485b39979e8994c78381b388a4eb5881574e",
+    ".build/build35-format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".build/build35-docs.log": "524090504967ad073b5d0a80c77e1f2ce2bdaa2eed910d6b06590b968984f7cd"
+  },
+  "prior_evidence_sha256": {
+    "docs/evidence/2026-10-23-build34-image-preview.json": "71a04e4ea090e1a4da947c11f1c1d6d04cf4d6307fee4125d5dc6a3086a839ed"
+  }
+}

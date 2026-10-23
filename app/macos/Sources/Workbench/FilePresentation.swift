@@ -10,6 +10,7 @@ extension WorkspaceEntry {
         case .other: return "questionmark.square.dashed"
         case .file:
             if ImagePreviewFormat.matches(name) { return "photo" }
+            if VideoPreviewFormat.matches(name) { return "film" }
             return switch (name as NSString).pathExtension.lowercased() {
             case "swift", "rs", "c", "h", "cpp", "m", "mm", "js", "ts", "py", "go", "dart":
                 "chevron.left.forwardslash.chevron.right"

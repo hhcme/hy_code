@@ -19,6 +19,8 @@ Web 编辑请求绑定工作区编辑代次。`LSPWorkspaceEdits` 在后台校�
 
 图片由 `ImagePreviewDocument` 单独拥有只读会话，后台串行 actor 完成安全读取、ImageIO 解码或 Rust resvg 栅格化；主线程只绘制已解码像素和更新几何。非活动标签释放像素，取消/会话代次隔离旧结果；不建立文本、撤销或自动保存。预算、FFI 所有权和当前格式见[图片预览](IMAGE_PREVIEW.md)与 [ADR 0008](adr/0008-image-preview.md)。
 
+视频独立于图片/文本；`VideoPreviewDocument` 拥有原生播放器和观察器，后台固定描述符经私有资源 delegate 分段供给 AVFoundation，元数据异步加载，原生播放层呈现帧。生命周期与限制见[视频预览](VIDEO_PREVIEW.md)和 [ADR 0009](adr/0009-video-preview.md)。
+
 ## 文档、缓冲与撤销
 
 当前由 Rust TextDocument 管理正式文本和修订；AppKit TextKit 1 视图保存输入投影与选择/滚动状态，通过 NSTextStorage 精确传递 UTF-16 增量。每文档原生 UndoManager 独占撤销历史，Rust 不再建立第二套历史。非 MainActor 的 NativeTextDocument actor 串行拥有句柄与磁盘基线并执行文件 I/O；UI 以有序任务提交编辑和保存。默认 800 ms 自动保存，可在设置关闭。实现和边界见 [ADR 0003](adr/0003-text-editing.md)。

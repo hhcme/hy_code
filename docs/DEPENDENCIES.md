@@ -14,6 +14,7 @@
 | Tree-sitter 与语法包 | 主库 0.27.1，12 个语法 crate 由 Cargo.toml/Cargo.lock 固定 | 增量树、可见范围高亮；Dart/Vue 为社区语法，版本/来源/许可见第三方通知及[高亮说明](SYNTAX.md) |
 | Dart Analysis Server / Dart Pub / Flutter CLI / SDK DAP | 外部 SDK，不在构建锁文件或应用内；语言 LSP 验证 Dart 3.11.5；DAP fixture 通过，当前 fork 真实控制台调试未通过；Flutter 安装元数据 3.41.10-ohos-0.0.2-beta | 官方 [Dart SDK](https://github.com/dart-lang/sdk/tree/3.11.5) / [Flutter](https://github.com/flutter/flutter)，上游均 BSD-3-Clause；仅调用已安装命令，未复制 SDK 或 IDE 插件；[Dart 许可](https://github.com/dart-lang/sdk/blob/3.11.5/LICENSE)、[Flutter 许可](https://github.com/flutter/flutter/blob/3.41.5/LICENSE)。此 fork 与其他版本兼容未完整验证，细节见 [Dart/Flutter 工具](DART_FLUTTER.md) |
 | ImageIO / CoreGraphics | macOS 系统框架；随系统版本变化 | 图片类型识别、首帧与方向处理、受限降采样和立即解码的只读 RGBA 投影；不分发第三方解码器 |
+| AVFoundation / CoreMedia / CoreVideo | macOS 系统框架；部署目标仍为 macOS 14 | 视频异步属性、AVPlayer/AVPlayerLayer、受限本地资源；测试只生成无音轨小样本和离屏单帧，无播放器/窗口；未新增第三方解码器或 SDK 分发 |
 | resvg / usvg / roxmltree | resvg/usvg 0.48.1，预检 roxmltree 0.21.1；Cargo.lock 固定 | Rust 后台 SVG 栅格化；禁用外部资源和嵌入图片，限制复杂效果；52 项新增 crate 的版本/许可/通知哈希见[机器台账](../third_party/image-preview-crates.json)与 [ADR 0008](adr/0008-image-preview.md) |
 | Python 标准库 | Python 3.9+ | 本地文档检查，无第三方 Python 包 |
 | Web 语言服务 | TypeScript 6.0.3、typescript-language-server 6.0.2、@vue/language-server 3.3.13、vscode-langservers-extracted 4.10.0 | npm 固定锁文件与 106 项传递依赖，来源/许可/校验见 [Web 工具](WEB_TOOLS.md) 和[第三方通知](../THIRD_PARTY_NOTICES.md)；外部 Node 22.22.2+ 不分发 |

@@ -3,6 +3,7 @@ import HyCodeWorkspace
 import Observation
 
 @MainActor @Observable final class EditorWorkspace {
+    private(set) var videos: [String: VideoPreviewDocument] = [:]
     private(set) var images: [String: ImagePreviewDocument] = [:]
     private(set) var documents: [String: EditorDocument] = [:]
     weak var language: DartWorkspaceController?
@@ -29,9 +30,13 @@ import Observation
     }
     private(set) var isClosing = false
     func open(path: String, access: WorkspaceAccess, onEdit: @escaping () -> Void) {
-        guard !isClosing, documents[path] == nil, images[path] == nil else { return }
+        guard !isClosing, documents[path] == nil, images[path] == nil, videos[path] == nil else { return }
         if ImagePreviewFormat.matches(path) {
             images[path] = ImagePreviewDocument(path: path, access: access)
+            return
+        }
+        if VideoPreviewFormat.matches(path) {
+            videos[path] = VideoPreviewDocument(path: path, access: access)
             return
         }
         let document = EditorDocument(path: path, access: access, autoSave: autoSave, language: language, web: web)
@@ -48,6 +53,7 @@ import Observation
         web?.invalidateEdits()
         documents.removeValue(forKey: path)?.close()
         images.removeValue(forKey: path)?.suspend()
+        videos.removeValue(forKey: path)?.suspend()
     }
     func reset() {
         editRequest = UUID()
@@ -59,13 +65,19 @@ import Observation
         documents.removeAll()
         for image in images.values { image.suspend() }
         images.removeAll()
+        for video in videos.values { video.suspend() }
+        videos.removeAll()
     }
-    func activateImage(path: String?) {
+    func activatePreview(path: String?) {
+        for (key, video) in videos {
+            if key == path { video.activate() } else { video.suspend() }
+        }
         for (key, image) in images {
             if key == path { image.activate() } else { image.suspend() }
         }
     }
     func prune(keeping paths: Set<String>) {
+        for path in videos.keys where !paths.contains(path) { remove(path) }
         for path in images.keys where !paths.contains(path) { remove(path) }
         for (path, document) in documents where !paths.contains(path) && !document.isDirty { remove(path) }
     }

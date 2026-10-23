@@ -222,6 +222,8 @@ struct WorkbenchView: View {
         } else if let tab = store.tabs.active, case .file(let entry) = tab.location {
             if let image = store.editing.images[entry.relativePath] {
                 ImagePreviewPanel(document: image).id(image.id)
+            } else if let video = store.editing.videos[entry.relativePath] {
+                VideoPreviewPanel(document: video).id(video.id)
             } else if let document = store.editing.documents[entry.relativePath] {
                 EditorPanel(document: document, reload: store.reloadActiveDocument)
             }
@@ -373,6 +375,11 @@ struct WorkbenchView: View {
                 Text(document.lineEnding)
                 if !document.syntaxLanguage.isEmpty {
                     Text(document.syntaxLanguage).help(document.syntaxNotice ?? "语法高亮")
+                }
+            } else if let video = store.activeVideo {
+                Text(video.status).fixedSize()
+                if let metadata = video.metadata {
+                    Text(ByteCountFormatter.string(fromByteCount: metadata.bytes, countStyle: .file))
                 }
             } else if let image = store.activeImage {
                 Text(image.status).fixedSize()

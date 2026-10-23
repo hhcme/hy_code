@@ -28,6 +28,7 @@ build 28 的 [Web 工具](WEB_TOOLS.md) 增加 JS/TS/JSX/TSX、Vue、HTML/CSS/SC
 | 浏览导航 | 文件临时/固定标签、关闭、前进后退与上级目录 | Swift 模型测试通过 | 未验证 |
 | 文件信息 | 路径、类型、大小、修改时间；不读取正文 | 目录元数据与刷新模型测试通过 | 未验证 |
 | 后台任务 | 最多两个并发读取、共享 FIFO 排队、取消、会话/请求代次隔离、数量限制 | 并发结果隔离、取消/预算/路径/释放测试通过；会话隔离已源码审查；临时样本探针见性能页 | 未验证 |
+| 视频只读预览 | 本地 MP4/MOV/M4V，默认暂停、播放/进度/音量、自动适应；切标签卸载播放器 | 自有无音轨 MOV/JPEG、MP4/H.264、M4V/H.264 元数据/单帧、分段/取消/租约与 seek 模型；[范围](VIDEO_PREVIEW.md) | 未验证 |
 | 图片只读预览 | 独立图片标签；缩放/适应/100%/平移与背景切换；位图 ImageIO、基础 SVG resvg，多帧首帧 | 13 项 Swift 图片/几何与 4 项 Rust SVG 新回归，样本格式与限制见[图片预览](IMAGE_PREVIEW.md) | 未验证 |
 | 基础文本编辑 | 单击编辑、原生 TextKit 1、Rust 正式文本/修订、原生撤销、修改固定标签；默认 800 ms 自动保存及设置开关、⌘S、关闭保护 | 13 项 Swift 文本/保存测试、5 项 Rust 文本/FFI 测试及源码复核；Swift 文本测试 ASan 通过，非真实 IME/撤销验收 | 未验证 |
 | 编辑区反馈与菜单 | 独立高对比插入点、宽光标及对应重绘、当前行/活动选区/I-beam；工作台纯色圆角编辑菜单、分组与快捷键、关闭/事件生命周期 | 6 项颜色/几何/重绘/菜单选择及跨屏定位模型测试，编译和独立复核；未执行原生光标闪烁、IME、菜单点击或 VoiceOver | 未验证 |
@@ -41,7 +42,7 @@ build 28 的 [Web 工具](WEB_TOOLS.md) 增加 JS/TS/JSX/TSX、Vue、HTML/CSS/SC
 | Git、终端 | 仅空面板入口，无服务 | 无 | 未验证 |
 | 正式应用分发 | 未实施签名、公证、上传或应用发布 | 仅本地开发构建 | 未验证 |
 
-源码地图、完整交互和命令见[工作台说明](WORKBENCH.md)。当前 build 34 的 Swift 186 项（34 组）与 Rust 19 项后台测试通过；图片新增 13 项 Swift 另通过 ASan，Rust 静态库未插桩，见[图片证据](evidence/2026-10-23-build34-image-preview.json)。此前 build 30 的 Rust 15 项、Swift 157 项后台测试通过，本批新增 6 项插入点对比度/几何/重绘和菜单导航/定位回归。此前 build 29 的 151 项 Swift 通过，其中 8 项新增扫描/安全读取/问题汇总/队列取消/FSEvents 回归；这 8 项与 6 项进程生命周期用例共 14 项通过 build 29 的 Swift ASan，Rust 静态库未插桩。此前 10 项 Flutter 运行模型/stdio fixture 与 12 项既有协议/进程回归通过 Swift ASan；此前 11 项悬浮模型测试及此前 16 项 Dart 协议/进程/SDK/包模型测试、11 项视口/高亮测试、3 项行号裁剪像素回归、7 项行索引/高亮桥接测试与 13 项 Swift 文本测试分别完成 Address Sanitizer，原 7 项 Swift 工作区测试曾通过 ASan，未重跑全部几何测试的 sanitizer。未由此推导 Rust 内部 sanitizer、完整 ABI 稳定性或真实窗口性能通过。
+源码地图、完整交互和命令见[工作台说明](WORKBENCH.md)。当前 build 35 的 Swift 196 项（37 组）与 Rust 19 项通过；10 项视频测试另通过 Swift ASan，见[视频证据](evidence/2026-10-23-build35-video-preview.json)。此前 build 34 的 Swift 186 项（34 组）与 Rust 19 项后台测试通过；图片新增 13 项 Swift 另通过 ASan，Rust 静态库未插桩，见[图片证据](evidence/2026-10-23-build34-image-preview.json)。此前 build 30 的 Rust 15 项、Swift 157 项后台测试通过，本批新增 6 项插入点对比度/几何/重绘和菜单导航/定位回归。此前 build 29 的 151 项 Swift 通过，其中 8 项新增扫描/安全读取/问题汇总/队列取消/FSEvents 回归；这 8 项与 6 项进程生命周期用例共 14 项通过 build 29 的 Swift ASan，Rust 静态库未插桩。此前 10 项 Flutter 运行模型/stdio fixture 与 12 项既有协议/进程回归通过 Swift ASan；此前 11 项悬浮模型测试及此前 16 项 Dart 协议/进程/SDK/包模型测试、11 项视口/高亮测试、3 项行号裁剪像素回归、7 项行索引/高亮桥接测试与 13 项 Swift 文本测试分别完成 Address Sanitizer，原 7 项 Swift 工作区测试曾通过 ASan，未重跑全部几何测试的 sanitizer。未由此推导 Rust 内部 sanitizer、完整 ABI 稳定性或真实窗口性能通过。
 
 ## 文件与格式范围
 
