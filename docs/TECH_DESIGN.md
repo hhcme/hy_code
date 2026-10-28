@@ -1,5 +1,7 @@
 # HyCode 重写技术设计
 
+build 50 的 [Git 工作流](GIT.md)由 Swift 仓库 actor 独占受限 Git CLI、快照和 alternate index，原生控制器独占界面代次与任务生命周期。写任务复用编辑器已有外部修改所有权；差异在后台解析/测量；build 53 工作版本右侧复用同一个正式文本视图/Rust owner，历史/index/统一投影只读，不建立第二个正式文本缓冲。选型、索引/引用提交点和执行边界见 [ADR 0016](adr/0016-native-git.md)。
+
 build 48 的[原生本地终端](TERMINAL.md)由项目控制器独占标签/分屏，SwiftTerm 提供模拟器/AppKit 视图，自有 utility 队列与 C `posix_spawn`/helper 独占 PTY、输入、FD 和退出等待；有界输出消费提供背压，隐藏保活、关闭等待。决策见 [ADR 0015](adr/0015-native-terminal.md)；以下早期“终端空入口”为当时状态。
 
 build 42 的 [Codex Agent 宿主](CODEX_AGENT.md)通过独立 JSONL actor 连接官方固定 app-server，不依赖可视终端。项目/会话/凭据和进程分别拥有，正式文本仍由既有 Rust/Swift 文档所有者管理；修改任务独占并冻结已保存文档。隔离、预算与未验收项见 [ADR 0014](adr/0014-codex-agent.md)。
@@ -66,7 +68,7 @@ FFI 契约需说明对象、句柄和字符串的所有权，长度与位置编�
 
 同一记录保存可空的启动项目路径：打开更新，显式关闭清空；旧数据缺少字段时迁移历史首项，显式空值不会重新迁移。场景首次出现只尝试恢复一次，用户主动打开/关闭/切换会消费恢复机会；后台解析结果仍按项目意图校验，不能覆盖较新的操作。不新增第二个工作区或文件访问所有者。
 
-当前已把 Rust 内核、macOS 宿主、C 头文件、Swift 包、测试和工具分开组织，源码地图见[工作台说明](WORKBENCH.md)。基础编辑、保存与语法着色已接入，Dart LSP、依赖、问题和结构面板已接入；Flutter 运行/调试、测试/构建和基础 Inspector 首批工具采用独立运行所有者和 SDK DAP，见 [ADR 0006](adr/0006-flutter-runtime.md)。终端使用原生视图、独立 PTY helper 和会话所有者，见 [ADR 0015](adr/0015-native-terminal.md)。实际依赖与候选按[依赖台账](DEPENDENCIES.md)分别管理，各专题保留未实现与未验收项。
+当前已把 Rust 内核、macOS 宿主、C 头文件、Swift 包、测试和工具分开组织，源码地图见[工作台说明](WORKBENCH.md)。基础编辑、保存与语法着色已接入，Dart LSP、依赖、问题和结构面板已接入；Flutter 运行/调试、测试/构建和基础 Inspector 首批工具采用独立运行所有者和 SDK DAP，见 [ADR 0006](adr/0006-flutter-runtime.md)。Git 首批采用受限外部 CLI、actor 和候选索引事务，见 [ADR 0016](adr/0016-native-git.md)；终端使用原生视图、独立 PTY helper 和会话所有者，见 [ADR 0015](adr/0015-native-terminal.md)。实际依赖与候选按[依赖台账](DEPENDENCIES.md)分别管理，各专题保留未实现与未验收项。
 
 项目后台诊断的单所有者、后台扫描/监听、原生覆盖与服务缓存交接、依赖范围和 UI 快照预算见[项目后台诊断](PROJECT_ANALYSIS.md)。工作区原生缓冲不因分析器的文件监听自动重载。
 

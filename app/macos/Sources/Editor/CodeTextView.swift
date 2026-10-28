@@ -5,6 +5,7 @@ import HyCodeWorkspace
     var externalHistory: UndoManager?
     override var undoManager: UndoManager? { externalHistory ?? super.undoManager }
     weak var semantic: EditorLanguageFeatures?
+    weak var comparison: (any EditorComparisonPresentation)?
     private lazy var windowFeedback = EditorWindowFeedback(view: self)
     private var lastLineRect = NSRect.zero
     private var editorFocused: Bool { window?.isKeyWindow == true && window?.firstResponder === self }
@@ -65,8 +66,9 @@ import HyCodeWorkspace
     }
     override func drawBackground(in rect: NSRect) {
         super.drawBackground(in: rect)
+        comparison?.drawBackground(in: rect, textView: self)
         let band = currentLineRect().intersection(rect)
-        if !band.isEmpty {
+        if !band.isEmpty, comparison?.containsChange(at: selectedRange().location) != true {
             WorkbenchColors.nativeEditorLine.setFill()
             band.fill()
         }

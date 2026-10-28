@@ -70,6 +70,15 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
     private var replacingPage = false
     private weak var document: EditorDocument?
     private(set) var presentation: EditorPresentation?
+    private(set) var comparison: (any EditorComparisonPresentation)?
+    func presentComparison(_ value: (any EditorComparisonPresentation)?) {
+        guard comparison?.id != value?.id else { return }
+        comparison?.detach(from: self)
+        comparison = value
+        (textView as? CodeTextView)?.comparison = value
+        presentation?.gutter.comparison = value
+        value?.attach(to: self)
+    }
     init(document: EditorDocument, content: TextDocumentContent) {
         self.document = document
         let layout = NSLayoutManager()
@@ -138,12 +147,32 @@ private final class EditorTextStorage: NSTextStorage, @unchecked Sendable {
         presentation?.gutter.localNumbers = document.largeFile != nil
         (scroll as? EditorScrollView)?.presentation = presentation
         storage.onWillReplace = { [weak self] change in
+            self?.comparison?.willReplace()
             self?.presentation?.willReplace(change)
         }
         textView.setAccessibilityLabel("代码编辑区 · " + document.path)
         applyAppearance()
     }
     func undoManager(for view: NSTextView) -> UndoManager? { document?.largeFile?.history ?? undo }
+    func restoreComparison(_ edit: GitBlockEdit, revision: UInt64) -> Bool {
+        guard let document, document.edits.revision == revision, document.largeFile == nil,
+            !document.composing, !document.closing, textView.isEditable, !textView.hasMarkedText(),
+            edit.range.location <= storage.length, edit.range.length <= storage.length - edit.range.location
+        else { return false }
+        let current = storage.mutableString.substring(with: edit.range)
+        guard current.utf16.elementsEqual(edit.expected.utf16),
+            !current.utf16.elementsEqual(edit.replacement.utf16)
+        else { return false }
+        textView.breakUndoCoalescing()
+        undo.beginUndoGrouping()
+        textView.window?.makeFirstResponder(textView)
+        textView.insertText(edit.replacement, replacementRange: edit.range)
+        let changed = document.edits.revision != revision
+        if changed { undo.setActionName("还原这处更改") }
+        undo.endUndoGrouping()
+        textView.breakUndoCoalescing()
+        return changed
+    }
     func connect(_ semantic: EditorLanguageFeatures?) {
         guard let view = textView as? CodeTextView else { return }
         view.semantic = semantic
@@ -207,7 +236,10 @@ struct NativeEditorHost: NSViewRepresentable {
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("editor.lineNumbers") private var lineNumbers = true
     @AppStorage("editor.syntaxHighlight") private var syntaxHighlight = true
-    func makeNSView(context: Context) -> NSScrollView { editor.scroll }
+    func makeNSView(context: Context) -> NSScrollView {
+        editor.presentComparison(nil)
+        return editor.scroll
+    }
     func updateNSView(_ scroll: NSScrollView, context: Context) {
         let name: NSAppearance.Name = colorScheme == .dark ? .darkAqua : .aqua
         if scroll.appearance?.name != name {

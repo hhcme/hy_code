@@ -17,6 +17,7 @@ extension WorkbenchTool {
         case .project: "项目"
         case .search: "搜索"
         case .structure: "结构"
+        case .commit: "提交"
         case .git: "Git"
         case .terminal: "终端"
         case .debug: "调试"
@@ -33,6 +34,7 @@ extension WorkbenchTool {
         case .project: "folder"
         case .search: "magnifyingglass"
         case .structure: "list.bullet.indent"
+        case .commit: "slider.horizontal.3"
         case .git: "point.3.connected.trianglepath.dotted"
         case .terminal: "terminal"
         case .debug: "ladybug"
@@ -56,7 +58,7 @@ extension WorkbenchTool {
         case .structure: "8"
         case .git: "9"
         case .terminal: "0"
-        case .search, .codex: nil
+        case .search, .codex, .commit: nil
         }
     }
 }

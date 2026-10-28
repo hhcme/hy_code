@@ -1,0 +1,61 @@
+Building for debugging...
+[Computing dependencies]
+[Pre-planning 1 / 590]
+[Planning deferred tasks]
+warning: missing creator for mutated node: ('.build/out/Products/Debug/SwiftTerm_SwiftTerm.bundle/Contents/MacOS')
+[7 / 51] SwiftTerm
+[7 / 47] HyCodeWorkspace
+[11 / 51] HyCodeWorkspace
+[17 / 43] HyCodeWorkspace
+[20 / 43] HyCodeTerminalProbe-product
+[21 / 43] HyCodeNativeLanguageProbe-product
+[22 / 50] HyCodeMarkupRuleProbe-product
+[24 / 50] HyCodeDirectoryProbe-product
+[25 / 50] HyCodeDebugProbe-product
+[27 / 50] HyCodeDartProbe-product
+[29 / 50] HyCodeWorkspaceTests-product
+[31 / 49] HyCodeWorkspaceTests-product
+[32 / 49] HyCodeWorkspaceTests-product
+[34 / 53] HyCodeWorkspaceTests-product
+[35 / 53] HyCodeWorkspaceTests-product
+[35 / 53] HyCode-product
+[42 / 52] HyCodeWorkspaceTests-product
+[43 / 52] HyCodeWorkspaceTests-product
+[45 / 52] HyCode-product
+[46 / 52] HyCode-product
+[50 / 54] HyCodeWorkspaceTests-product
+[53 / 54] HyCodeWorkspaceTests-product
+[55 / 56] HyCodeWebProbe-product
+[59 / 60] HyCodeMarkupRuleProbe-product
+[63 / 64] HyCodeDirectoryProbe-product
+[67 / 68] HyCodeDartProbe-product
+[71 / 72] HyCodeCodexProbe-product
+Build complete! (13.01秒)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite TextDocumentTests started.
+◇ Suite GitHunkTests started.
+◇ Suite GitRepositoryTests started.
+◇ Test blockRestoreAndInverseUseRevisionBoundNativeTextDeltas() started.
+◇ Test insertionAndDeletionRestoreAtActualEmptyAnchors() started.
+◇ Test aggregateCandidatesAreBoundedBeforeCommitPreparation() started.
+◇ Test partialCommitKeepsBOMCRLFAndNoFinalNewlineByteExact() started.
+◇ Test restoreAndPartialCompositionKeepCRLFUnicodeAndUnterminatedEOF() started.
+✔ Test aggregateCandidatesAreBoundedBeforeCommitPreparation() passed after 0.001 seconds.
+✔ Test insertionAndDeletionRestoreAtActualEmptyAnchors() passed after 0.001 seconds.
+✔ Test restoreAndPartialCompositionKeepCRLFUnicodeAndUnterminatedEOF() passed after 0.001 seconds.
+✔ Suite GitHunkTests passed after 0.001 seconds.
+✔ Test blockRestoreAndInverseUseRevisionBoundNativeTextDeltas() passed after 0.005 seconds.
+✔ Suite TextDocumentTests passed after 0.006 seconds.
+✔ Test partialCommitKeepsBOMCRLFAndNoFinalNewlineByteExact() passed after 0.574 seconds.
+◇ Test stalePartialReviewAndCandidateNeverChangeHeadOrIndex() started.
+✔ Test stalePartialReviewAndCandidateNeverChangeHeadOrIndex() passed after 0.440 seconds.
+◇ Test partialPolicyRejectsConversionsButSelectingAllRemainsWholeFile() started.
+✔ Test partialPolicyRejectsConversionsButSelectingAllRemainsWholeFile() passed after 0.362 seconds.
+◇ Test partialCommitKeepsOtherWorkingHunksAndOtherStagedFiles() started.
+✔ Test partialCommitKeepsOtherWorkingHunksAndOtherStagedFiles() passed after 0.616 seconds.
+◇ Test partialCommitPreservesExcludedPreStagedHunks() started.
+✔ Test partialCommitPreservesExcludedPreStagedHunks() passed after 0.581 seconds.
+✔ Suite GitRepositoryTests passed after 2.576 seconds.
+✔ Test run with 9 tests in 3 suites passed after 2.576 seconds.

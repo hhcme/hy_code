@@ -39,7 +39,7 @@ build 28 的 [Web 工具](WEB_TOOLS.md) 增加 JS/TS/JSX/TSX、Vue、HTML/CSS/SC
 | Pub 依赖 | 获取/过期/升级/添加/移除、版本/来源展示；清单保存/冻结/重载，任务可停止 | 解析和任务回收 fixture 通过，真实 Pub/网络与清单 UI 流程未运行 | 未验证 |
 | Flutter 运行/调试与工具 | 显式设备/配置、SDK DAP、普通/条件/日志断点、调用栈/变量/求值、热更新、build/test/Doctor 和基础 Widget 树入口 | 10 项新模型/stdio fixture 回归，保留 LSP 探针；本机 fork 的生成 Dart DAP 探针未通过，真实 Flutter/设备未执行；[完整清单](FLUTTER_PLAN.md) | 未验证 |
 | 项目后台诊断 | 打开项目检查未打开的 Dart/Web 文件；模块反向引用增量、文件监听与 JSON 依赖；左下角三类计数、问题分组及定位 | 受限发现/链接替换/编码/预算/汇总/取消/FSEvents 后台回归、真实服务临时样本；[范围与限制](PROJECT_ANALYSIS.md) | 未验证 |
-| Git | 仅空面板入口，无服务 | 无 | 未验证 |
+| Git | [原生提交/差异/日志/分支/远端](GIT.md)首批已接；外部 Git 2.48+、完整文件/真实 index 两种提交、只读磁盘/对象差异 | 生成临时仓库与本机 bare remote 后台回归；不计为真实 SSH/HTTPS、用户项目或全分期验收 | 真实窗口/IME/滚动、认证和大型仓库性能未验证；同页编辑/差异块/Stash/合并工具未实现 |
 | 终端 | 本地 PTY、原生多标签/分屏、搜索、Shell 设置、项目树入口、关闭保护、zsh 常用命令/路径候选及统一细滚动条；[范围](TERMINAL.md) | 无 GUI 模型、headless 引擎及真实 PTY 固定 fixture；本批结果见专题 | 窗口/IME/TUI/性能未验证 |
 | 正式应用分发 | 未实施签名、公证、上传或应用发布 | 仅本地开发构建 | 未验证 |
 

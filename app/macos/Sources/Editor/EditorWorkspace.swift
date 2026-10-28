@@ -156,6 +156,29 @@ import Observation
         }
         return true
     }
+    /// Git shares the existing external-write owner with agents. Index-only
+    /// operations require only their selected buffers to be clean; other drafts
+    /// remain intact while every writer is briefly fenced. nil protects all.
+    func prepareGitWrite(_ id: UUID, paths: Set<String>?) async -> Bool {
+        guard !isClosing, agentWriteID == nil, packageToolRoot == nil, !preparingLanguageEdit, editPreview == nil else {
+            return false
+        }
+        func affected(_ document: EditorDocument) -> Bool { paths == nil || paths!.contains(document.path) }
+        guard !documents.values.contains(where: { affected($0) && ($0.isDirty || $0.composing || $0.loading) }) else {
+            return false
+        }
+        agentWriteID = id
+        let protected = Array(documents.values)
+        for document in protected { document.toolManaged = true }
+        for document in protected { await document.finishPendingOperations() }
+        guard !Task.isCancelled, agentWriteID == id, !isClosing,
+            !documents.values.contains(where: { affected($0) && ($0.isDirty || $0.composing || $0.loading) })
+        else {
+            finishAgentWrite(id, reload: false)
+            return false
+        }
+        return true
+    }
     func finishAgentWrite(_ id: UUID, reload: Bool = true) {
         guard agentWriteID == id else { return }
         agentWriteID = nil

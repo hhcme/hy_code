@@ -3,6 +3,7 @@
 - 正式名称 HyCode，仓库为 `hhcme/hy_code`。目标是高性能原生开源代码编辑器；首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。
 - 开始前读 README.md、docs/EDITOR_DIRECTION.md、docs/PRODUCT_REQUIREMENTS.md、docs/TECH_DESIGN.md、docs/DEVELOPMENT.md，再按 docs/README.md 读任务专题。
 - 内置 Codex 多会话、DeepSeek 预设/思考与上下文预算、项目自定义 Responses 服务、私有运行资源/应用自管本地凭据、并发与修改互斥见 docs/CODEX_AGENT.md；默认展开右侧 Codex。系统 Codex 登录与配置保持独立，固定官方资源须校验；通用测试只用生成项目和本机替身。不读写系统钥匙串；真实服务及用户本地凭据仅在用户要求配置后显式验证，不使用用户源码或启动 GUI，不在源码、参数或日志写入密钥。
+- Git 的 WebStorm 截图参考、独立提交/日志布局、提交选择与真实暂存区、差异/分支/远端、文档/终端/Codex 互斥及分期验收见 docs/GIT.md 和 docs/adr/0016-native-git.md；G1/G2 首批采用已安装 Git 2.48+，工作区差异同文档编辑、块级还原及受限块选择首批已接入；真实窗口、贮藏/合并工具仍独立验收。通用测试只用生成仓库与本机 bare remote，不操作用户源码、真实认证或 GUI；hooks/过滤器/签名和外部管理目录按专题约束处理。
 - Web 多语言服务、修改预览和 package 工具的当前范围见 docs/WEB_TOOLS.md；需要外部 Node 22.22.2+，Vue 项目插件须显式工作区信任。Web 调试与框架专用工具尚未全部实现。
 - 本地交互终端、多会话/分屏、PTY helper、Shell 环境、关闭确认、资源与 Codex 修改互斥见 docs/TERMINAL.md；仅显式打开才启动 Shell。后台测试只用生成路径、固定非登录命令与 headless 模拟器；zsh 中继/候选使用禁用全局配置且 HOME/启动文件全部生成的固定样本，不创建终端视图或读取用户 Shell 配置。
 - 2026-10-21 清理旧实现后，现已重新建立 macOS 文件工作台、原生基础编辑、Rust 文本/目录内核及后台测试。当前范围见 docs/WORKBENCH.md、docs/EDITING.md 和 docs/SYNTAX.md；行号/语法高亮已接入，Dart/Flutter 首批语义与 Pub 工具已接入，见 docs/DART_FLUTTER.md；Flutter 运行/调试、热更新、测试/构建及基础 Inspector 首批入口已接入，真实 Flutter/设备未验证；完整必做范围见 docs/FLUTTER_PLAN.md。旧源码和 docs/history/ 仅用于追溯，不据此恢复旧产品。

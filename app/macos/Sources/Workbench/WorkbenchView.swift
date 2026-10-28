@@ -26,6 +26,7 @@ struct WorkbenchView: View {
         .background(WorkbenchColors.chrome)
         .background(WorkbenchWindowChrome())
         .background(EditorWindowCloseGuard(store: store))
+        .onAppear { store.git.resumeIfNeeded() }
         .sheet(item: Binding(get: { store.flutter.dialog }, set: { store.flutter.dialog = $0 })) { dialog in
             switch dialog {
             case .configuration: FlutterRunConfigurationEditor(controller: store.flutter)
@@ -37,6 +38,9 @@ struct WorkbenchView: View {
                 get: { store.editing.editPreview }, set: { if $0 == nil { store.editing.cancelLanguagePreview() } })
         ) { preview in
             LanguageEditPreviewView(editing: store.editing, preview: preview)
+        }
+        .sheet(item: Binding(get: { store.git.dialog }, set: { store.git.dialog = $0 })) { dialog in
+            GitDialogContent(kind: dialog, controller: store.git)
         }
         .ignoresSafeArea(.container, edges: .all)
     }
@@ -55,6 +59,12 @@ struct WorkbenchView: View {
         case .information: informationPanel
         case .openTabs: openTabsPanel
         case .workspace: workspacePanel
+        case .commit:
+            GitCommitPanel(controller: store.git, headerHeight: panelHeaderHeight(.commit)) {
+                store.docking.hide(.commit)
+            }
+        case .git:
+            GitLogPanel(controller: store.git, headerHeight: panelHeaderHeight(.git)) { store.docking.hide(.git) }
         case .analysis:
             VStack(spacing: 0) {
                 toolPanelHeader(.analysis)
@@ -204,7 +214,7 @@ struct WorkbenchView: View {
                             tab: tab, projectName: store.projectName, active: store.tabs.activeID == tab.id,
                             activate: { store.activateTab(tab.id) }, pin: { store.pinTab(tab.id) },
                             close: { store.closeTab(tab.id) },
-                            dirty: store.editing.documents[tab.location.path]?.isDirty ?? false
+                            dirty: tab.location.documentPath.flatMap { store.editing.documents[$0]?.isDirty } ?? false
                         )
                         .id(tab.id)
                     }
@@ -230,6 +240,8 @@ struct WorkbenchView: View {
     @ViewBuilder private var content: some View {
         if store.rootURL == nil {
             welcome
+        } else if let tab = store.tabs.active, case .gitDiff(let location) = tab.location {
+            GitDiffView(controller: store.git, state: store.git.review(location)).id(location)
         } else if let tab = store.tabs.active, case .file(let entry) = tab.location {
             if let image = store.editing.images[entry.relativePath] {
                 ImagePreviewPanel(document: image).id(image.id)

@@ -19,6 +19,7 @@
 | 当前工程 | [文件浏览工作台](WORKBENCH.md) | 布局、交互、源码地图、构建与证据 |
 | AI Agent | [内置 Codex](CODEX_AGENT.md) | 右侧多会话、自定义 Responses、运行/凭据隔离、静默验证 |
 | 终端 | [本地交互终端](TERMINAL.md) | 原生标签/分屏、Shell、PTY/关闭/修改互斥和静默验证 |
+| Git | [工作流与分期验收](GIT.md) | 原生提交/差异编辑/日志/分支/远端、真实索引保护、文档/任务互斥与后续范围 |
 | 视觉 | [WebStorm 截图对齐](VISUAL_ALIGNMENT.md) | 像素采样、整体界面覆盖、共享控件与真实窗口验证缺口 |
 | 分屏预览 | [Markdown / HTML](MARKUP_PREVIEW.md) | 原生源码、静态预览、资源限制和滚动映射 |
 | 原生语言 | [Swift / Java / SQL](NATIVE_LANGUAGES.md) | 外部语义、项目模型、信任与离线 DDL |

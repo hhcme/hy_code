@@ -108,6 +108,17 @@ struct HyCodeApplication: App {
                 }.disabled(store.rootURL == nil)
                 Button("重启 Web 分析器", action: store.web.restart).disabled(store.rootURL == nil)
             }
+            CommandMenu("Git") {
+                Button("提交…", action: store.revealGitCommit).keyboardShortcut("k").disabled(store.rootURL == nil)
+                Button("显示 Git 日志", action: store.revealGitLog).disabled(store.rootURL == nil)
+                Button("刷新 Git", action: store.git.refresh).disabled(!store.git.ready || store.git.writing)
+                Divider()
+                Button("分支…") { store.git.dialog = .branch }.disabled(!store.git.ready || store.git.writing)
+                Button("获取", action: store.git.fetch).disabled(!store.git.ready || store.git.writing)
+                Button("仅快进拉取", action: store.git.pull).disabled(!store.git.ready || store.git.writing)
+                Button("预览并推送…", action: store.git.requestPush).keyboardShortcut("k", modifiers: [.command, .shift])
+                    .disabled(!store.git.ready || store.git.writing)
+            }
             CommandMenu("外观") {
                 Picker("主题", selection: $appearance) {
                     ForEach(WorkbenchAppearance.allCases) { item in

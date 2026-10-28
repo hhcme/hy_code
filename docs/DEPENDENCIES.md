@@ -13,6 +13,7 @@ build 48 新增 SwiftTerm 1.20.0（MIT，commit `5d14406844143538cd8f8851d2d8a67
 | serde / serde_core / serde_derive | 1.0.229；[Cargo.toml](../Cargo.toml) 与 [Cargo.lock](../Cargo.lock) | JSON 响应模型序列化；[上游](https://github.com/serde-rs/serde) |
 | serde_json | 1.0.154；同上 | ABI 结果编码；[上游](https://github.com/serde-rs/json) |
 | Swift Testing | 验证环境随 Xcode 提供，不下载外部 Swift 包 | 工作区与几何数据模型的无 GUI 测试 |
+| Git CLI | 外部已安装 Git 2.48+；本机验证 2.54.0（Apple Git-157），其他版本另验 | [Git 上游](https://git-scm.com/)、[GPL-2.0 原文](https://github.com/git/git/blob/v2.54.0/COPYING)；独立进程，不链接、不复制/分发 Git，也不自动安装。原生适配与受限配置/沙箱/取消见 [ADR 0016](adr/0016-native-git.md)，真实认证与最低声明版本尚未覆盖 |
 | Tree-sitter 与语法包 | 主库 0.27.1，15 个语法 crate 由 Cargo.toml/Cargo.lock 固定 | 增量树、可见范围高亮；Dart/Vue 为社区语法，版本/来源/许可见第三方通知及[高亮说明](SYNTAX.md) |
 | Dart Analysis Server / Dart Pub / Flutter CLI / SDK DAP | 外部 SDK，不在构建锁文件或应用内；语言 LSP 验证 Dart 3.11.5；DAP fixture 通过，当前 fork 真实控制台调试未通过；Flutter 安装元数据 3.41.10-ohos-0.0.2-beta | 官方 [Dart SDK](https://github.com/dart-lang/sdk/tree/3.11.5) / [Flutter](https://github.com/flutter/flutter)，上游均 BSD-3-Clause；仅调用已安装命令，未复制 SDK 或 IDE 插件；[Dart 许可](https://github.com/dart-lang/sdk/blob/3.11.5/LICENSE)、[Flutter 许可](https://github.com/flutter/flutter/blob/3.41.5/LICENSE)。此 fork 与其他版本兼容未完整验证，细节见 [Dart/Flutter 工具](DART_FLUTTER.md) |
 | ImageIO / CoreGraphics | macOS 系统框架；随系统版本变化 | 图片类型识别、首帧与方向处理、受限降采样和立即解码的只读 RGBA 投影；不分发第三方解码器 |

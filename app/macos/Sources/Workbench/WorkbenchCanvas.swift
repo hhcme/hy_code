@@ -38,6 +38,8 @@ final class NativeWorkbenchCanvas: NSView {
     private var toolHosts: [WorkbenchTool: NSHostingView<AnyView>] = [:]
     private var dividers: [WorkbenchDivider: WorkbenchResizeHandle] = [:]
     private var sizes = WorkbenchPaneSizes(informationWidth: 380)
+    private var gitLogSizeApplied = false
+    private var bottomManuallySized = false
     private var visibility = WorkbenchVisibility()
     private var initialized = false
     private var contentLayoutDirty = true
@@ -112,6 +114,16 @@ final class NativeWorkbenchCanvas: NSView {
         if liveResize {
             deferredContent = nil
             endLiveResize()
+        }
+        if !gitLogSizeApplied,
+            docking.active[.bottomLeading] == .git || docking.active[.bottomTrailing] == .git
+        {
+            gitLogSizeApplied = true
+            if !bottomManuallySized {
+                sizes = WorkbenchPaneSizes(
+                    projectWidth: sizes.projectWidth, informationWidth: sizes.informationWidth,
+                    bottomHeight: 380, bottomFraction: sizes.bottomFraction)
+            }
         }
         lastDocking = docking
         self.workspaceSession = workspaceSession
@@ -263,6 +275,7 @@ final class NativeWorkbenchCanvas: NSView {
         }
     }
     private func resize(_ axis: WorkbenchDivider, value: Double) {
+        if axis == .bottom { bottomManuallySized = true }
         if liveResize { interaction.enqueue(axis, value: value) } else { applyResize(axis, value: value) }
     }
     @discardableResult

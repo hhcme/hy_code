@@ -3,6 +3,7 @@ import HyCodeWorkspace
 
 @MainActor final class EditorLineRuler: NSRulerView {
     weak var semantic: EditorLanguageFeatures?
+    weak var comparison: (any EditorComparisonPresentation)?
     var localNumbers = false
     var lines: TextLineIndex
     private weak var editor: NSTextView?
@@ -83,6 +84,14 @@ import HyCodeWorkspace
             let point = convert(NSPoint(x: 0, y: fragment.minY + origin.y), from: editor)
             if point.y > bounds.maxY { break }
             if point.y + fragment.height >= 0 {
+                if let color = comparison?.lineColor(at: line) {
+                    color.withAlphaComponent(0.15).setFill()
+                    NSRect(x: 0, y: point.y, width: bounds.width, height: fragment.height).intersection(rect).fill()
+                }
+                if comparison?.showsLineNumber(at: line) == false {
+                    line += 1
+                    continue
+                }
                 if let semantic, let path = semantic.document?.sourceURL.path,
                     let runtime = semantic.controller?.flutter
                 {

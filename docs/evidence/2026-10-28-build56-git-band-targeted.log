@@ -1,0 +1,90 @@
+Building for debugging...
+[Computing dependencies]
+[1 / 1]
+[1 / 27] HyCodeWorkspace
+[3 / 30] SwiftTerm
+[3 / 26] HyCodeWorkspace
+[6 / 29] HyCodeWorkspace
+[15 / 54] HyCodeNativeLanguageProbe-product
+[17 / 56] HyCodeTerminalProbe-product
+[20 / 57] HyCodeNativeLanguageProbe-product
+[24 / 58] HyCodeLargeFileProbe-product
+[27 / 60] HyCodeLargeFileProbe-product
+[31 / 60] HyCodeDebugProbe-product
+[35 / 62] HyCodeDartProbe-product
+[38 / 63] HyCodeCodexSetup-product
+[43 / 64] HyCodeCodexProbe-product
+[43 / 74] HyCodeWorkspace
+[56 / 74] HyCode-product
+[59 / 79] HyCodeWorkspaceTests-product
+[59 / 81] HyCodeTerminalProbe-product
+[60 / 81] HyCodeNativeLanguageProbe-product
+[61 / 81] HyCodeMarkupRuleProbe-product
+[62 / 81] HyCodeLargeFileProbe-product
+[63 / 81] HyCodeDirectoryProbe-product
+[66 / 81] HyCodeWorkspaceTests-product
+[69 / 82] HyCodeCodexSetup-product
+[72 / 82] HyCodeWorkspaceTests-product
+[73 / 82] HyCode-product
+[75 / 83] HyCode-product
+[77 / 88] HyCode-product
+[77 / 88] HyCodeWorkspaceTests-product
+[79 / 88] HyCode-product
+[80 / 88] HyCode-product
+[82 / 88] HyCode-product
+[88 / 88] HyCodeWebProbe-product
+[91 / 92] HyCodeCodexSetup-product
+[95 / 96] HyCodeDebugProbe-product
+[99 / 100] HyCode-product
+[103 / 104] HyCodeNativeLanguageProbe-product
+[107 / 108] HyCode-product
+warning: missing creator for mutated node: ('.build/out/Products/Debug/SwiftTerm_SwiftTerm.bundle/Contents/MacOS')
+Build complete! (11.03秒)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite GitConnectionBandTests started.
+◇ Suite GitTextComparisonTests started.
+◇ Suite GitComparisonLayoutTests started.
+◇ Test rasterHasContinuousEqualColourThroughTheReservedLaneAndNumberRails() started.
+◇ Test bridgeStartsAtTextViewportAndExcludesHeadersAndHorizontalScrollLanes() started.
+◇ Test fiveLineDeletionKeepsItsRailThenTapersToTheOppositeAnchor() started.
+◇ Test budgetIsCheckedBeforeAllocatingRowsForAnEmptyPatch() started.
+◇ Test canonicallyEquivalentTextStillHasDistinctUTF16PresentationAndLiteralCopy() started.
+◇ Test unequalReplacementUsesOneBlockColourWithoutChangingLineOrCharacterMetadata() started.
+◇ Test omittedContextBareCRAndLongLinesCannotBecomeEditableFullText() started.
+◇ Test alignmentUsesRealUTF16OffsetsWithoutPaddingTheSource() started.
+◇ Test cleanButStaleBufferCannotApproveAnUnseenDiskCandidateAndOldRepliesStayRejected() started.
+◇ Test decodingRemovesOneFileBOMAndPreservesLiteralBodyFEFF() started.
+◇ Test emptyBaselineAndEOFStayLiteralAndSelectable() started.
+◇ Test fractionalResizeAndClippedCrossingPreserveRealEndpoints() started.
+◇ Test listRowsKeepStageAndWorkActionsBoundToTheSameIdentityAfterGrouping() started.
+◇ Test eofNotesDoNotConsumeSourceRowBudgetForExactContextOrDenseReplacement() started.
+◇ Test deletionKeepsBothSourcesContinuousAndConnectsFiveLinesToAnAnchor() started.
+◇ Test emptyBaselineAndMissingFinalNewlineHaveExactEOFAnchors() started.
+◇ Test fileListAndReviewNavigationUseTheSameTrackedOrderAndSeparateUntrackedGroup() started.
+◇ Test insertionAndUnequalReplacementMapRealLineRangesInBothDirections() started.
+◇ Test sharedSourceAndDiffTabsRetainOneDocumentAndPinOnInput() started.
+✔ Test bridgeStartsAtTextViewportAndExcludesHeadersAndHorizontalScrollLanes() passed after 0.001 seconds.
+✔ Test cleanButStaleBufferCannotApproveAnUnseenDiskCandidateAndOldRepliesStayRejected() passed after 0.001 seconds.
+✔ Test fractionalResizeAndClippedCrossingPreserveRealEndpoints() passed after 0.001 seconds.
+✔ Test deletionKeepsBothSourcesContinuousAndConnectsFiveLinesToAnAnchor() passed after 0.001 seconds.
+✔ Test canonicallyEquivalentTextStillHasDistinctUTF16PresentationAndLiteralCopy() passed after 0.001 seconds.
+✔ Test listRowsKeepStageAndWorkActionsBoundToTheSameIdentityAfterGrouping() passed after 0.001 seconds.
+✔ Test unequalReplacementUsesOneBlockColourWithoutChangingLineOrCharacterMetadata() passed after 0.001 seconds.
+✔ Test emptyBaselineAndEOFStayLiteralAndSelectable() passed after 0.001 seconds.
+✔ Test emptyBaselineAndMissingFinalNewlineHaveExactEOFAnchors() passed after 0.001 seconds.
+✔ Test alignmentUsesRealUTF16OffsetsWithoutPaddingTheSource() passed after 0.001 seconds.
+✔ Test insertionAndUnequalReplacementMapRealLineRangesInBothDirections() passed after 0.001 seconds.
+✔ Test sharedSourceAndDiffTabsRetainOneDocumentAndPinOnInput() passed after 0.001 seconds.
+✔ Test decodingRemovesOneFileBOMAndPreservesLiteralBodyFEFF() passed after 0.001 seconds.
+✔ Test omittedContextBareCRAndLongLinesCannotBecomeEditableFullText() passed after 0.002 seconds.
+✔ Test fileListAndReviewNavigationUseTheSameTrackedOrderAndSeparateUntrackedGroup() passed after 0.004 seconds.
+✔ Suite GitComparisonLayoutTests passed after 0.004 seconds.
+✔ Test fiveLineDeletionKeepsItsRailThenTapersToTheOppositeAnchor() passed after 0.004 seconds.
+✔ Test rasterHasContinuousEqualColourThroughTheReservedLaneAndNumberRails() passed after 0.004 seconds.
+✔ Suite GitConnectionBandTests passed after 0.004 seconds.
+✔ Test eofNotesDoNotConsumeSourceRowBudgetForExactContextOrDenseReplacement() passed after 0.035 seconds.
+✔ Test budgetIsCheckedBeforeAllocatingRowsForAnEmptyPatch() passed after 0.048 seconds.
+✔ Suite GitTextComparisonTests passed after 0.048 seconds.
+✔ Test run with 19 tests in 3 suites passed after 0.048 seconds.

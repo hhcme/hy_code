@@ -10,6 +10,7 @@ struct WorkbenchHeader: View {
             // The system retains ownership of the traffic lights in this space.
             Color.clear.frame(width: WorkbenchMetrics.trafficLightReserve).accessibilityHidden(true)
             WorkbenchProjectSwitcher(store: store)
+            if store.rootURL != nil { GitBranchButton(store: store) }
             HStack(spacing: 2) {
                 WorkbenchIconButton(title: "后退 ⌘[", symbol: "arrow.left", action: store.goBack)
                     .disabled(!store.history.canGoBack)

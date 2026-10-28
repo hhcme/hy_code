@@ -38,6 +38,8 @@ public actor NativeTextDocument {
     private let path: String
     private var handle: Handle?
     private var baseline: TextFileIO.Snapshot?
+    private var encoding = "utf8"
+    private var hasBOM = false
     public init(root: URL, path: String) {
         self.root = root
         self.path = path
@@ -74,6 +76,8 @@ public actor NativeTextDocument {
         content.protocolLineIndex = TextLineIndex(content.text, unicodeLineSeparators: false)
         handle = owner
         baseline = snapshot
+        encoding = content.encoding
+        hasBOM = content.hasBOM
         try Task.checkCancellation()
         return content
     }
@@ -121,6 +125,33 @@ public actor NativeTextDocument {
         let data = try consume(hycode_text_bytes(handle.pointer, revision))
         self.baseline = try TextFileIO.save(
             root: root, path: path, expected: baseline, bytes: data, cancellation: cancellation)
+    }
+    /// Immutable full-buffer projection from the existing Rust owner. Pages are
+    /// never exported as a complete file; the FFI rejects stale revisions.
+    public func textSnapshot(revision: UInt64) throws -> String {
+        try Task.checkCancellation()
+        guard large == nil, let handle else {
+            throw WorkspaceFailure(code: "not_full_text", message: "分段文档不能作为全文差异输入")
+        }
+        let bytes = try consume(hycode_text_bytes(handle.pointer, revision))
+        let text: String?
+        if encoding == "utf16_le" || encoding == "utf16_be" {
+            let content = Array(bytes.dropFirst(2))
+            let little = encoding == "utf16_le"
+            let units = stride(from: 0, to: content.count - 1, by: 2).map { index in
+                if little { return UInt16(content[index]) | UInt16(content[index + 1]) << 8 }
+                return UInt16(content[index]) << 8 | UInt16(content[index + 1])
+            }
+            text = String(decoding: units, as: UTF16.self)
+        } else {
+            // Rust has already validated these UTF-8 bytes. Decoding preserves
+            // a literal leading U+FEFF inserted into the body (Foundation's
+            // String(data:encoding:) would consume it as another BOM).
+            text = String(decoding: hasBOM ? bytes.dropFirst(3) : bytes, as: UTF8.self)
+        }
+        guard let text else { throw WorkspaceFailure(code: "invalid_text", message: "文本快照无法解码") }
+        try Task.checkCancellation()
+        return text
     }
     public func syntax(revision: UInt64, range: NSRange) throws -> SyntaxHighlight {
         try Task.checkCancellation()

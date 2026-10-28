@@ -1,0 +1,29 @@
+    Finished `release` profile [optimized] target(s) in 0.17s
+PASS: 119 locked Web packages and retained notices; no project code loaded
+PASS: 14 pinned offline schemas and retained Apache-2.0 license
+PASS: pinned Codex 0.164.0, four official runtime files; no CLI execution, GUI or global installation
+PASS: 52 pinned image-preview crates and retained notices
+PASS: 3 pinned markup-preview crates and retained notices
+PASS: 16 pinned native-language crates and retained notices
+PASS: pinned terminal Swift dependencies and original notices
+Building for production...
+[1 / 5]
+Build complete! (0.26秒)
+Building for production...
+[Planning 64 / 212]
+[Planning deferred tasks]
+[9 / 29]
+[11 / 28]
+[14 / 29] HyCodeWorkspace
+[19 / 36] SwiftTerm
+[20 / 38] SwiftTerm
+[22 / 39] SwiftTerm
+[24 / 35] HyCodeWorkspace
+[30 / 35] HyCode-product
+[32 / 36] HyCode-product
+[34 / 36] HyCode-product
+[35 / 36] HyCode-product
+Build complete! (63.73秒)
+Generated .build/icons/HyCode.icns (10 standard frames, 16-1024px).
+PASS: pinned Codex 0.164.0, four official runtime files; no CLI execution, GUI or global installation
+Built build/HyCode.app (release, unsigned development build). Application was not launched.

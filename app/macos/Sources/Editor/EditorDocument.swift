@@ -269,6 +269,13 @@ import Observation
         markupPreview?.edited()
     }
     func finishPendingOperations() async { await tail?.value }
+    func textSnapshot(revision: UInt64) async throws -> String {
+        await tail?.value
+        guard !closed, !synchronizationFailed, !composing, !loading, largeFile == nil,
+            edits.revision == revision, !Task.isCancelled
+        else { throw CancellationError() }
+        return try await engine.textSnapshot(revision: revision)
+    }
     func syntax(range: NSRange, revision: UInt64) async throws -> SyntaxHighlight {
         await tail?.value
         guard !closed, !synchronizationFailed, edits.revision == revision, !Task.isCancelled else {

@@ -7,7 +7,8 @@ public enum WorkbenchCorner: String, CaseIterable, Sendable {
 }
 
 public enum WorkbenchTool: String, CaseIterable, Identifiable, Sendable {
-    case project, search, structure, git, terminal, debug, analysis, problems, information, openTabs, workspace, codex
+    case project, search, structure, commit, git, terminal, debug, analysis, problems, information, openTabs, workspace,
+        codex
     public var id: String { rawValue }
 }
 
@@ -15,7 +16,7 @@ public enum WorkbenchTool: String, CaseIterable, Identifiable, Sendable {
 /// home; one selected tool per corner is visible, and nil means that corner is closed.
 public struct WorkbenchDocking: Equatable, Sendable {
     public private(set) var groups: [WorkbenchCorner: [WorkbenchTool]] = [
-        .topLeading: [.project, .search, .structure],
+        .topLeading: [.project, .search, .structure, .commit],
         .topTrailing: [.codex, .information, .analysis],
         .bottomLeading: [.git, .terminal, .debug, .problems],
         .bottomTrailing: [.openTabs, .workspace],

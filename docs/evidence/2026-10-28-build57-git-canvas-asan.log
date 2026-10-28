@@ -1,0 +1,224 @@
+Building for debugging...
+[Computing dependencies]
+[1 / 83] SwiftTermBuildInfoGenerator-product
+[22 / 146] HyCodeWorkspace
+[26 / 146] HyCodeTerminalHost-product
+warning: missing creator for mutated node: ('.build/out/Products/Debug/SwiftTerm_SwiftTerm.bundle/Contents/MacOS')
+[32 / 145] HyCodeWorkspace
+[34 / 145] SwiftTerm
+[35 / 146] SwiftTerm
+[42 / 145] HyCodeWorkspace
+[50 / 131] HyCodeWebProbe-product
+[53 / 133] HyCodeTerminalProbe-product
+[56 / 134] HyCodeNativeLanguageProbe-product
+[60 / 135] HyCodeLargeFileProbe-product
+[63 / 137] HyCodeLargeFileProbe-product
+[67 / 137] HyCodeDebugProbe-product
+[71 / 139] HyCodeDartProbe-product
+[74 / 140] HyCodeCodexSetup-product
+[79 / 141] HyCodeCodexProbe-product
+[91 / 138] HyCodeWorkspaceTests-product
+[94 / 141] HyCodeWebProbe-product
+[95 / 141] HyCodeTerminalProbe-product
+[96 / 141] HyCodeNativeLanguageProbe-product
+[97 / 141] HyCodeWorkspaceTests-product
+[101 / 141] HyCodeWorkspaceTests-product
+[106 / 141] HyCodeDebugProbe-product
+[109 / 141] HyCode-product
+[111 / 141] HyCode-product
+[113 / 142] HyCode-product
+[113 / 142] HyCodeWorkspaceTests-product
+[115 / 142] HyCodeWorkspace-product
+[118 / 140] HyCodeWebProbe-product
+[122 / 140] HyCodeNativeLanguageProbe-product
+[126 / 140] HyCodeLargeFileProbe-product
+[130 / 140] HyCodeDebugProbe-product
+[133 / 140] HyCodeCodexProbe-product
+[135 / 140] HyCode-product
+[138 / 140] HyCode-product
+[139 / 140] HyCode-product
+Build complete! (9.79秒)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite GitHunkTests started.
+◇ Suite GitComparisonLayoutTests started.
+◇ Suite LargeTextDocumentTests started.
+◇ Suite GitTextComparisonTests started.
+◇ Suite GitRepositoryTests started.
+◇ Suite TextDocumentTests started.
+◇ Suite GitInteractionTests started.
+◇ Suite GitConnectionBandTests started.
+◇ Test aggregateCandidatesAreBoundedBeforeCommitPreparation() started.
+◇ Test restoreAndPartialCompositionKeepCRLFUnicodeAndUnterminatedEOF() started.
+◇ Test insertionAndUnequalReplacementMapRealLineRangesInBothDirections() started.
+◇ Test compactDiffExplainsOmittedLinesAndKeepsNoNewlineOnTheCorrectSide() started.
+◇ Test cancelledSaveDoesNotWriteOrLoseTheBuffer() started.
+◇ Test insertionAndDeletionRestoreAtActualEmptyAnchors() started.
+◇ Test budgetIsCheckedBeforeAllocatingRowsForAnEmptyPatch() started.
+◇ Test externalChangesAreNeverReplacedAndBufferRemainsEditable() started.
+◇ Test olderSelectionBatchCannotReplaceOrFinishNewerChoices() started.
+◇ Test listRowsKeepStageAndWorkActionsBoundToTheSameIdentityAfterGrouping() started.
+◇ Test fileListAndReviewNavigationUseTheSameTrackedOrderAndSeparateUntrackedGroup() started.
+◇ Test alignmentUsesRealUTF16OffsetsWithoutPaddingTheSource() started.
+◇ Test decodingRemovesOneFileBOMAndPreservesLiteralBodyFEFF() started.
+◇ Test revisionBoundSnapshotsKeepEncodingBOMAndLiteralLeadingFEFFWithoutSaving() started.
+◇ Test diffBodyExcludesPatchHeadersAndNavigatesActualChangeBlocks() started.
+◇ Test emptyBaselineAndMissingFinalNewlineHaveExactEOFAnchors() started.
+◇ Test utf16FilesKeepOriginalEncodingAndBOM() started.
+◇ Test partialCommitKeepsBOMCRLFAndNoFinalNewlineByteExact() started.
+◇ Test sourcePreviewAndHistoricalDiffHaveDifferentIdentityAndPinning() started.
+◇ Test emptyBaselineAndEOFStayLiteralAndSelectable() started.
+◇ Test cleanButStaleBufferCannotApproveAnUnseenDiskCandidateAndOldRepliesStayRejected() started.
+◇ Test deletionKeepsBothSourcesContinuousAndConnectsFiveLinesToAnAnchor() started.
+◇ Test specialFilesAndHardLinksAreNotEditable() started.
+◇ Test sharedSourceAndDiffTabsRetainOneDocumentAndPinOnInput() started.
+◇ Test amendRepliesCannotOverwriteTypingOrLaterRequest() started.
+◇ Test everyTextExtensionRoutesWithoutWholeFileTextAndKeepsTailOnSave() started.
+◇ Test omittedContextBareCRAndLongLinesCannotBecomeEditableFullText() started.
+◇ Test eofNotesDoNotConsumeSourceRowBudgetForExactContextOrDenseReplacement() started.
+◇ Test invalidOrOldEditsDoNotMutateTheDocument() started.
+◇ Test commitAndLogAreIndependentToolsAndKeepCodexOpen() started.
+◇ Test symlinksAndParentTraversalAreRejected() started.
+◇ Test readOnlyFilesFailSavingWithoutChangingOriginalOrLeavingTemporaryFiles() started.
+◇ Test unicodeIncrementalEditingAndNativeUndoDeltasPreserveBOMAndCRLF() started.
+◇ Test graphTracksMergeParentsInsteadOfInventingLinearHistory() started.
+◇ Test bridgeStartsAtTextViewportAndExcludesHeadersAndHorizontalScrollLanes() started.
+◇ Test canonicallyEquivalentTextStillHasDistinctUTF16PresentationAndLiteralCopy() started.
+◇ Test aclDenyWriteIsRespectedEvenWhenModeBitsAllowIt() started.
+◇ Test separateDocumentsCannotOverwriteEachOthersCommittedVersion() started.
+◇ Test fiveLineDeletionKeepsItsRailThenTapersToTheOppositeAnchor() started.
+◇ Test blockRestoreAndInverseUseRevisionBoundNativeTextDeltas() started.
+◇ Test unequalReplacementUsesOneBlockColourWithoutChangingLineOrCharacterMetadata() started.
+◇ Test completionOfAnOlderSaveKeepsNewerTypingDirty() started.
+◇ Test historicalScrollLaneMovesOutsideAndRetilingDoesNotAccumulateOffset() started.
+◇ Test savesPreservePermissionsAndExtendedAttributes() started.
+◇ Test diffWidthsMeasureFallbackGlyphsAndTabsWithoutAWindow() started.
+◇ Test ownerWithoutWritePermissionIsNotGrantedTheOtherUsersWriteBit() started.
+◇ Test fractionalResizeAndClippedCrossingPreserveRealEndpoints() started.
+◇ Test rasterHasContinuousEqualColourThroughTheReservedLaneAndNumberRails() started.
+◇ Test emptySceneRepaintsItsWholeSurfaceInsteadOfLeavingOldDeletedBlocks() started.
+✔ Test aggregateCandidatesAreBoundedBeforeCommitPreparation() passed after 0.026 seconds.
+✔ Test insertionAndDeletionRestoreAtActualEmptyAnchors() passed after 0.026 seconds.
+✔ Test alignmentUsesRealUTF16OffsetsWithoutPaddingTheSource() passed after 0.026 seconds.
+✔ Test listRowsKeepStageAndWorkActionsBoundToTheSameIdentityAfterGrouping() passed after 0.026 seconds.
+✔ Test insertionAndUnequalReplacementMapRealLineRangesInBothDirections() passed after 0.026 seconds.
+✔ Test diffBodyExcludesPatchHeadersAndNavigatesActualChangeBlocks() passed after 0.025 seconds.
+✔ Test decodingRemovesOneFileBOMAndPreservesLiteralBodyFEFF() passed after 0.026 seconds.
+✔ Test sourcePreviewAndHistoricalDiffHaveDifferentIdentityAndPinning() passed after 0.025 seconds.
+✔ Test emptyBaselineAndMissingFinalNewlineHaveExactEOFAnchors() passed after 0.025 seconds.
+✔ Test emptyBaselineAndEOFStayLiteralAndSelectable() passed after 0.025 seconds.
+✔ Test restoreAndPartialCompositionKeepCRLFUnicodeAndUnterminatedEOF() passed after 0.026 seconds.
+✔ Test cleanButStaleBufferCannotApproveAnUnseenDiskCandidateAndOldRepliesStayRejected() passed after 0.025 seconds.
+✔ Test sharedSourceAndDiffTabsRetainOneDocumentAndPinOnInput() passed after 0.025 seconds.
+✔ Test olderSelectionBatchCannotReplaceOrFinishNewerChoices() passed after 0.026 seconds.
+✔ Test amendRepliesCannotOverwriteTypingOrLaterRequest() passed after 0.025 seconds.
+✔ Test deletionKeepsBothSourcesContinuousAndConnectsFiveLinesToAnAnchor() passed after 0.026 seconds.
+✔ Test specialFilesAndHardLinksAreNotEditable() passed after 0.025 seconds.
+✔ Test fileListAndReviewNavigationUseTheSameTrackedOrderAndSeparateUntrackedGroup() passed after 0.026 seconds.
+✔ Test commitAndLogAreIndependentToolsAndKeepCodexOpen() passed after 0.025 seconds.
+✔ Test symlinksAndParentTraversalAreRejected() passed after 0.025 seconds.
+✔ Test omittedContextBareCRAndLongLinesCannotBecomeEditableFullText() passed after 0.025 seconds.
+✔ Test cancelledSaveDoesNotWriteOrLoseTheBuffer() passed after 0.026 seconds.
+✔ Test graphTracksMergeParentsInsteadOfInventingLinearHistory() passed after 0.025 seconds.
+✔ Test externalChangesAreNeverReplacedAndBufferRemainsEditable() passed after 0.026 seconds.
+✔ Test bridgeStartsAtTextViewportAndExcludesHeadersAndHorizontalScrollLanes() passed after 0.025 seconds.
+✔ Test invalidOrOldEditsDoNotMutateTheDocument() passed after 0.025 seconds.
+✔ Test fiveLineDeletionKeepsItsRailThenTapersToTheOppositeAnchor() passed after 0.024 seconds.
+✔ Test readOnlyFilesFailSavingWithoutChangingOriginalOrLeavingTemporaryFiles() passed after 0.025 seconds.
+✔ Test unequalReplacementUsesOneBlockColourWithoutChangingLineOrCharacterMetadata() passed after 0.024 seconds.
+✔ Test completionOfAnOlderSaveKeepsNewerTypingDirty() passed after 0.024 seconds.
+✔ Test historicalScrollLaneMovesOutsideAndRetilingDoesNotAccumulateOffset() passed after 0.024 seconds.
+✔ Test utf16FilesKeepOriginalEncodingAndBOM() passed after 0.026 seconds.
+✔ Test unicodeIncrementalEditingAndNativeUndoDeltasPreserveBOMAndCRLF() passed after 0.025 seconds.
+✔ Test fractionalResizeAndClippedCrossingPreserveRealEndpoints() passed after 0.024 seconds.
+✔ Test canonicallyEquivalentTextStillHasDistinctUTF16PresentationAndLiteralCopy() passed after 0.025 seconds.
+✔ Test rasterHasContinuousEqualColourThroughTheReservedLaneAndNumberRails() passed after 0.024 seconds.
+✔ Test blockRestoreAndInverseUseRevisionBoundNativeTextDeltas() passed after 0.024 seconds.
+✔ Test emptySceneRepaintsItsWholeSurfaceInsteadOfLeavingOldDeletedBlocks() passed after 0.024 seconds.
+✔ Suite GitHunkTests passed after 0.028 seconds.
+✔ Suite GitComparisonLayoutTests passed after 0.028 seconds.
+✔ Suite GitConnectionBandTests passed after 0.028 seconds.
+✔ Test separateDocumentsCannotOverwriteEachOthersCommittedVersion() passed after 0.026 seconds.
+✔ Test ownerWithoutWritePermissionIsNotGrantedTheOtherUsersWriteBit() passed after 0.026 seconds.
+✔ Test savesPreservePermissionsAndExtendedAttributes() passed after 0.027 seconds.
+✔ Test compactDiffExplainsOmittedLinesAndKeepsNoNewlineOnTheCorrectSide() passed after 0.033 seconds.
+✔ Test aclDenyWriteIsRespectedEvenWhenModeBitsAllowIt() passed after 0.033 seconds.
+✔ Test diffWidthsMeasureFallbackGlyphsAndTabsWithoutAWindow() passed after 0.041 seconds.
+✔ Suite GitInteractionTests passed after 0.044 seconds.
+✔ Test revisionBoundSnapshotsKeepEncodingBOMAndLiteralLeadingFEFFWithoutSaving() passed after 0.043 seconds.
+✔ Suite TextDocumentTests passed after 0.045 seconds.
+✔ Test eofNotesDoNotConsumeSourceRowBudgetForExactContextOrDenseReplacement() passed after 0.148 seconds.
+✔ Test budgetIsCheckedBeforeAllocatingRowsForAnEmptyPatch() passed after 0.270 seconds.
+✔ Suite GitTextComparisonTests passed after 0.271 seconds.
+✔ Test everyTextExtensionRoutesWithoutWholeFileTextAndKeepsTailOnSave() passed after 0.473 seconds.
+◇ Test utf16BOMSurrogatesCrossPagesHistoryAndRepeatedSaves() started.
+✔ Test utf16BOMSurrogatesCrossPagesHistoryAndRepeatedSaves() passed after 0.107 seconds.
+◇ Test literalSearchSpansIOBoundariesAndFindsUncommittedPieces() started.
+✔ Test literalSearchSpansIOBoundariesAndFindsUncommittedPieces() passed after 0.043 seconds.
+◇ Test cancellationDoesNotChangeActivePageOrInstallAPartialFile() started.
+✔ Test cancellationDoesNotChangeActivePageOrInstallAPartialFile() passed after 0.032 seconds.
+◇ Test externalChangesAndReadOnlyModeNeverGetOverwritten() started.
+✔ Test partialCommitKeepsBOMCRLFAndNoFinalNewlineByteExact() passed after 0.708 seconds.
+◇ Test stalePartialReviewAndCandidateNeverChangeHeadOrIndex() started.
+✔ Test externalChangesAndReadOnlyModeNeverGetOverwritten() passed after 0.065 seconds.
+◇ Test previewAboveOneMiBUsesWholeDocumentAndNeverJustCurrentPage() started.
+✔ Test previewAboveOneMiBUsesWholeDocumentAndNeverJustCurrentPage() passed after 0.068 seconds.
+◇ Test pendingInputReservationsCannotBeSpentTwiceOrResetByOldReplies() started.
+✔ Test pendingInputReservationsCannotBeSpentTwiceOrResetByOldReplies() passed after 0.001 seconds.
+◇ Test committedSaveFailureIsDistinguishedFromFailureBeforeRename() started.
+✔ Test committedSaveFailureIsDistinguishedFromFailureBeforeRename() passed after 0.005 seconds.
+◇ Test syntaxProjectionNeedsNoDocumentOrDiskQueueAndKeepsPageUTF16Positions() started.
+✔ Test syntaxProjectionNeedsNoDocumentOrDiskQueueAndKeepsPageUTF16Positions() passed after 0.011 seconds.
+✔ Suite LargeTextDocumentTests passed after 0.810 seconds.
+✔ Test stalePartialReviewAndCandidateNeverChangeHeadOrIndex() passed after 0.580 seconds.
+◇ Test partialPolicyRejectsConversionsButSelectingAllRemainsWholeFile() started.
+✔ Test partialPolicyRejectsConversionsButSelectingAllRemainsWholeFile() passed after 0.445 seconds.
+◇ Test partialCommitKeepsOtherWorkingHunksAndOtherStagedFiles() started.
+✔ Test partialCommitKeepsOtherWorkingHunksAndOtherStagedFiles() passed after 0.831 seconds.
+◇ Test partialCommitPreservesExcludedPreStagedHunks() started.
+✔ Test partialCommitPreservesExcludedPreStagedHunks() passed after 0.755 seconds.
+◇ Test bufferPreviewUsesTheFormalRevisionWithoutChangingDiskOrIndex() started.
+✔ Test bufferPreviewUsesTheFormalRevisionWithoutChangingDiskOrIndex() passed after 0.413 seconds.
+◇ Test completeSourcesCoverCleanFilesStagingDeletionAndUntrackedEOF() started.
+✔ Test completeSourcesCoverCleanFilesStagingDeletionAndUntrackedEOF() passed after 0.833 seconds.
+◇ Test diffShowsFullSourceContextAndFallsBackWithinTheRowBudget() started.
+✔ Test diffShowsFullSourceContextAndFallsBackWithinTheRowBudget() passed after 0.359 seconds.
+◇ Test statusAndDiffUseActualTemporaryRepositoryAndLiteralNames() started.
+✔ Test statusAndDiffUseActualTemporaryRepositoryAndLiteralNames() passed after 0.267 seconds.
+◇ Test selectedCommitPreservesOtherStagedAndUnstagedVersions() started.
+✔ Test selectedCommitPreservesOtherStagedAndUnstagedVersions() passed after 0.513 seconds.
+◇ Test initialSelectedCommitAndMessageOnlyAmendKeepExcludedFile() started.
+✔ Test initialSelectedCommitAndMessageOnlyAmendKeepExcludedFile() passed after 0.745 seconds.
+◇ Test sameFileTwoLayersRequiresExplicitStagedCommit() started.
+✔ Test sameFileTwoLayersRequiresExplicitStagedCommit() passed after 0.511 seconds.
+◇ Test changedSelectionAndExistingLockNeverModifyHeadOrDeleteForeignLock() started.
+✔ Test changedSelectionAndExistingLockNeverModifyHeadOrDeleteForeignLock() passed after 0.275 seconds.
+◇ Test unstageAndDiscardHaveDifferentBaselines() started.
+✔ Test unstageAndDiscardHaveDifferentBaselines() passed after 0.435 seconds.
+◇ Test historyDetailsAndBranchesUseCompleteObjects() started.
+✔ Test historyDetailsAndBranchesUseCompleteObjects() passed after 0.417 seconds.
+◇ Test hooksFiltersAndExternalIncludesAreNotExecutedOrSilentlySkipped() started.
+✔ Test hooksFiltersAndExternalIncludesAreNotExecutedOrSilentlySkipped() passed after 0.203 seconds.
+◇ Test localBareRemotePushFetchAndRejectedPushKeepLocalCommit() started.
+✔ Test localBareRemotePushFetchAndRejectedPushKeepLocalCommit() passed after 2.107 seconds.
+◇ Test localBareRemoteHooksAndUnknownServerConfigurationAreNeverBypassed() started.
+✔ Test localBareRemoteHooksAndUnknownServerConfigurationAreNeverBypassed() passed after 0.777 seconds.
+◇ Test selectedStagedDeletionAndRenameReconcileExactIndexPaths() started.
+✔ Test selectedStagedDeletionAndRenameReconcileExactIndexPaths() passed after 0.752 seconds.
+◇ Test stagedRenameCanDiscardOnlyNewPathWorkingChanges() started.
+✔ Test stagedRenameCanDiscardOnlyNewPathWorkingChanges() passed after 0.291 seconds.
+◇ Test worktreeConfigurationAndBOMIncludesCannotBypassExecutionPolicy() started.
+✔ Test worktreeConfigurationAndBOMIncludesCannotBypassExecutionPolicy() passed after 0.376 seconds.
+◇ Test parentSymlinkAndLargeDiffFailClosedWithoutReadingWholeFile() started.
+✔ Test parentSymlinkAndLargeDiffFailClosedWithoutReadingWholeFile() passed after 0.087 seconds.
+◇ Test malformedRecordsAndHunksAreErrorsInsteadOfTraps() started.
+✔ Test malformedRecordsAndHunksAreErrorsInsteadOfTraps() passed after 0.097 seconds.
+◇ Test discardConfirmationVersionAndOldPushPlanAreNotRecaptured() started.
+✔ Test discardConfirmationVersionAndOldPushPlanAreNotRecaptured() passed after 0.389 seconds.
+◇ Test linkedWorktreeRequiresExplicitManagementDirectoryGrant() started.
+✔ Test linkedWorktreeRequiresExplicitManagementDirectoryGrant() passed after 0.467 seconds.
+◇ Test historyOutputLimitAndFixedShellTimeoutAreReaped() started.
+✔ Test historyOutputLimitAndFixedShellTimeoutAreReaped() passed after 0.497 seconds.
+✔ Suite GitRepositoryTests passed after 14.145 seconds.
+✔ Test run with 82 tests in 8 suites passed after 14.145 seconds.

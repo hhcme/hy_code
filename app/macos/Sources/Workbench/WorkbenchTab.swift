@@ -18,6 +18,8 @@ struct WorkbenchTab: View {
                 HStack(spacing: 7) {
                     if case .file(let entry) = tab.location {
                         FileIcon(entry: entry)
+                    } else if tab.location.isGitDiff {
+                        Image(systemName: "arrow.left.arrow.right").foregroundStyle(WorkbenchColors.accent)
                     } else {
                         Image(systemName: "folder").foregroundStyle(Color(nsColor: WorkbenchColors.nativeFolder))
                     }

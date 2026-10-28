@@ -73,6 +73,7 @@ struct MarkupEditorHost: NSViewRepresentable {
     @AppStorage("editor.lineNumbers") private var lineNumbers = true
     @AppStorage("editor.syntaxHighlight") private var syntaxHighlight = true
     func makeNSView(context: Context) -> MarkupSplitView {
+        editor.presentComparison(nil)
         let view = MarkupSplitView()
         view.preview = preview
         configure(view)

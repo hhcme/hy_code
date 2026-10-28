@@ -54,12 +54,12 @@ struct WorkbenchDockingTests {
     @Test func insertionSlotsReorderInBothDirectionsWithoutChangingSelection() {
         var docking = WorkbenchDocking()
         docking.hide(.codex)
-        docking.move(.project, to: .topLeading, at: 3)
-        #expect(docking.groups[.topLeading] == [.search, .structure, .project])
+        docking.move(.project, to: .topLeading, at: 4)
+        #expect(docking.groups[.topLeading] == [.search, .structure, .commit, .project])
         docking.move(.project, to: .topLeading, at: 0)
-        #expect(docking.groups[.topLeading] == [.project, .search, .structure])
+        #expect(docking.groups[.topLeading] == [.project, .search, .structure, .commit])
         docking.move(.project, to: .topLeading, at: 1)
-        #expect(docking.groups[.topLeading] == [.project, .search, .structure])
+        #expect(docking.groups[.topLeading] == [.project, .search, .structure, .commit])
         #expect(docking.active == [.topLeading: .project])
     }
 

@@ -1,0 +1,94 @@
+Building for debugging...
+[Provisioning 1 / 23]
+[1 / 50] SwiftTerm
+[18 / 148]
+[22 / 146] HyCodeTerminalHost-product
+[26 / 146] HyCodeTerminalHost-product
+warning: missing creator for mutated node: ('.build/out/Products/Debug/SwiftTerm_SwiftTerm.bundle/Contents/MacOS')
+[34 / 146] HyCodeWorkspace
+[36 / 146] HyCodeWorkspace
+[44 / 137] HyCodeNativeLanguageProbe-product
+[45 / 138] HyCodeNativeLanguageProbe-product
+[54 / 138] HyCodeLargeFileProbe-product
+[58 / 140] HyCodeDirectoryProbe-product
+[65 / 141] HyCodeCodexSetup-product
+[67 / 143] HyCodeDartProbe-product
+[76 / 143] HyCodeWorkspaceTests-product
+[87 / 141] HyCode-product
+[88 / 142] SwiftTerm
+[92 / 142] HyCodeTerminalProbe-product
+[94 / 142] HyCodeMarkupRuleProbe-product
+[95 / 143] HyCodeLargeFileProbe-product
+[95 / 143] HyCodeMarkupRuleProbe-product
+[97 / 143] HyCodeDirectoryProbe-product
+[99 / 143] HyCodeDartProbe-product
+[101 / 143] SwiftTerm
+[103 / 140] HyCodeWorkspaceTests-product
+[105 / 142] HyCodeWorkspaceTests-product
+[108 / 142] HyCode-product
+[114 / 142] HyCode-product
+[117 / 142] HyCodeWebProbe-product
+[120 / 142] HyCodeMarkupRuleProbe-product
+[125 / 142] HyCodeLargeFileProbe-product
+[129 / 142] HyCodeDebugProbe-product
+[134 / 142] HyCodeCodexProbe-product
+[136 / 142] HyCodeWorkspaceTests-product
+[138 / 142] HyCodeWorkspaceTests-product
+[140 / 142] HyCodeWorkspaceTests-product
+Build complete! (8.68秒)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite GitInteractionTests started.
+◇ Suite GitRepositoryTests started.
+◇ Test olderSelectionBatchCannotReplaceOrFinishNewerChoices() started.
+◇ Test commitAndLogAreIndependentToolsAndKeepCodexOpen() started.
+◇ Test amendRepliesCannotOverwriteTypingOrLaterRequest() started.
+◇ Test graphTracksMergeParentsInsteadOfInventingLinearHistory() started.
+◇ Test statusAndDiffUseActualTemporaryRepositoryAndLiteralNames() started.
+◇ Test sourcePreviewAndHistoricalDiffHaveDifferentIdentityAndPinning() started.
+◇ Test diffWidthsMeasureFallbackGlyphsAndTabsWithoutAWindow() started.
+✔ Test commitAndLogAreIndependentToolsAndKeepCodexOpen() passed after 0.001 seconds.
+✔ Test olderSelectionBatchCannotReplaceOrFinishNewerChoices() passed after 0.001 seconds.
+✔ Test amendRepliesCannotOverwriteTypingOrLaterRequest() passed after 0.001 seconds.
+✔ Test sourcePreviewAndHistoricalDiffHaveDifferentIdentityAndPinning() passed after 0.001 seconds.
+✔ Test graphTracksMergeParentsInsteadOfInventingLinearHistory() passed after 0.001 seconds.
+✔ Test diffWidthsMeasureFallbackGlyphsAndTabsWithoutAWindow() passed after 0.009 seconds.
+✔ Suite GitInteractionTests passed after 0.010 seconds.
+✔ Test statusAndDiffUseActualTemporaryRepositoryAndLiteralNames() passed after 0.157 seconds.
+◇ Test selectedCommitPreservesOtherStagedAndUnstagedVersions() started.
+✔ Test selectedCommitPreservesOtherStagedAndUnstagedVersions() passed after 0.355 seconds.
+◇ Test initialSelectedCommitAndMessageOnlyAmendKeepExcludedFile() started.
+✔ Test initialSelectedCommitAndMessageOnlyAmendKeepExcludedFile() passed after 0.443 seconds.
+◇ Test sameFileTwoLayersRequiresExplicitStagedCommit() started.
+✔ Test sameFileTwoLayersRequiresExplicitStagedCommit() passed after 0.288 seconds.
+◇ Test changedSelectionAndExistingLockNeverModifyHeadOrDeleteForeignLock() started.
+✔ Test changedSelectionAndExistingLockNeverModifyHeadOrDeleteForeignLock() passed after 0.182 seconds.
+◇ Test unstageAndDiscardHaveDifferentBaselines() started.
+✔ Test unstageAndDiscardHaveDifferentBaselines() passed after 0.305 seconds.
+◇ Test historyDetailsAndBranchesUseCompleteObjects() started.
+✔ Test historyDetailsAndBranchesUseCompleteObjects() passed after 0.290 seconds.
+◇ Test hooksFiltersAndExternalIncludesAreNotExecutedOrSilentlySkipped() started.
+✔ Test hooksFiltersAndExternalIncludesAreNotExecutedOrSilentlySkipped() passed after 0.159 seconds.
+◇ Test localBareRemotePushFetchAndRejectedPushKeepLocalCommit() started.
+✔ Test localBareRemotePushFetchAndRejectedPushKeepLocalCommit() passed after 1.620 seconds.
+◇ Test localBareRemoteHooksAndUnknownServerConfigurationAreNeverBypassed() started.
+✔ Test localBareRemoteHooksAndUnknownServerConfigurationAreNeverBypassed() passed after 0.660 seconds.
+◇ Test selectedStagedDeletionAndRenameReconcileExactIndexPaths() started.
+✔ Test selectedStagedDeletionAndRenameReconcileExactIndexPaths() passed after 0.575 seconds.
+◇ Test stagedRenameCanDiscardOnlyNewPathWorkingChanges() started.
+✔ Test stagedRenameCanDiscardOnlyNewPathWorkingChanges() passed after 0.220 seconds.
+◇ Test worktreeConfigurationAndBOMIncludesCannotBypassExecutionPolicy() started.
+✔ Test worktreeConfigurationAndBOMIncludesCannotBypassExecutionPolicy() passed after 0.198 seconds.
+◇ Test parentSymlinkAndLargeDiffFailClosedWithoutReadingWholeFile() started.
+✔ Test parentSymlinkAndLargeDiffFailClosedWithoutReadingWholeFile() passed after 0.065 seconds.
+◇ Test malformedRecordsAndHunksAreErrorsInsteadOfTraps() started.
+✔ Test malformedRecordsAndHunksAreErrorsInsteadOfTraps() passed after 0.094 seconds.
+◇ Test discardConfirmationVersionAndOldPushPlanAreNotRecaptured() started.
+✔ Test discardConfirmationVersionAndOldPushPlanAreNotRecaptured() passed after 0.305 seconds.
+◇ Test linkedWorktreeRequiresExplicitManagementDirectoryGrant() started.
+✔ Test linkedWorktreeRequiresExplicitManagementDirectoryGrant() passed after 0.358 seconds.
+◇ Test historyOutputLimitAndFixedShellTimeoutAreReaped() started.
+✔ Test historyOutputLimitAndFixedShellTimeoutAreReaped() passed after 0.456 seconds.
+✔ Suite GitRepositoryTests passed after 6.739 seconds.
+✔ Test run with 24 tests in 2 suites passed after 6.740 seconds.

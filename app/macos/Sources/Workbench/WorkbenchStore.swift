@@ -30,6 +30,7 @@ final class WorkbenchStore {
     let native = NativeToolsController()
     let problems = WorkspaceProblemsController()
     let codex = CodexWorkspaceController()
+    let git = GitWorkspaceController()
     let terminal = TerminalWorkspaceController()
     var analysisLanguage = "dart"
     var languageController: any EditorLanguageController {
@@ -48,9 +49,15 @@ final class WorkbenchStore {
         get { editing.autoSave }
         set { editing.autoSave = newValue }
     }
-    var activeVideo: VideoPreviewDocument? { tabs.active.flatMap { editing.videos[$0.location.path] } }
-    var activeImage: ImagePreviewDocument? { tabs.active.flatMap { editing.images[$0.location.path] } }
-    var activeDocument: EditorDocument? { tabs.active.flatMap { editing.documents[$0.location.path] } }
+    var activeVideo: VideoPreviewDocument? {
+        tabs.active.flatMap { $0.location.isGitDiff ? nil : editing.videos[$0.location.path] }
+    }
+    var activeImage: ImagePreviewDocument? {
+        tabs.active.flatMap { $0.location.isGitDiff ? nil : editing.images[$0.location.path] }
+    }
+    var activeDocument: EditorDocument? {
+        tabs.active?.location.documentPath.flatMap { editing.documents[$0] }
+    }
     @ObservationIgnored let dockingSession = UUID()
     var includeHidden = false { didSet { if oldValue != includeHidden { refresh() } } }
     @ObservationIgnored private var access: WorkspaceAccess?
@@ -118,10 +125,11 @@ final class WorkbenchStore {
         resetProject()
         access = WorkspaceAccess(url: url)
         rootURL = url
+        configureGit(access: access)
         terminal.configure(access: access)
         terminal.executionAllowed = { [weak self] in
             guard let self else { return false }
-            return !self.codex.busy && !self.editing.isClosing
+            return !self.codex.busy && !self.git.writing && !self.editing.isClosing
                 && !self.editing.preparingLanguageEdit
                 && self.editing.editPreview == nil
         }
@@ -142,7 +150,7 @@ final class WorkbenchStore {
         codex.executionAllowed = { [weak self] in
             guard let self else { return false }
             return !self.dart.toolRunning && !self.web.toolRunning && !self.flutter.active
-                && !self.flutter.commandRunning && !self.editing.isClosing
+                && !self.flutter.commandRunning && !self.editing.isClosing && !self.git.writing
         }
         codex.prepareWrite = { [weak self] id in
             guard let self, self.codex.executionAllowed() else { return false }
@@ -180,7 +188,7 @@ final class WorkbenchStore {
             }
         }
         native.configure(access: access)
-        editing.isDocumentVisible = { [weak self] path in self?.tabs.tabs.contains { $0.location.path == path } == true
+        editing.isDocumentVisible = { [weak self] path in self?.tabs.documentPaths.contains(path) == true
         }
         editing.onLanguageFilesApplied = { [weak self] paths in
             guard let self else { return }
@@ -193,7 +201,8 @@ final class WorkbenchStore {
                             relativePath: path, kind: .file)), preview: false)
             }
             if let active { self.tabs.activate(active) }
-            self.editing.activatePreview(path: self.tabs.active?.location.path)
+            self.editing.activatePreview(
+                path: self.tabs.active?.location.documentPath)
         }
         web.onEditPreview = { [weak self] edit, feature, revision, title in
             self?.editing.previewLanguageEdit(edit, feature: feature, revision: revision, title: title)
@@ -206,10 +215,12 @@ final class WorkbenchStore {
         flutter.executionAllowed = { [weak self] in
             guard let self else { return false }
             return !self.codex.busy && !self.dart.toolRunning && !self.web.toolRunning && !self.editing.isClosing
+                && !self.git.writing
                 && !self.editing.preparingLanguageEdit && self.editing.editPreview == nil
         }
         flutter.prepareRun = { [weak self] in
-            guard let self, !self.codex.busy, !self.dart.toolRunning, !self.web.toolRunning, !self.editing.isClosing
+            guard let self, !self.codex.busy, !self.dart.toolRunning, !self.web.toolRunning, !self.editing.isClosing,
+                !self.git.writing
             else { return false }
             return await self.editing.saveAll()
         }
@@ -225,17 +236,21 @@ final class WorkbenchStore {
         dart.onNavigate = { [weak self] in self?.navigateSemantic($0) }
         let session = sessionID
         dart.prepareTool = { [weak self] root in
-            guard let self, self.sessionID == session, !self.codex.busy, !self.web.toolRunning else { return false }
+            guard let self, self.sessionID == session, !self.codex.busy, !self.web.toolRunning, !self.git.writing else {
+                return false
+            }
             return await self.editing.preparePackageTool(root)
         }
         web.executionAllowed = { [weak self] in
             guard let self else { return false }
             return !self.codex.busy && !self.dart.toolRunning && !self.flutter.active && !self.flutter.commandRunning
+                && !self.git.writing
                 && !self.editing.isClosing
                 && !self.editing.preparingLanguageEdit && self.editing.editPreview == nil
         }
         web.prepareTool = { [weak self] root in
-            guard let self, self.sessionID == session, !self.codex.busy, !self.dart.toolRunning, !self.editing.isClosing
+            guard let self, self.sessionID == session, !self.codex.busy, !self.dart.toolRunning,
+                !self.editing.isClosing, !self.git.writing
             else {
                 return false
             }
@@ -320,6 +335,7 @@ final class WorkbenchStore {
     }
 
     private func stopProjectTools() async {
+        await git.stop()
         await terminal.stopAll()
         await codex.stopAll()
         let analysis = dart.stop()
@@ -347,6 +363,7 @@ final class WorkbenchStore {
     }
 
     private func resetProject() {
+        configureGit(access: nil)
         terminal.configure(access: nil)
         codex.configure(access: nil)
         problems.configure(root: nil)
@@ -374,12 +391,28 @@ final class WorkbenchStore {
         treeRevision += 1
     }
 
-    private func isReadOnlyPreview(_ path: String) -> Bool {
+    func isReadOnlyPreview(_ path: String) -> Bool {
         ImagePreviewFormat.matches(path) || VideoPreviewFormat.matches(path)
     }
 
     func navigate(_ location: BrowserLocation, preview: Bool, recordHistory: Bool = true) {
         guard rootURL != nil, !editing.isClosing else { return }
+        if case .gitDiff(let review) = location {
+            tabs.open(location, preview: preview)
+            browsingLocation = location
+            editing.activatePreview(path: review.path)
+            editing.prune(keeping: tabs.documentPaths)
+            git.pruneReviews(
+                keeping: Set(
+                    tabs.tabs.compactMap {
+                        if case .gitDiff(let value) = $0.location { return value }
+                        return nil
+                    }))
+            if recordHistory { history.visit(location) }
+            git.loadDiff(review)
+            return
+        }
+        git.suspendDiff()
         let currentEntries = snapshots[location.parentDirectory ?? ""]?.entries ?? []
         let resolved = location.resolvingFile(in: currentEntries)
         if case .file(let entry) = resolved, !isReadOnlyPreview(entry.relativePath) {
@@ -389,16 +422,8 @@ final class WorkbenchStore {
         }
         browsingLocation = resolved
         tabs.open(resolved, preview: preview)
-        if case .file(let entry) = resolved, let access {
-            let session = sessionID
-            editing.open(path: entry.relativePath, access: access) { [weak self] in
-                guard let self, self.sessionID == session,
-                    let tab = self.tabs.tabs.first(where: { $0.location.path == entry.relativePath })
-                else { return }
-                self.tabs.pin(tab.id)
-            }
-        }
-        editing.prune(keeping: Set(tabs.tabs.map { $0.location.path }))
+        if case .file(let entry) = resolved { openSharedDocument(entry.relativePath) }
+        editing.prune(keeping: tabs.documentPaths)
         editing.activatePreview(path: tabs.active?.location.path)
         if recordHistory { history.visit(resolved) }
         if case .file(let entry) = resolved {
@@ -422,6 +447,14 @@ final class WorkbenchStore {
         tabs.activate(id)
         editing.activatePreview(path: tabs.active?.location.path)
         guard let active = tabs.active else { return }
+        if case .gitDiff(let review) = active.location {
+            editing.activatePreview(path: review.path)
+            browsingLocation = active.location
+            history.visit(active.location)
+            git.loadDiff(review)
+            return
+        }
+        git.suspendDiff()
         if !isReadOnlyPreview(active.location.path) {
             dart.refreshProject(path: active.location.path)
             web.refreshProject(path: active.location.path)
@@ -433,18 +466,45 @@ final class WorkbenchStore {
         requestDirectory(currentDirectory)
     }
     func pinTab(_ id: UUID) { tabs.pin(id) }
-    func closeTab(_ id: UUID) {
-        guard let tab = tabs.tabs.first(where: { $0.id == id }) else { return }
-        let documents = editing.documents[tab.location.path].map { [$0] } ?? []
+    func openSharedDocument(_ path: String) {
+        guard let access else { return }
         let session = sessionID
-        editing.confirmClosing(documents) { [weak self] allowed in
-            guard let self, allowed, self.sessionID == session else { return }
-            self.removeTab(id, path: tab.location.path)
+        editing.open(path: path, access: access) { [weak self] in
+            guard let self, self.sessionID == session else { return }
+            self.tabs.pinDocument(path)
+            self.git.bufferChanged(path)
         }
     }
-    private func removeTab(_ id: UUID, path: String) {
-        editing.remove(path)
+    func closeTab(_ id: UUID) {
+        guard let tab = tabs.tabs.first(where: { $0.id == id }), !editing.isClosing else { return }
+        if let path = tab.location.documentPath, !tabs.retainsDocument(path, excluding: id),
+            let document = editing.documents[path]
+        {
+            let session = sessionID
+            editing.confirmClosing([document]) { [weak self] allowed in
+                guard let self, allowed, self.sessionID == session else { return }
+                self.removeTab(id, path: path)
+            }
+        } else {
+            removeTab(id, path: tab.location.documentPath)
+        }
+    }
+    private func removeTab(_ id: UUID, path: String?) {
+        if let tab = tabs.tabs.first(where: { $0.id == id }), case .gitDiff(let review) = tab.location {
+            git.releaseDiff(review)
+        }
         tabs.close(id)
+        if let path, !tabs.documentPaths.contains(path) { editing.remove(path) }
+        if let active = tabs.active, case .gitDiff(let review) = active.location {
+            // This completion still holds confirmClosing's protection. Only
+            // activate the retained shared document; public activateTab rejects closing.
+            browsingLocation = active.location
+            history.visit(active.location)
+            editing.activatePreview(path: review.path)
+            git.loadDiff(review)
+            return
+        }
+        git.suspendDiff()
         editing.activatePreview(path: tabs.active?.location.path)
         selectedEntry = nil
         browsingLocation = tabs.active?.location ?? .directory(currentDirectory)
@@ -459,25 +519,23 @@ final class WorkbenchStore {
         }
     }
     func saveActiveDocument() {
-        guard !editing.isClosing else { return }
+        guard !editing.isClosing, !git.writing else { return }
         if let document = activeDocument { Task { await document.save() } }
     }
     func saveAllDocuments() {
-        guard !editing.isClosing else { return }
+        guard !editing.isClosing, !git.writing else { return }
         Task { _ = await editing.saveAll() }
     }
     func reloadActiveDocument() {
-        guard let document = activeDocument, let access else { return }
+        guard let document = activeDocument, access != nil else { return }
         let session = sessionID
         editing.confirmClosing([document]) { [weak self] allowed in
             guard let self, allowed, self.sessionID == session else { return }
             self.editing.releaseClosingProtection()
             self.editing.remove(document.path)
-            self.editing.open(path: document.path, access: access) { [weak self] in
-                guard let self, self.sessionID == session,
-                    let tab = self.tabs.tabs.first(where: { $0.location.path == document.path })
-                else { return }
-                self.tabs.pin(tab.id)
+            self.openSharedDocument(document.path)
+            if let tab = self.tabs.active, case .gitDiff(let review) = tab.location, review.path == document.path {
+                self.git.loadDiff(review)
             }
         }
     }
@@ -498,6 +556,7 @@ final class WorkbenchStore {
             completion(allowed)
         }
     }
+
     func toggleTool(_ tool: WorkbenchTool) {
         docking.toggle(tool)
         if tool == .terminal, docking.isVisible(.terminal) { terminal.ensureSession() }

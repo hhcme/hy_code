@@ -5,6 +5,45 @@ import Testing
 @testable import HyCodeWorkspace
 
 struct TextDocumentTests {
+    @Test func blockRestoreAndInverseUseRevisionBoundNativeTextDeltas() async throws {
+        let body = "😀changed\r\nkeep\r\nlast"
+        let fixture = try Fixture(Data([0xef, 0xbb, 0xbf]) + Data(body.utf8))
+        let document = fixture.document()
+        _ = try await document.open()
+        let rows = try GitDiffParser.rows(
+            "@@ -1,3 +1,3 @@\n-😀base\r\n+😀changed\r\n keep\r\n last\n\\ No newline at end of file\n")
+        let comparison = try GitTextComparison.make(left: "😀base\r\nkeep\r\nlast", right: body, rows: rows)
+        let block = try #require(comparison.blocks.first)
+        let edit = try GitBlockEdit.restoring(block.id, in: comparison)
+        try await document.replace(expected: 0, range: edit.range, text: edit.replacement)
+        #expect(try await document.textSnapshot(revision: 1) == comparison.left.text)
+        await #expect(throws: WorkspaceFailure.self) {
+            try await document.replace(expected: 0, range: edit.range, text: edit.replacement)
+        }
+        try await document.replace(
+            expected: 1, range: NSRange(location: edit.range.location, length: edit.replacement.utf16.count),
+            text: edit.expected)
+        #expect(try await document.textSnapshot(revision: 2) == body)
+        try await document.save(revision: 2)
+        #expect(try Data(contentsOf: fixture.file) == Data([0xef, 0xbb, 0xbf]) + Data(body.utf8))
+    }
+    @Test func revisionBoundSnapshotsKeepEncodingBOMAndLiteralLeadingFEFFWithoutSaving() async throws {
+        for (encoding, bom) in [
+            (String.Encoding.utf8, Data()), (.utf8, Data([0xef, 0xbb, 0xbf])),
+            (.utf16LittleEndian, Data([0xff, 0xfe])), (.utf16BigEndian, Data([0xfe, 0xff])),
+        ] {
+            let original = bom + "中😀\r\n".data(using: encoding)!
+            let fixture = try Fixture(original)
+            let document = fixture.document()
+            _ = try await document.open()
+            try await document.replace(expected: 0, range: NSRange(location: 0, length: 0), text: "\u{feff}")
+            #expect(try await document.textSnapshot(revision: 1) == "\u{feff}中😀\r\n")
+            await #expect(throws: WorkspaceFailure.self) { try await document.textSnapshot(revision: 0) }
+            #expect(try Data(contentsOf: fixture.file) == original)
+            try await document.save(revision: 1)
+            #expect(try Data(contentsOf: fixture.file) == bom + "\u{feff}中😀\r\n".data(using: encoding)!)
+        }
+    }
     private final class Fixture {
         let root: URL
         let file: URL

@@ -3,24 +3,42 @@ import Foundation
 public enum BrowserLocation: Hashable, Sendable {
     case directory(String)
     case file(WorkspaceEntry)
+    case gitDiff(GitDiffLocation)
 
     public var path: String {
         switch self {
         case .directory(let path): path
         case .file(let entry): entry.relativePath
+        case .gitDiff(let location): location.path
         }
     }
     public var isDirectory: Bool {
         if case .directory = self { return true }
         return false
     }
-    public var title: String { path.split(separator: "/").last.map(String.init) ?? "项目" }
+    public var isGitDiff: Bool {
+        if case .gitDiff = self { return true }
+        return false
+    }
+    public var documentPath: String? {
+        switch self {
+        case .file(let entry): return entry.relativePath
+        case .gitDiff(let location):
+            return location.comparison == .working || location.comparison == .unstaged ? location.path : nil
+        case .directory: return nil
+        }
+    }
+    public var tabIdentity: String {
+        if case .gitDiff(let location) = self { return "git\0" + location.key }
+        return (isDirectory ? "directory\0" : "file\0") + path
+    }
+    public var title: String { (isGitDiff ? "差异: " : "") + (path.split(separator: "/").last.map(String.init) ?? "项目") }
     public var parentDirectory: String? {
         if isDirectory && path.isEmpty { return nil }
         return path.split(separator: "/").dropLast().joined(separator: "/")
     }
     public func resolvingFile(in entries: [WorkspaceEntry]) -> BrowserLocation {
-        guard !isDirectory, let updated = entries.first(where: { $0.relativePath == path }) else { return self }
+        guard case .file = self, let updated = entries.first(where: { $0.relativePath == path }) else { return self }
         return updated.isDirectory ? .directory(updated.relativePath) : .file(updated)
     }
 }
@@ -35,13 +53,26 @@ public struct BrowserTabs: Sendable {
     public private(set) var tabs: [BrowserTab] = []
     public private(set) var activeID: UUID?
     public var active: BrowserTab? { tabs.first { $0.id == activeID } }
+    public var documentPaths: Set<String> { Set(tabs.compactMap { $0.location.documentPath }) }
+    public func retainsDocument(_ path: String, excluding id: UUID) -> Bool {
+        tabs.contains { $0.id != id && $0.location.documentPath == path }
+    }
+    public mutating func pinDocument(_ path: String) {
+        for index in tabs.indices where tabs[index].location.documentPath == path { tabs[index].isPreview = false }
+    }
+    public func fileTab(path: String) -> BrowserTab? {
+        tabs.first { tab in
+            if case .file(let entry) = tab.location { return entry.relativePath == path }
+            return false
+        }
+    }
     public init() {}
 
     public mutating func open(_ location: BrowserLocation, preview: Bool) {
         // Directories belong to the project tree, never the central document tabs.
         guard !location.isDirectory else { return }
         if let index = tabs.firstIndex(where: {
-            $0.location.path == location.path && $0.location.isDirectory == location.isDirectory
+            $0.location.tabIdentity == location.tabIdentity
         }) {
             tabs[index].location = location
             activeID = tabs[index].id
@@ -86,9 +117,7 @@ public struct NavigationHistory: Sendable {
     public init() {}
 
     public mutating func visit(_ location: BrowserLocation) {
-        if position >= 0, locations[position].path == location.path,
-            locations[position].isDirectory == location.isDirectory
-        {
+        if position >= 0, locations[position].tabIdentity == location.tabIdentity {
             locations[position] = location
             return
         }

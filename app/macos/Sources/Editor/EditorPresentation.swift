@@ -158,10 +158,9 @@ import HyCodeWorkspace
         guard let textView, let layout = textView.layoutManager else { return }
         let length = textView.textStorage?.length ?? 0
         if range.location <= length {
-            layout.removeTemporaryAttribute(
-                .foregroundColor,
-                forCharacterRange: NSRange(
-                    location: range.location, length: min(range.length, length - range.location)))
+            let visible = NSRange(location: range.location, length: min(range.length, length - range.location))
+            layout.removeTemporaryAttribute(.foregroundColor, forCharacterRange: visible)
+            layout.removeTemporaryAttribute(.font, forCharacterRange: visible)
         }
     }
     private func apply(_ snapshot: SyntaxHighlight) {
@@ -177,26 +176,40 @@ import HyCodeWorkspace
             guard span.start >= painted.location, span.length > 0, span.start <= NSMaxRange(painted),
                 span.length <= NSMaxRange(painted) - span.start
             else { continue }
-            layout.addTemporaryAttribute(
-                .foregroundColor, value: SyntaxPalette.color(span.style, dark: dark ?? true),
+            layout.addTemporaryAttributes(
+                SyntaxPalette.attributes(span.style, language: snapshot.language, dark: dark ?? true),
                 forCharacterRange: span.range)
         }
     }
 }
 
-private enum SyntaxPalette {
-    static func color(_ capture: String, dark: Bool) -> NSColor {
+@MainActor enum SyntaxPalette {
+    private static let italic = NSFont(
+        descriptor: NSFont.monospacedSystemFont(ofSize: WorkbenchMetrics.editorFontSize, weight: .regular)
+            .fontDescriptor.withSymbolicTraits(.italic), size: WorkbenchMetrics.editorFontSize)
+    static func attributes(_ capture: String, language: String, dark: Bool) -> [NSAttributedString.Key: Any] {
+        var value: [NSAttributedString.Key: Any] = [.foregroundColor: color(capture, language: language, dark: dark)]
+        if language == "YAML", capture.hasPrefix("comment"), let italic { value[.font] = italic }
+        return value
+    }
+    static func color(_ capture: String, language: String = "", dark: Bool) -> NSColor {
         let name = capture.split(separator: ".").first.map(String.init) ?? capture
         let hex: UInt32
-        switch name {
-        case "comment": hex = dark ? 0x7f8993 : 0x71806b
-        case "keyword", "conditional", "repeat", "exception", "include": hex = dark ? 0xcf8e6d : 0x8b3a85
-        case "string", "character": hex = dark ? 0x6aab73 : 0x397b40
-        case "number", "float", "boolean", "constant": hex = dark ? 0x2aacb8 : 0x176b91
-        case "function", "method": hex = dark ? 0x56a8f5 : 0x1759a6
-        case "type", "constructor": hex = dark ? 0xc4b6e6 : 0x6f42a6
-        case "property", "attribute", "tag": hex = dark ? 0xc77dbb : 0x8b427d
-        default: return WorkbenchColors.nativeText
+        if language == "YAML", name == "property" || name == "attribute" {
+            hex = dark ? 0xcf8e6d : 0x8b3a85
+        } else if language == "YAML", name == "comment" {
+            hex = dark ? 0x6a8759 : 0x71806b
+        } else {
+            switch name {
+            case "comment": hex = dark ? 0x7f8993 : 0x71806b
+            case "keyword", "conditional", "repeat", "exception", "include": hex = dark ? 0xcf8e6d : 0x8b3a85
+            case "string", "character": hex = dark ? 0x6aab73 : 0x397b40
+            case "number", "float", "boolean", "constant": hex = dark ? 0x2aacb8 : 0x176b91
+            case "function", "method": hex = dark ? 0x56a8f5 : 0x1759a6
+            case "type", "constructor": hex = dark ? 0xc4b6e6 : 0x6f42a6
+            case "property", "attribute", "tag": hex = dark ? 0xc77dbb : 0x8b427d
+            default: return WorkbenchColors.nativeText
+            }
         }
         return NSColor(
             srgbRed: CGFloat((hex >> 16) & 255) / 255, green: CGFloat((hex >> 8) & 255) / 255,

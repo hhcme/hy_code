@@ -1,5 +1,11 @@
 # HyCode 开发约定
 
+build 57 的 Git 连接承载改为独立原生 canvas 与前景 rail，完整 scene/raster 仍只做无界面检查。361 Swift / 37 Rust / 4 Node、82 Swift ASan、315 项最终输入与 Release 开发构建通过，见[后台记录](evidence/2026-10-28-build57-git-canvas.json)。用户在获知样本窗口验证例外后明确选择继续仅后台验证，当前 GUI 禁止规则保持；不把本批原生层级编译或 scene 位图等同窗口验收。
+
+build 56 的 Git 连接回归使用共享 `GitConnectionBand` 和生成的 CoreGraphics 内存位图，不创建 NSView 或应用宿主。359 Swift / 37 Rust / 4 Node、80 Swift ASan 与本地 Release 开发构建通过；完整检查后的仅 build 元数据变更和311项最终输入见[后台记录](evidence/2026-10-28-build56-git-band.json)。数学像素连续不能证明真实 AppKit 透明层、主题切换或窗口效果，静默规则保持。
+
+build 55 的 Git 块级候选/还原与连接层仅以生成仓库、纯模型和编译验证；`check_native.sh` 354 Swift / 37 Rust / 4 Node、相关75项 Swift ASan及309项输入核对通过。首次 Codex 临时项目 owner 锁测试失败与同输入原样重跑分别保留，详见[后台记录](evidence/2026-10-28-build55-git-hunks.json)。不得据此启动 GUI、读取实际用户仓库/凭据或宣称按钮/撤销/像素已通过窗口验收。
+
 build 48 增加[本地交互终端](TERMINAL.md)。`check_native.sh` 先编译纯 C `HyCodeTerminalHost`，终端回归只用生成路径、固定非登录 `/bin/sh -c` 与真实无 GUI PTY；候选另用生成 HOME/配置和禁用全局启动文件的固定 `zsh -d -i`（登录中继样本另带 `-l`）；SwiftTerm 仅实例化 headless 内核，不创建终端视图/应用宿主、不读取用户 Shell 配置或使用系统剪贴板。上游模块链接 AppKit 不等于测试实例化了视图；原生输入/焦点/TUI 仍须另验。
 
 build 42 增加[内置 Codex](CODEX_AGENT.md)。`python3 scripts/codex_runtime.py setup` 显式准备固定官方原生资源，首次约 135 MiB 下载；`check` 只做离线哈希/许可校验。应用构建私有复制资源，不安装全局命令、不读取系统登录。通用检查只用固定 JSONL 和文件沙箱样本；官方 CLI 的 `HyCodeCodexProbe` 单独显式运行，只连接 loopback 假服务、生成项目和固定无 GUI 命令。真实服务、本地凭据、窗口、性能和发布独立验收。
@@ -65,7 +71,7 @@ Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并�
 | `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `52`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `57`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
 
