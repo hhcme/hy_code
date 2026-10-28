@@ -1,0 +1,32 @@
+{
+  "packages": [
+    {
+      "identity": "swift-argument-parser",
+      "version": "1.8.2",
+      "revision": "6a52f3251125d74daf04fcbd5e6f08a75d074382",
+      "source": "https://github.com/apple/swift-argument-parser",
+      "license": "Apache-2.0",
+      "use": "resolved upstream CLI dependency; not linked into HyCode",
+      "notices": [
+        {
+          "path": "third_party/licenses/swift-argument-parser-1.8.2/LICENSE.txt",
+          "sha256": "770af8291f708538d8ff885a0bbc4e045cd700531741c4f99528d435c14d7f55"
+        }
+      ]
+    },
+    {
+      "identity": "swiftterm",
+      "version": "1.20.0",
+      "revision": "5d14406844143538cd8f8851d2d8a67c1fe443e5",
+      "source": "https://github.com/migueldeicaza/SwiftTerm.git",
+      "license": "MIT",
+      "use": "embedded terminal",
+      "notices": [
+        {
+          "path": "third_party/licenses/swiftterm-1.20.0/LICENSE",
+          "sha256": "0dc6bdd99b652c675586854efcacd59de21e2679d64fcaa20424aeb951df6856"
+        }
+      ]
+    }
+  ]
+}

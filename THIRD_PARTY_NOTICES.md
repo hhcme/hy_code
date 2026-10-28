@@ -1,5 +1,11 @@
 # Third-party notices
 
+## Native terminal (build 48)
+
+SwiftTerm 1.20.0, commit `5d14406844143538cd8f8851d2d8a67c1fe443e5`, is embedded for terminal emulation and AppKit display under MIT. The original [LICENSE](third_party/licenses/swiftterm-1.20.0/LICENSE) is retained without modification. [Upstream](https://github.com/migueldeicaza/SwiftTerm/tree/v1.20.0). HyCode provides its own PTY/process owner and does not call upstream LocalProcess.
+
+SwiftPM also resolves the upstream CLI dependency swift-argument-parser 1.8.2 (`6a52f3251125d74daf04fcbd5e6f08a75d074382`, Apache-2.0). It is not linked into HyCode; its original [LICENSE](third_party/licenses/swift-argument-parser-1.8.2/LICENSE.txt) is retained for build provenance (this checkout supplies no separate NOTICE). Versions, sources and original notice hashes are in [terminal-dependencies.json](third_party/terminal-dependencies.json) and checked offline.
+
 ## Codex runtime 0.164.0
 
 The application bundles the unmodified official Codex CLI and Code Mode host from OpenAI under Apache-2.0, with upstream LICENSE and NOTICE in `third_party/licenses/codex-0.164.0/`. The native package also includes ripgrep 15.2.0 (MIT) with PCRE2 10.45. Their original license notices and the Ratatui MIT notice are retained in the same directory. The official source, archive integrity, selected file hashes and notice hashes are recorded in `tools/codex-runtime/manifest.json`. Voice binaries, libraries and assets are excluded.

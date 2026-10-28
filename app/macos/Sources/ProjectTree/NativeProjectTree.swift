@@ -344,6 +344,7 @@ struct NativeProjectTree: NSViewRepresentable {
             } else {
                 items.append(WorkbenchMenuItem(title: "打开", action: action { $0.store.open(entry, preview: false) }))
             }
+            items.append(WorkbenchMenuItem(title: "在终端中打开", action: action { $0.store.openTerminal(at: entry) }))
             items.append(
                 WorkbenchMenuItem(
                     title: "在访达中显示",

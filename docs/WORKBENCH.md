@@ -1,12 +1,14 @@
 # 当前文件浏览工作台
 
+build 48 增加[本地交互终端](TERMINAL.md)：显式打开才启动 Shell，原生多标签/分屏、搜索、自有设置和项目树入口；隐藏保活，关闭/切项目/退出确认并等待回收。以下较早批次的“终端空入口”为当时状态，当前范围与窗口/性能缺口见专题。
+
 build 42 已增加默认展开的右侧 [Codex 多会话面板](CODEX_AGENT.md)：独立工具图标、项目自定义服务、流式输出、停止与文件修改保护。后台协议、真实服务、Keychain 和窗口验收分别记录，见专题。
 
 build 28 已增加 [Web 工作流](WEB_TOOLS.md)：代码菜单提供多语言诊断/导航、参数信息、显式补全/自动导入、格式化及修改预览；分析面板可切换 Dart/Flutter 与 Web，并显示最近 package 的声明依赖与 scripts。Node 路径在设置中配置，Vue 配置插件需显式工作区信任。包任务均为显式操作，有停止入口，运行前保护清单；真实包脚本、窗口及性能仍未验证。
 
 新增原生入口为 `app/macos/Sources/Language/EditorLanguageController.swift`、`EditorLanguageFeatures.swift`、`WebWorkspaceController.swift`、`EditorWebActions.swift`、`LanguageEditPreview.swift` 和 `WebToolPanels.swift`；无 GUI 模型/协议在 `packages/HyCodeWorkspace/Sources/Language/`，固定服务在 `tools/web-language-services/`，后台 fixture 在 `tools/WebProbe/`。
 
-更新：2026-10-23。当前按用户要求实现 IDEA / WebStorm 风格工作台、文件浏览和基础文本编辑，新增行号和基础多语言着色，Dart SDK 语义及 Pub 首批工具已接入，见 [Dart/Flutter 工具](DART_FLUTTER.md)。已有真实工程、Rust 文本/目录内核、构建与后台测试；真实窗口效果、交互和性能尚未验收。
+更新：2026-10-28。当前按用户要求实现 IDEA / WebStorm 风格工作台、文件浏览和基础文本编辑，新增行号和基础多语言着色，Dart SDK 语义及 Pub 首批工具已接入，见 [Dart/Flutter 工具](DART_FLUTTER.md)。已有真实工程、Rust 文本/目录内核、构建与后台测试；真实窗口效果、交互和性能尚未验收。
 
 ## 当前范围
 
@@ -34,7 +36,7 @@ build 33 已扩展到全部已有应用界面的共用样式：项目/菜单弹�
 - 未打开项目时，中央欢迎页显示最近项目，整行可点击继续打开；与头部项目切换共用记录和打开入口。
 - 应用所属纵向滚动区及项目树横向保留固定 8 pt 槽，只绘制 4 pt 滑块，不绘制轨道背景；标签/面包屑的横向指示条持续隐藏。
 - 前进、后退、上级目录、刷新、隐藏文件开关、取消读取与失败重试。
-- 单击文件打开原生文本编辑，Rust 持有正式文本/修订；默认停止输入 800 ms 自动保存，可在设置关闭，并提供 ⌘S 和未保存关闭保护，详见[编辑与保存](EDITING.md)。行号与 Tree-sitter 着色见[高亮说明](SYNTAX.md)；Dart/Flutter 语义、依赖、问题与结构现已接入；Flutter 运行/调试、热更新、测试/构建及基础 Widget 树入口已接入，真实 Flutter/设备未验证；尚无 Git、终端、文件整理或编辑缓冲自动重载，项目背景诊断与分析监听见[项目分析](PROJECT_ANALYSIS.md)。文件信息、已打开标签和项目概览继续使用真实状态；其他工具仅有空白面板与标题，不启动服务或伪造运行结果。
+- 单击文件打开原生文本编辑，Rust 持有正式文本/修订；默认停止输入 800 ms 自动保存，可在设置关闭，并提供 ⌘S 和未保存关闭保护，详见[编辑与保存](EDITING.md)。行号与 Tree-sitter 着色见[高亮说明](SYNTAX.md)；Dart/Flutter 语义、依赖、问题与结构现已接入；Flutter 运行/调试、热更新、测试/构建及基础 Widget 树入口已接入，真实 Flutter/设备未验证。终端首批范围见本页顶部与专题，Git 仍待后续集成；项目背景诊断与分析监听见[项目分析](PROJECT_ANALYSIS.md)。文件信息、已打开标签和项目概览继续使用真实状态；其他尚未实现的工具保持空入口，不伪造服务结果。
 
 ## 交互与快捷键
 

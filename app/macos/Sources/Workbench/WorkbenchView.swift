@@ -44,7 +44,7 @@ struct WorkbenchView: View {
     private func toolRail(leading: Bool) -> some View {
         WorkbenchToolRail(
             leading: leading, docking: store.docking, session: store.dockingSession,
-            toggle: { store.docking.toggle($0) }, move: { store.docking.move($0, to: $1, at: $2) }
+            toggle: { store.toggleTool($0) }, move: { store.docking.move($0, to: $1, at: $2) }
         )
         .frame(width: WorkbenchMetrics.stripeWidth).frame(maxHeight: .infinity)
     }
@@ -84,6 +84,13 @@ struct WorkbenchView: View {
         case .codex:
             CodexPanel(controller: store.codex, headerHeight: panelHeaderHeight(.codex)) {
                 store.docking.hide(.codex)
+            }
+        case .terminal:
+            TerminalPanel(
+                controller: store.terminal, visible: store.docking.isVisible(.terminal),
+                headerHeight: panelHeaderHeight(.terminal)
+            ) {
+                store.docking.hide(.terminal)
             }
         default:
             VStack(spacing: 0) {

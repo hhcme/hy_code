@@ -58,7 +58,7 @@ struct HyCodeApplication: App {
                 ForEach(WorkbenchTool.allCases) { tool in
                     let binding = Binding(
                         get: { store.docking.isVisible(tool) },
-                        set: { if $0 != store.docking.isVisible(tool) { store.docking.toggle(tool) } })
+                        set: { if $0 != store.docking.isVisible(tool) { store.toggleTool(tool) } })
                     if let key = tool.shortcut {
                         Toggle(tool.title, isOn: binding).keyboardShortcut(KeyEquivalent(key))
                     } else {

@@ -30,6 +30,7 @@ final class WorkbenchStore {
     let native = NativeToolsController()
     let problems = WorkspaceProblemsController()
     let codex = CodexWorkspaceController()
+    let terminal = TerminalWorkspaceController()
     var analysisLanguage = "dart"
     var languageController: any EditorLanguageController {
         switch analysisLanguage {
@@ -105,6 +106,7 @@ final class WorkbenchStore {
         projectIntent = intent
         editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
             guard let self, allowed, self.projectIntent == intent else { return }
+            guard await self.terminal.confirmClosingAll(), self.projectIntent == intent else { return }
             await self.stopProjectTools()
             guard self.projectIntent == intent else { return }
             self.editing.releaseClosingProtection()
@@ -116,6 +118,26 @@ final class WorkbenchStore {
         resetProject()
         access = WorkspaceAccess(url: url)
         rootURL = url
+        terminal.configure(access: access)
+        terminal.executionAllowed = { [weak self] in
+            guard let self else { return false }
+            return !self.codex.busy && !self.editing.isClosing
+                && !self.editing.preparingLanguageEdit
+                && self.editing.editPreview == nil
+        }
+        terminal.onOpenFile = { [weak self] url, line, column in
+            guard let self, let root = self.rootURL else { return }
+            if url.hasDirectoryPath {
+                let canonical = root.standardizedFileURL.resolvingSymlinksInPath().path
+                let relative =
+                    url.path == canonical ? "" : String(url.path.dropFirst(canonical == "/" ? 1 : canonical.count + 1))
+                self.navigate(.directory(relative), preview: false)
+            } else {
+                let position = LSPPosition(line: line - 1, character: column - 1)
+                self.navigateSemantic(
+                    LSPLocation(uri: url.absoluteString, range: LSPRange(start: position, end: position)))
+            }
+        }
         codex.configure(access: access)
         codex.executionAllowed = { [weak self] in
             guard let self else { return false }
@@ -124,6 +146,10 @@ final class WorkbenchStore {
         }
         codex.prepareWrite = { [weak self] id in
             guard let self, self.codex.executionAllowed() else { return false }
+            guard !self.terminal.hasLiveSessions else {
+                self.terminal.error = "终端会话仍在运行；结束会话后可执行 Codex 修改任务，只读对话仍可使用。"
+                return false
+            }
             return await self.editing.prepareAgentWrite(id)
         }
         codex.finishWrite = { [weak self] id in self?.editing.finishAgentWrite(id) }
@@ -294,6 +320,7 @@ final class WorkbenchStore {
     }
 
     private func stopProjectTools() async {
+        await terminal.stopAll()
         await codex.stopAll()
         let analysis = dart.stop()
         let runtime = flutter.stop()
@@ -310,6 +337,7 @@ final class WorkbenchStore {
         projectIntent = intent
         editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
             guard let self, allowed, self.projectIntent == intent else { return }
+            guard await self.terminal.confirmClosingAll(), self.projectIntent == intent else { return }
             await self.stopProjectTools()
             guard self.projectIntent == intent else { return }
             self.recentProjects.closeWorkspace()
@@ -319,6 +347,7 @@ final class WorkbenchStore {
     }
 
     private func resetProject() {
+        terminal.configure(access: nil)
         codex.configure(access: nil)
         problems.configure(root: nil)
         editing.reset()
@@ -456,6 +485,10 @@ final class WorkbenchStore {
         projectIntent = UUID()
         editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
             if allowed, let self {
+                guard await self.terminal.confirmClosingAll() else {
+                    completion(false)
+                    return
+                }
                 await self.stopProjectTools()
                 self.editing.reset()
                 self.tabs = BrowserTabs()
@@ -464,6 +497,17 @@ final class WorkbenchStore {
             }
             completion(allowed)
         }
+    }
+    func toggleTool(_ tool: WorkbenchTool) {
+        docking.toggle(tool)
+        if tool == .terminal, docking.isVisible(.terminal) { terminal.ensureSession() }
+    }
+    func openTerminal(at entry: WorkspaceEntry) {
+        guard let rootURL, !editing.isClosing else { return }
+        let url = entry.url(relativeTo: rootURL)
+        let directory = entry.isDirectory ? url : url.deletingLastPathComponent()
+        if !docking.isVisible(.terminal) { docking.toggle(.terminal) }
+        terminal.newTab(directory: directory)
     }
     func goBack() {
         guard !editing.isClosing else { return }

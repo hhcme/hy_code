@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-28",
+  "captured_at": "2026-10-28T13:43:19+08:00",
+  "stage": "LOCAL_DEVELOPMENT_BUILD",
+  "version": "0.1.0",
+  "build": "52",
+  "git_head": "52ab41be5e56e8ebbdbee5655d6948eba8560f06",
+  "artifact": {
+    "path": "build/HyCode.app",
+    "configuration": "release",
+    "architecture": "arm64",
+    "sha256": {
+      "Contents/MacOS/HyCode": "4ae2b20a2f86ce5893d00192274e4879ccc50b95ab8c7ac4ad3b526233ecd7cf",
+      "Contents/MacOS/HyCodeTerminalHost": "780d43c8715bb6229b929a989b6e6820858d47ab78ea90e5c4b9d6d7a1c1b0e8",
+      "Contents/Info.plist": "998b503d7cb97a2faa5f2484cd35207bebcd131491dec0283bfe80cc848443f9"
+    },
+    "launched": false,
+    "installed": false,
+    "formally_signed": false,
+    "published": false
+  },
+  "requirements": [
+    "Remove tab accent underline and entire dot/directory/status row",
+    "Workbench neutral selection, soft adaptive ANSI palette and app-owned 8pt scroll lane / 4pt thumb",
+    "Automatic command/subcommand/project-path candidate popup; Tab inserts; explicit Enter executes"
+  ],
+  "verification": {
+    "native": "37 Rust, 328 Swift / 53 suites, 4 Node; full check_native.sh passed",
+    "completion": "13 new model/protocol/generated-HOME real-PTY cases passed as part of the final full native and sanitizer runs",
+    "asan": "33 terminal tests / 4 suites passed with AddressSanitizer in an identical-source isolated package",
+    "source_snapshot_matches": true,
+    "independent_review": "Reported end-hook, quoting, ZDOTDIR export, ordered acceptance and split focus issues fixed and rechecked",
+    "final_appkit_changes": "Release compilation and source review only; no GUI test host or real input"
+  },
+  "scope": [
+    "New local zsh sessions only for popup integration; other shells keep their own completion",
+    "Offline common command metadata; bounded authorized-root directory enumeration; no command execution, history/plugin/model lookup",
+    "ZLE owns buffer and cursor; accepted insertion occupies ordered input queue and is guarded by exact original buffer/cursor plus consumption ACK",
+    "Private per-session startup relay preserves user configuration order and ZDOTDIR set/export attributes; fixtures only used generated HOME/config files with global startup disabled"
+  ],
+  "limits": [
+    "No actual window, visual/scroll/IME/focus/TUI/performance acceptance",
+    "No app launch/restart, clipboard, system keychain, user shell-profile read or user-project command in tests",
+    "No claim of complete WebStorm dynamic CLI/branch/history completion"
+  ],
+  "concurrent_work": "Unrelated Git implementation/style changes remain in the shared worktree and app; terminal evidence does not claim their GUI acceptance",
+  "logs": {
+    "native": {
+      "path": "docs/evidence/2026-10-28-build52-terminal-style-native.log",
+      "sha256": "3086bbbd3b2878cf23c08f7181910ea9e7c1126ced27f3e82151c2be5643901e"
+    },
+    "asan": {
+      "path": "docs/evidence/2026-10-28-build52-terminal-style-asan.log",
+      "sha256": "45b65cdf08b1f88b85bf3c5599a990e040e5d5b689639998dbd2a464131f6402"
+    },
+    "release": {
+      "path": "docs/evidence/2026-10-28-build52-terminal-style-release.log",
+      "sha256": "18b0361458b9172462a14853b69b33764a9e7248ab97b10567b8a72dfd43ffdb"
+    }
+  },
+  "source_sha256": {
+    "app/macos/Sources/Terminal/TerminalViewport.swift": "c31b8c41c3f0d5e11ca0b5097f69db4709a4b5ec561dbc580aa25693ded05551",
+    "app/macos/Sources/Terminal/TerminalPaneSession.swift": "50bec40953cbcad6ca666da98492286ccbe79c222d81f2c0591bc7832a05c7b8",
+    "app/macos/Sources/Terminal/TerminalCompletionOverlay.swift": "2c828ef8dac604c18a761a664be8345672e55b6af191b0c51ec569f2963290cc",
+    "app/macos/Sources/Terminal/TerminalPanel.swift": "e2fa2c05f9cfe7fd88f07159b42d11cec578c66a157c735dd2845fb5998b6557",
+    "app/macos/Sources/Terminal/HyCodeTerminalView.swift": "39cdb1c79695eb8925b7e1e5d92f796fb619bcac25b51a02a4762ebb1c1c2002",
+    "app/macos/Sources/Terminal/TerminalWorkspaceController.swift": "19c5f896b4a2aa9352a3f77ae46c8f77d5f8d0fc65c23be382e1146d70576437",
+    "app/macos/Sources/Terminal/TerminalPalette.swift": "5d8c1ff5f373698fb40655e36c280eb501f69df6eb70aa7cfca59914786b4e76",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalFileReference.swift": "7a0d803c27de64f433edbf0b5aa41eeac0687b6d5d93d38ae2b232fc0f4805bf",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalOutputFilter.swift": "3db65b664bfb74cfcfb7afdb5a967a90ae31e56667779e48f7640ad3397e4826",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalCompletion.swift": "8b5e73b99052014b7c26b0ae82e6a7d07e1ddeac0197285a841f633252c0f74e",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalShellIntegration.swift": "425bb1b6fbbc5d81c4d368add16d4ebcc3f73c7affa65cce3b999981b6ce78ab",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalConfiguration.swift": "d1bffca3d3a37775dd20c40d0e207de9317aa6da54f8fd0b4f8749f33ee4f874",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalLayout.swift": "7708ec0e264c3804d9c69c6c1f51de4b833c82c2214738e2b199fa00064992bf",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalProcess.swift": "59506357773a959d1f1b867f8506b757017ec76bc43cc001bff9727b954cb075",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalCommandCatalog.swift": "28bec15ce78d6bb1b08546626a7a85c20ba10da9bf7c308ce9c95c33b9e59e57",
+    "packages/HyCodeWorkspace/Tests/TerminalCompletionTests.swift": "b049b7567439f311edddc7e6e4d0ac9e4a263f491adcd0ccc99ff48426d6ac94",
+    "packages/HyCodeWorkspace/Tests/TerminalTests.swift": "dfe1466ffb7c32d02f72a7c3b16d8c90a56cb819ed7e5a6ad14f1f6d76921be8",
+    "app/macos/Resources/Info.plist": "998b503d7cb97a2faa5f2484cd35207bebcd131491dec0283bfe80cc848443f9",
+    "Package.swift": "c56f8ad0d0ea64f00d1401ee872c23c61797408c2efe43c85cdb23b0da40c59b",
+    "Package.resolved": "7af98bda428187667acd95d5bbf2161e1c5cd6dfca3e76bfb8ec872d1e2b01c0"
+  },
+  "asan_snapshot_sha256": {
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalFileReference.swift": "7a0d803c27de64f433edbf0b5aa41eeac0687b6d5d93d38ae2b232fc0f4805bf",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalOutputFilter.swift": "3db65b664bfb74cfcfb7afdb5a967a90ae31e56667779e48f7640ad3397e4826",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalCompletion.swift": "8b5e73b99052014b7c26b0ae82e6a7d07e1ddeac0197285a841f633252c0f74e",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalShellIntegration.swift": "425bb1b6fbbc5d81c4d368add16d4ebcc3f73c7affa65cce3b999981b6ce78ab",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalConfiguration.swift": "d1bffca3d3a37775dd20c40d0e207de9317aa6da54f8fd0b4f8749f33ee4f874",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalLayout.swift": "7708ec0e264c3804d9c69c6c1f51de4b833c82c2214738e2b199fa00064992bf",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalProcess.swift": "59506357773a959d1f1b867f8506b757017ec76bc43cc001bff9727b954cb075",
+    "packages/HyCodeWorkspace/Sources/Terminal/TerminalCommandCatalog.swift": "28bec15ce78d6bb1b08546626a7a85c20ba10da9bf7c308ce9c95c33b9e59e57",
+    "bindings/CHyCodeTerminal/terminal.c": "0585873726921a7ce1c80b9b6c550e50f202dda50f5f1bd56a042a0156b42623",
+    "bindings/CHyCodeTerminal/include/hycode_terminal.h": "012ac1b0c4a1196b7d5f4948b76d499855ef48e78573cfa2810fa383087d3660",
+    "tools/TerminalHost/main.c": "fab2b139b8ab0d4c2994c4fa18e951e431860def9d34e517315f91269d75b1ea",
+    "tools/TerminalProbe/main.swift": "02a03a3d07f3083c4e2a1250aa21e99f1bc45d8e76ddd80e2a480567618265bc",
+    "packages/HyCodeWorkspace/Tests/TerminalTests.swift": "dfe1466ffb7c32d02f72a7c3b16d8c90a56cb819ed7e5a6ad14f1f6d76921be8",
+    "packages/HyCodeWorkspace/Tests/TerminalCompletionTests.swift": "b049b7567439f311edddc7e6e4d0ac9e4a263f491adcd0ccc99ff48426d6ac94"
+  },
+  "submission_validation": {
+    "captured_at": "2026-10-28T13:55:22+08:00",
+    "scope": "Terminal-only Git tree, excluding parallel Git feature/source/tests/docs changes",
+    "tree_before_submission_receipt": "24131f097e7a9d0835f47d6f1a2548fff72ec43f",
+    "swift": "301 tests / 51 suites passed, no GUI application host",
+    "release": "HyCode Release product compilation passed; integrated build/HyCode.app was not replaced",
+    "docs": "87 Markdown files / 903 local links / 10 archive hash pairs passed",
+    "dependencies_and_format": "Terminal dependency pins and original notices, touched Swift format checks passed",
+    "selected_shared_file_sha256": {
+      "app/macos/Sources/HyCodeApp.swift": "561c09de3531e4036f29004a0556f1071d44ab1ae1efe4347ad29341f814b7df",
+      "app/macos/Sources/Workbench/WorkbenchStore.swift": "8efd6005ae94044e0877410a42339345e322a6599ee0a39529ff74a746033b1c",
+      "app/macos/Sources/Workbench/WorkbenchView.swift": "dbf3bd4997b3077d8930433d286f29781beaceb57e3fce675b993d1597eed690"
+    },
+    "logs": {
+      "swift": {
+        "path": "docs/evidence/2026-10-28-build52-terminal-submit-swift.log",
+        "sha256": "178432ca3d1c25996f7513d6d4ad5dd2fd73d01541f3dfcdfbee10898ef466d9"
+      },
+      "release": {
+        "path": "docs/evidence/2026-10-28-build52-terminal-submit-release.log",
+        "sha256": "d644f6ceea92a6f782439c5b2594f88b6520e3c0b6ae0ed430e3ba65fb32738a"
+      }
+    }
+  }
+}

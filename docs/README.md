@@ -1,6 +1,6 @@
 # HyCode 文档索引
 
-更新：2026-10-23。当前已有文件工作台与基础文本编辑，后台验证与真实窗口状态分别记录。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核；自有代码与文档采用 [MIT](../LICENSE)。
+更新：2026-10-28。当前已有文件工作台与基础文本编辑，后台验证与真实窗口状态分别记录。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核；自有代码与文档采用 [MIT](../LICENSE)。
 
 ## 建议阅读顺序
 
@@ -18,6 +18,7 @@
 | 品牌 | [品牌与应用图标](BRANDING.md) | 系列视觉、资源来源、图标导出及验证边界 |
 | 当前工程 | [文件浏览工作台](WORKBENCH.md) | 布局、交互、源码地图、构建与证据 |
 | AI Agent | [内置 Codex](CODEX_AGENT.md) | 右侧多会话、自定义 Responses、运行/凭据隔离、静默验证 |
+| 终端 | [本地交互终端](TERMINAL.md) | 原生标签/分屏、Shell、PTY/关闭/修改互斥和静默验证 |
 | 视觉 | [WebStorm 截图对齐](VISUAL_ALIGNMENT.md) | 像素采样、整体界面覆盖、共享控件与真实窗口验证缺口 |
 | 分屏预览 | [Markdown / HTML](MARKUP_PREVIEW.md) | 原生源码、静态预览、资源限制和滚动映射 |
 | 原生语言 | [Swift / Java / SQL](NATIVE_LANGUAGES.md) | 外部语义、项目模型、信任与离线 DDL |

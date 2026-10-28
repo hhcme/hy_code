@@ -1,8 +1,10 @@
 # HyCode 依赖与来源
 
-更新：2026-10-23。自有代码与文档采用 [MIT](../LICENSE)。当前应用为文件工作台与基础文本编辑；使用系统 TextKit 1 和 Tree-sitter 基础着色，无第三方编辑器框架；Dart 语义、Pub 与 Flutter DAP/工具命令使用用户安装的外部 SDK，不随应用分发。
+更新：2026-10-28。自有代码与文档采用 [MIT](../LICENSE)。当前应用为文件工作台与基础文本编辑；使用系统 TextKit 1 和 Tree-sitter 基础着色，无第三方编辑器框架；Dart 语义、Pub 与 Flutter DAP/工具命令使用用户安装的外部 SDK，不随应用分发。
 
 ## 已采用
+
+build 48 新增 SwiftTerm 1.20.0（MIT，commit `5d14406844143538cd8f8851d2d8a67c1fe443e5`），作为原生终端模拟器/AppKit 视图；不采用其 LocalProcess。上游 CLI 依赖 swift-argument-parser 1.8.2（Apache-2.0）由 SwiftPM 锁定但不链接应用；版本/来源/原始许可哈希见[终端依赖台账](../third_party/terminal-dependencies.json)，`python3 scripts/check_terminal_dependencies.py` 离线校验。资源与 C helper 由构建脚本打包，范围见[终端专题](TERMINAL.md)。本批开始采用外部 Swift 包，以下早期“没有新增外部 Swift 包”为当时状态。
 
 | 组件 | 固定方式 | 用途与来源 |
 | --- | --- | --- |

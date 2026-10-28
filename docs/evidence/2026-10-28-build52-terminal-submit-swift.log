@@ -1,0 +1,866 @@
+Building for debugging...
+[Computing dependencies]
+[Pre-planning 1 / 590]
+[Planning deferred tasks]
+warning: missing creator for mutated node: ('<terminal-submit-snapshot>/.build/out/Products/Debug/SwiftTerm_SwiftTerm.bundle/Contents/MacOS')
+[96 / 227]
+[99 / 225] HyCodeWorkspace
+[99 / 225] SwiftTermBuildInfoGenerator-product
+[104 / 261]
+[106 / 261]
+[111 / 343]
+[117 / 343]
+[124 / 343]
+[128 / 343]
+[134 / 343]
+[138 / 343]
+[140 / 343]
+[141 / 343]
+[147 / 343]
+[149 / 343]
+[154 / 343]
+[159 / 343]
+[164 / 343]
+[167 / 343]
+[171 / 343]
+[175 / 343]
+[178 / 343]
+[180 / 343]
+[184 / 343]
+[187 / 343]
+[189 / 343]
+[191 / 343]
+[194 / 343] SwiftTermBuildInfoGenerator-product
+[198 / 343]
+[201 / 343]
+[202 / 343]
+[205 / 343]
+[207 / 343]
+[209 / 343] CHyCodeTerminal
+[211 / 343] HyCodeWorkspace
+[212 / 343] HyCodeWorkspace
+[214 / 343] HyCodeWorkspace
+[221 / 343] HyCodeWorkspace
+[223 / 343] HyCodeWorkspace
+[225 / 343] HyCodeWorkspace
+[226 / 343] HyCodeWorkspace
+[227 / 343] HyCodeWorkspace
+[228 / 343] HyCodeWorkspace
+[237 / 344] SwiftTermBuildInfoPlugin
+[243 / 348] HyCodeWorkspace
+[245 / 348] HyCodeWebProbe-product
+[247 / 348] HyCodeWebProbe-product
+[256 / 349] HyCodeWebProbe-product
+[258 / 350] HyCodeNativeLanguageProbe-product
+[263 / 352] HyCodeMarkupRuleProbe-product
+[266 / 377] HyCodeDirectoryProbe-product
+[268 / 379] HyCodeDebugProbe-product
+[268 / 379] HyCodeDirectoryProbe-product
+[271 / 381] HyCodeDebugProbe-product
+[274 / 383] HyCodeDartProbe-product
+[277 / 386] HyCodeCodexSetup-product
+[280 / 388]
+[283 / 388]
+[287 / 390] HyCodeCodexProbe-product
+[291 / 390]
+[293 / 390]
+[297 / 390] HyCodeLargeFileProbe-product
+[298 / 390]
+[300 / 390] HyCodeDirectoryProbe-product
+[301 / 390] HyCodeDebugProbe-product
+[303 / 390] HyCodeDartProbe-product
+[305 / 390] HyCodeCodexSetup-product
+[306 / 390] HyCodeCodexSetup-product
+[310 / 390]
+[311 / 390]
+[317 / 390] HyCodeWorkspace
+[321 / 390] HyCodeNativeLanguageProbe-product
+[324 / 390] HyCodeLargeFileProbe-product
+[324 / 390] HyCodeMarkupRuleProbe-product
+[325 / 390] HyCodeLargeFileProbe-product
+[327 / 390] HyCodeDartProbe-product
+[327 / 390] HyCodeDebugProbe-product
+[328 / 390] HyCodeDartProbe-product
+[330 / 390] SwiftTerm_SwiftTerm
+[330 / 390] HyCodeWebProbe-product
+[333 / 390]
+[337 / 390] SwiftTerm_SwiftTerm
+[345 / 390]
+[349 / 390]
+[352 / 390] SwiftTerm
+[353 / 391] SwiftTerm
+[357 / 444]
+[361 / 444]
+[367 / 444]
+[370 / 444]
+[374 / 444]
+[376 / 444]
+[379 / 444]
+[382 / 444]
+[385 / 444]
+[388 / 444]
+[390 / 444]
+[391 / 444]
+[393 / 444]
+[396 / 444] SwiftTerm
+[397 / 444] SwiftTerm
+[398 / 444] SwiftTerm
+[400 / 444] SwiftTerm
+[406 / 444] SwiftTerm
+[407 / 444] SwiftTerm-product
+[408 / 444] SwiftTerm-product
+[409 / 444] SwiftTerm
+[411 / 444] SwiftTerm
+[412 / 444] SwiftTerm
+[412 / 444] HyCodeWorkspaceTests-product
+[419 / 445] HyCodeTerminalProbe-product
+[422 / 453]
+[423 / 453] SwiftTerm
+[426 / 453]
+[428 / 454]
+[431 / 469] HyCodeWorkspaceTests-product
+[433 / 485]
+[435 / 485]
+[437 / 485] HyCodeTerminalProbe-product
+[438 / 485]
+[441 / 485] HyCodeWorkspaceTests-product
+[443 / 485] HyCode-product
+[450 / 485] HyCodeWorkspaceTests-product
+[451 / 485] HyCodeWorkspaceTests-product
+[452 / 485] HyCodeWorkspaceTests-product
+[453 / 485] HyCodeWorkspaceTests-product
+[454 / 485] HyCodeWorkspaceTests-product
+[455 / 485] HyCodeWorkspaceTests-product
+[457 / 485] HyCodeWorkspaceTests-product
+[458 / 485] HyCodeWorkspaceTests-product
+[458 / 485] HyCodeTerminalProbe-product
+[460 / 485] HyCode-product
+[460 / 485] HyCodeWorkspaceTests-product
+[463 / 485] HyCodeTerminalProbe-product
+[465 / 485] HyCode-product
+[466 / 485] HyCode-product
+[468 / 485] HyCode-product
+[468 / 485] HyCodeWorkspaceTests-product
+[470 / 485] HyCode-product
+[471 / 485] HyCode-product
+[472 / 485] HyCode-product
+[473 / 485] HyCode-product
+[474 / 485] HyCode-product
+[475 / 485] HyCode-product
+[477 / 485]
+[481 / 485] HyCode-product
+[483 / 485] HyCode-product
+Build complete! (66.87秒)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite WorkbenchResizeInteractionTests started.
+◇ Suite WorkspaceTests started.
+◇ Suite LanguageProtocolTests started.
+◇ Suite EditorFeedbackTests started.
+◇ Suite VideoPreviewFileTests started.
+◇ Suite WorkbenchLayoutTests started.
+◇ Suite ProjectTreeTextTests started.
+◇ Suite CodexCredentialTests started.
+◇ Suite CodexTests started.
+◇ Suite TerminalProcessTests started.
+◇ Suite TerminalZshCompletionTests started.
+◇ Suite LSPDocumentQueueTests started.
+◇ Suite ConfigurationLanguageTests started.
+◇ Suite ProjectTreeScrollAxisTests started.
+◇ Suite TextDocumentTests started.
+◇ Suite MemoryCacheTests started.
+◇ Suite ProcessResourceTests started.
+◇ Suite LSPWorkspaceEditTests started.
+◇ Suite WorkbenchDockingTests started.
+◇ Suite TextLineIndexTests started.
+◇ Suite CodexTranscriptTests started.
+◇ Suite WorkspaceEntryPathTests started.
+◇ Suite MarkupPreviewTests started.
+◇ Suite LanguageProcessTests started.
+◇ Suite DartHoverTests started.
+◇ Suite ImagePreviewGeometryTests started.
+◇ Suite WorkbenchStyleTests started.
+◇ Suite WorkbenchToolTileTests started.
+◇ Suite FlutterPresentationTests started.
+◇ Suite VideoPreviewStateTests started.
+◇ Suite LargeTextDocumentTests started.
+◇ Suite SyntaxViewportStateTests started.
+◇ Suite TerminalModelTests started.
+◇ Suite WorkbenchPopupPlacementTests started.
+◇ Suite FlutterDAPProcessTests started.
+◇ Suite FlutterRuntimeTests started.
+◇ Suite TerminalCompletionTests started.
+◇ Suite LSPSnippetTests started.
+◇ Suite ProjectAnalysisTests started.
+◇ Suite CodexPresentationTests started.
+◇ Suite ContextMenuInteractionTests started.
+◇ Suite DartProjectTests started.
+◇ Suite NativeLanguageTests started.
+◇ Suite VideoPreviewResourceTests started.
+◇ Suite EditorGutterDrawingTests started.
+◇ Suite SyntaxHighlightTests started.
+◇ Suite WorkspaceSourceWatcherTests started.
+◇ Suite ImagePreviewTests started.
+◇ Suite DartDirectiveTests started.
+◇ Suite WebProjectTests started.
+◇ Suite RecentProjectTests started.
+◇ Test nativeABIAndUnicodeDirectoryListing() started.
+◇ Test keyboardFocusIsNeutralAndPointerExitCannotLeaveBlue() started.
+◇ Test autoImportAtCompletionStartKeepsReplacementAndCaretCorrect() started.
+◇ Test diagnosticRetainsProviderDataForCodeActionRoundTrip() started.
+◇ Test invalidLengthsAndOversizedHeadersAreRejected() started.
+◇ Test framingSurvivesEveryByteBoundaryAndMultipleMessages() started.
+◇ Test crossingOtherDividersWhileDraggingKeepsExactlyOneActiveLine() started.
+◇ Test pointerBurstsCommitOnlyLatestValuePerDisplayAndOnceAtRelease() started.
+◇ Test locationsAcceptLinksAndSingleOrMultipleResults() started.
+◇ Test nativeCRLFEdgeEditsRemainExactlyEquivalentInTheProtocol() started.
+◇ Test thinCaretBecomesPixelAlignedAndKeepsNativeLineHeight() started.
+◇ Test nativeBlinkDamageCoversTheEntireWidenedCaret() started.
+◇ Test caretHasStrongContrastInBothEditorThemes() started.
+◇ Test releaseWithoutMouseExitClearsLineAndBlocksDelayedEnter() started.
+◇ Test protocolPositionsUseUTF16AndCRLFWithoutCountingUnicodeSeparatorsAsLines() started.
+◇ Test movingTheBoundaryUsesOnlyTheLatestPresentedGeometry() started.
+◇ Test everyEdgeLandsOnBackingPixelsIncludingAnimationAndReversal() started.
+◇ Test removedOrTinyDividerNeverLeavesALineOutsideItsRoundedEndpoints() started.
+◇ Test narrowingWindowFitsBottomMinimumWithoutForgettingTheSplitPreference() started.
+◇ Test interruptionDropsQueuedResizeAndEveryIndicatorSource() started.
+◇ Test aSingleBottomDockFillsTheRowAndUpperDocksStopAboveIt() started.
+◇ Test editBatchIsValidatedBeforeMutationAndCompletionCaretAccountsForImports() started.
+◇ Test cancellationDoesNotStartFileAccess() started.
+◇ Test windowLossClearsHoverAndKeyboardFocusWithoutAnyDrag() started.
+◇ Test nonfiniteAndOutOfSessionEventsCannotResurrectPendingWork() started.
+◇ Test collapsingEveryDockLeavesExactlyTheFullContentRectangle() started.
+◇ Test pathLinksSpecialFilesAndOversizeAreRejected() started.
+◇ Test rangeReadsAreBoundedAndStayPinnedToOneFile() started.
+◇ Test extremeDraggingPreservesUsableCentralAndBottomPanes() started.
+◇ Test resizingAfterWindowFittingDoesNotMoveTheOtherBoundary() started.
+◇ Test customSettingsDoNotImportEnvironmentOrPutCredentialsOnTheCommandLine() started.
+◇ Test allSixteenDockCombinationsFitWithoutOverlapAndKeepTheCenter() started.
+◇ Test invalidOrTinyViewportNeverCreatesNegativeOrNonfiniteGeometry() started.
+◇ Test localCredentialsSurviveNewClientsWithPrivateModesAndIndependentAccounts() started.
+◇ Test realPtyHasAControllingTerminalAndInitialDimensions() started.
+◇ Test bothBottomDocksShareSnappedEdgesWithTheirDivider() started.
+◇ Test unicodeNamesKeepTheirPathIdentityAndActualGlyphWidths() started.
+◇ Test cancelledPreparationNeverReturnsPartialWidths() started.
+◇ Test cancellationCannotOverwriteLaterNativeBufferWork() started.
+◇ Test configDiscoveryIncludesKnownFoldersButNeverDependenciesOrPrivateDirectories() started.
+◇ Test animatedRegionsDoNotOverlapEvenWhenAllDockFlagsReverse() started.
+◇ Test zleReportsUnicodeAndAcceptsWithoutExecuting() started.
+◇ Test fittingOrHidingDoesNotOverwriteRememberedUserSizes() started.
+◇ Test contentThatFitsHasNoScrollRangeEvenAfterShrinking() started.
+◇ Test independentBatchesDoNotShareResults() started.
+◇ Test schemaSizeAndCancellationAreBounded() started.
+◇ Test ownerWithoutWritePermissionIsNotGrantedTheOtherUsersWriteBit() started.
+◇ Test invalidOrOvershootingPositionsStayFiniteAndWithinBounds() started.
+◇ Test boundedCatalogBuildsOnlyDeclaredJsonAndYamlAssociations() started.
+◇ Test utf16FilesKeepOriginalEncodingAndBOM() started.
+◇ Test localSchemasDecodeUnicodeBomAndRemainInsideTheAuthorizedRoot() started.
+◇ Test overflowMapsThumbPositionsToDocumentOffsets() started.
+◇ Test symlinksAndParentTraversalAreRejected() started.
+◇ Test readOnlyFilesFailSavingWithoutChangingOriginalOrLeavingTemporaryFiles() started.
+◇ Test externalChangesAreNeverReplacedAndBufferRemainsEditable() started.
+◇ Test completionOfAnOlderSaveKeepsNewerTypingDirty() started.
+◇ Test aclDenyWriteIsRespectedEvenWhenModeBitsAllowIt() started.
+◇ Test invalidOrOldEditsDoNotMutateTheDocument() started.
+◇ Test separateDocumentsCannotOverwriteEachOthersCommittedVersion() started.
+◇ Test specialFilesAndHardLinksAreNotEditable() started.
+◇ Test dirtyUnicodeBufferAndRevisionSurviveCacheEvictionAndRebuild() started.
+◇ Test readsOnlyTheHeadlessTestProcessWithNoApplicationHost() started.
+◇ Test emptyAndWhitespaceInputsStayFinite() started.
+◇ Test savesPreservePermissionsAndExtendedAttributes() started.
+◇ Test untrustedVueRequestNeverStartsConfiguredExecutable() started.
+◇ Test emptyTrailingAndMixedUnicodeLines() started.
+◇ Test schemaRequestsAcceptBothPinnedRpcParameterShapes() started.
+◇ Test unicodeIncrementalEditingAndNativeUndoDeltasPreserveBOMAndCRLF() started.
+◇ Test invalidIntervalsAndCounterResetsNeverProduceInventedZero() started.
+◇ Test sparseEditsAcrossManyLinesKeepOffsetsAndCRLFBoundaries() started.
+◇ Test cancelledSaveDoesNotWriteOrLoseTheBuffer() started.
+◇ Test movingAnInactiveToolPreservesOpenPanelsAndSupportsAnEmptyGroup() started.
+◇ Test symlinksCannotEscapeGrantedRootAndDuplicateAliasesFail() started.
+◇ Test overlappingUnicodeInvalidRangesAndOversizePreviewNeverProduceReplacement() started.
+◇ Test unsupportedResourceOperationsRemoteTargetsAndNullTextAreRejected() started.
+◇ Test incrementalIndexMatchesRebuildAcrossCRLFAndEmojiEdits() started.
+◇ Test rootItemRefersToTheRootAndCopiesADotInsteadOfAnEmptyPath() started.
+◇ Test yamlAndCommentedConfigurationsUseTheirOwnServices() started.
+◇ Test clickingAnotherToolReplacesOnlyThatCornerAndClickingAgainClosesIt() started.
+◇ Test unsavedNativeRevisionsAndUtf16GenerateTheSamePreviewWithoutWritingDisk() started.
+◇ Test anOpenToolCarriesItsSelectionAcrossAllFourCorners() started.
+◇ Test displayedAndCopiedPathsPreserveUnicodeSpacesAndLiteralPercentSigns() started.
+◇ Test offlineRulesCoverEveryNetworkResourceCategory() started.
+◇ Test multiFileChangesAndVersionedEditsPreserveOneSourceRevision() started.
+◇ Test formatModesAndFiniteScrollGeometry() started.
+◇ Test repeatedMovesNeverDuplicateOrLoseToolsAndKeepSelectionValid() started.
+◇ Test ratesUseElapsedTimeAllowMultipleCoresAndStartUnavailable() started.
+◇ Test structuredMetadataIsRedactedBudgetedAndOldHistoryStillDecodes() started.
+◇ Test nativeResourcesReadCSSAndDecodeImagesWithoutFollowingLinksOrSpecialFiles() started.
+◇ Test unifiedDiffPreservesLiteralHunkLinesAndHandlesAddsDeletesAndRenames() started.
+◇ Test defaultOpensFileListAndDedicatedCodexPanel() started.
+◇ Test previewPreparationFailureIncludesTheWebKitCompilerReason() started.
+◇ Test insertionSlotsReorderInBothDirectionsWithoutChangingSelection() started.
+◇ Test scrollPinningRequiresTheActualBottomAndRejectsInvalidGeometry() started.
+◇ Test largeChangeListsRemainVisibleAndExplicitlyReportTheProjectionLimit() started.
+◇ Test activitiesCollapseOnlyAcrossContiguousToolsAndKeepStableIdentities() started.
+◇ Test resourceURLsStayWithinTheCurrentPreviewAndSafePath() started.
+◇ Test stoppingAtTheExactItemAndConversationBudgetsStillAllowsPersistence() started.
+◇ Test aggregateChangesReplacePerToolCountsAndAnEmptyAggregateClearsThem() started.
+◇ Test cardsUseTheAnchorScreenIncludingNegativeCoordinatesAndStayInsideItsEdges() started.
+◇ Test pageResourceBudgetCannotOverflowAndRejectsExcessBeforeMutation() started.
+◇ Test repeatedHeaderOnlyPatchesOfOneFileDoNotCountTheNextHeadersAsContent() started.
+◇ Test commandsRetainStreamOutputAndAuthoritativeStatusAndActions() started.
+◇ Test targetUsesWholeUnicodeIdentifiersAndRejectsWhitespaceAndNumericLiterals() started.
+◇ Test boundedLRUIncludesNegativeHoverAndDefinitionResults() started.
+◇ Test repeatedEditsAtOneLocationKeepIndexStorageBounded() started.
+◇ Test anInterruptedOrDisconnectedRunDoesNotKeepActivitiesRunningForever() started.
+◇ Test plaintextLegacyAndIncompleteMarkdownRemainReadableAndBounded() started.
+◇ Test aPointerCanCrossTheWhitespaceBridgeToEitherCardEdgeWithoutPreservingUnrelatedWhitespace() started.
+◇ Test onlyPublicReasoningSummariesAreCollectedAndTokenUsageIsActual() started.
+◇ Test modifierExpeditesTheSameSymbolWithoutLosingTheSingleWorkerSlot() started.
+◇ Test cancellingTheCallingTaskStopsItsOwnedToolGroup() started.
+◇ Test previewContainsAnOpaqueBackgroundAndAnExplicitForeground() started.
+◇ Test movingAcrossASymbolDoesNotResetItsDwellOrCreateMoreWorkers() started.
+◇ Test dartSignatureDeclarationAndDocumentationBecomeCompactSections() started.
+◇ Test cancelledAToBToAStillServicesTheLatestPointerAfterTheOldWorkerExits() started.
+◇ Test failedPatchesAreNotPresentedAsCompletedAndANewPromptStartsANewSummary() started.
+◇ Test oversizedDefinitionListsAreNotMistakenForCompleteNavigationCaches() started.
+◇ Test invalidDraftCannotOverwriteCurrentConfiguration() started.
+◇ Test editingDoesNotChangeConfigurationUntilAccepted() started.
+◇ Test contextResetRejectsOldResultsWhileKeepingOnlyOneWorkerSlot() started.
+◇ Test sourceGlyphColorCannotTurnThePreviewBlack() started.
+◇ Test onlyLocalVideoSuffixesEnterPreview() started.
+◇ Test staleWorkspaceConcurrentEditAndRunningTaskRejectDraft() started.
+◇ Test everyTextExtensionRoutesWithoutWholeFileTextAndKeepsTailOnSave() started.
+◇ Test labelsHandleHoursAndUnloadedDuration() started.
+◇ Test shellChromeLeavesUsableEditorSpaceWithAllFourCorners() started.
+◇ Test nativeButtonSizeIsPreservedWhileOriginsSnapInsideTheHeaderReserve() started.
+◇ Test zoomPreservesTheImagePointBeneathThePointer() started.
+◇ Test fitNeverEnlargesSmallImagesAndKeepsLargeImagesWithinMargins() started.
+◇ Test dropdownPrefersBelowAndAlignsToItsAnchor() started.
+◇ Test invalidRasterProposalsAreRejectedBeforeAllocation() started.
+◇ Test manualZoomAndPanClampAtSupportedLimits() started.
+◇ Test outputGateDropsGraphicsAndOversizedStringsBeforeTheyReachTheEngine() started.
+◇ Test oversizedAndTinyPopupRequestsRemainInsideTheirDisplay() started.
+◇ Test submenuConnectsToTheVisibleRowAndFlipsAtTheRightEdge() started.
+◇ Test dropdownFlipsAboveWhenTheSpaceBelowIsInsufficient() started.
+◇ Test nestedSplitsCollapseWithoutLosingTheOtherSession() started.
+◇ Test seekingKeepsOneFlightAndLatestTarget() started.
+◇ Test seekingRejectsInvalidTimesAndClampsBeforePlayback() started.
+◇ Test boundedEvictionPreservesOverlappingFreshColorsAndTouchesRecentWindows() started.
+◇ Test terminalEnvironmentDoesNotReceiveHyCodeAgentSecrets() started.
+◇ Test c1AndEmbeddedIntroducersCannotBypassTheOutputGate() started.
+◇ Test insertionUsesTheSameSlotsAsVisibleButtonsAndNeverEscapesTheRail() started.
+◇ Test prefetchPreservesVisibleUnicodeScalarsAndStaysWithinTheCoreBudget() started.
+◇ Test insertedPathsRemainOneShellArgument() started.
+◇ Test outputGatePassesOnlyBoundedIntegrationFrames() started.
+◇ Test fileReferencesRespectTheAuthorizedRootAndSourceLocations() started.
+◇ Test pathsAreQuotedAndConfinedToTheAuthorizedRoot() started.
+◇ Test repeatedCombiningMarksAreBoundedBeforeTheEmulator() started.
+◇ Test readAheadAvoidsARequestForEverySmallScrollAndKeepsEarlierColors() started.
+◇ Test breakpointConfirmationCanArriveBeforeTheResponseAndRemovedEventsClearIt() started.
+◇ Test ordinaryRailsKeepReferenceSpacingAndShortRailsCompactOnlyTheGaps() started.
+◇ Test continuousScrollEventsJoinOneWorkerWithoutInvalidatingItsResult() started.
+◇ Test splitsAreBoundedAndUnknownSelectionCannotStealFocus() started.
+◇ Test everyToolFitsTheTwoRailGroupsAtTheMinimumWindowHeight() started.
+◇ Test stopEpochInvalidatesFramesAndLateEventsCannotResumeEndedSession() started.
+◇ Test failedOldViewportStillProcessesTheFinalScrollWithoutRetryingInPlace() started.
+◇ Test promptReportsRequireTokenAndBoundedValidState() started.
+◇ Test adjacentCoverageIsReusableAndResetRejectsOldRevisionWorkers() started.
+◇ Test adjacentInitializeEventsWaitForCapabilitiesAndLaunchBeforeConfiguration() started.
+◇ Test complexExpressionsAndMidLineEditingStayWithTheShell() started.
+◇ Test inspectorProjectsSafeCreationLocationsAndCapsTreeDepth() started.
+◇ Test distinctUnicodeClustersKeepFlagsHangulAndEmojiIntactAcrossChunks() started.
+◇ Test commandAndNestedSubcommandsUseOfflineMetadata() started.
+◇ Test devicesAreDeduplicatedFilteredAndDoNotCreateFakeTargets() started.
+◇ Test testReporterHandlesChunksNoiseFailuresAndOversizedLines() started.
+◇ Test unsavedBreakpointProjectionDiscardsAndPartialSaveKeepsTheDiskBaseline() started.
+◇ Test integrationUsesPrivateStorageAndRejectsControlInput() started.
+◇ Test c0AndRepeatedEscapesCannotDesynchronizeTheGateAndEngine() started.
+◇ Test escapeIntermediateStateIsBoundedAcrossThousandsOfChunks() started.
+◇ Test resizeAtFarEdgesClampsOnlyAfterPreservingTheOldCenter() started.
+◇ Test replacementWithAFifoDoesNotBlockTheReader() started.
+◇ Test escapedSymbolsVariablesAndRepeatedDefaultsDoNotReadEnvironment() started.
+◇ Test bareNumberStopsDoNotConsumeFollowingIdentifierAndTypingMovesLaterStops() started.
+◇ Test discoveryAndReadEnforceBudgetsAndEncoding() started.
+◇ Test menuWidthFollowsMeasuredContentAndStaysInsideSmallScreens() started.
+◇ Test conditionalLogBreakpointsAndRelocationPreserveOneLineOwner() started.
+◇ Test nestedDefaultsPreservePlaceholderOrder() started.
+◇ Test cancelledDiscoveryDoesNotContinueScanning() started.
+◇ Test defaultsChoiceFinalStopAndUnicodeUseUtf16() started.
+◇ Test launchArgumentsAreLiteralBoundedAndDoNotImplicitlyRunPub() started.
+◇ Test aLinkSwapAfterDiscoveryCannotReadOutsideTheProject() started.
+◇ Test theEmbeddedEngineHandlesFragmentedUnicodeCursorAndAlternateScreen() started.
+◇ Test outputDecoderPreservesSplitChineseAndEmojiAndBoundsIncompleteBytes() started.
+◇ Test nativeGrammarProjectionAndCancelledSQL() started.
+◇ Test outputGatePreservesSplitUtf8AnsiAndBoundedMetadata() started.
+◇ Test malformedTransformAndOversizedTemplatesAreNotInsertedLiterally() started.
+◇ Test sqlDDLCompletionNavigationAndUnsavedIncrement() started.
+◇ Test diagnosticInboxIsBoundedAndRejectsSameRevisionStaleWork() started.
+◇ Test keyboardSelectionSkipsDisabledRowsAndSeparatorsAndWraps() started.
+◇ Test cachePathsURIMappingAndProjectModels() started.
+◇ Test nestedPackageUsesNearestManifestAndDistinguishesPackageAndLanguageVersions() started.
+◇ Test untrustedServiceDoesNotCreateCacheOrStartTool() started.
+◇ Test emptyAndDisabledMenusHaveNoExecutableSelection() started.
+◇ Test fencedCodePreservesLiteralContentsAndIncompleteStream() started.
+◇ Test mp4MovM4vLoadThroughPinnedRangesAndDecodeOneVideoFrame() started.
+◇ Test sdkDiscoveryReadsMetadataWithoutExecutingSDKOrProjectFiles() started.
+◇ Test discoveryUsesExactRelativeNamesAndPrunesDependenciesAndLinks() started.
+◇ Test composerRemainsCompactForEmptyAndBoundedForLargeInput() started.
+◇ Test partialRepaintTouchesOnlyTheGutterIntersection() started.
+◇ Test routingAndMissingToolsDoNotLaunchAnything() started.
+◇ Test problemAggregationPreservesSeverityCountsFilteringAndNavigation() started.
+◇ Test oversizedDirtyRectCannotCoverEditorOrAdjacentHeaders() started.
+◇ Test excessiveFencesFallBackWithoutDiscardingAnySource() started.
+◇ Test menuPlacementKeepsAllEdgesInsideThePointerScreen() started.
+◇ Test catalogAndReadsExcludeLinksAndBuildOutput() started.
+◇ Test invalidEmptyOrUnrelatedDamageDoesNotDraw() started.
+◇ Test invalidPackageConfigStaysUnresolvedAndUnsupportedLockScalarsStayUnknown() started.
+◇ Test applicationDefaultsKeepDraftsAndExplicitProjectSettingsIndependent() started.
+◇ Test sqlNavigationRequiresBoundTablesAndRejectsAmbiguity() started.
+◇ Test sqlDialectDiagnosticsCommentsAndFormatting() started.
+◇ Test revisionsAndViewportRangesSurviveEditsAndRejectStaleResults() started.
+◇ Test distantDartViewportsReturnColorsWithReadAheadAndKeepSavedContent() started.
+◇ Test nativeBridgeReturnsUTF16CapturesWithoutEditingTheDocument() started.
+◇ Test cancelledViewportDoesNotEnterTheNativeParser() started.
+◇ Test recursiveEventsObserveOnlyOwnFixtureWithoutAMainRunLoop() started.
+◇ Test unsupportedAndLargeFilesStayEditableWithExplicitHighlightStatus() started.
+◇ Test fileReadsStayInsideRootAndRejectLinksAndSpecialFiles() started.
+◇ Test generatedRasterFormatsDecodeWithoutTextOrAppKit() started.
+◇ Test multilineAndConditionalURIsExcludeConditionComparisonStrings() started.
+◇ Test everyCharacterAndSeparatorSharesTheCompleteLibraryURI() started.
+◇ Test commentsCannotHideTheActualImportOrCreateAnEarlierFakeCandidate() started.
+◇ Test ordinaryStringsCommentsAndUnfinishedOrInterpolatedURIsAreNotDirectiveHits() started.
+◇ Test lookupIsBoundedEvenForVeryLongLinesAndUnclosedDirectives() started.
+◇ Test gifUsesFirstFrameAndReportsMultipleFrames() started.
+◇ Test orientationAndTransparentPixelsAreAppliedInTheProjection() started.
+◇ Test largeImagesUseABoundedDecodeRatherThanFullResolution() started.
+◇ Test svgBridgeReturnsOwnedPixelsAndRejectsExternalContent() started.
+◇ Test unknownContextBeforeTheWindowCannotSwallowALaterRealDirective() started.
+◇ Test webpLosslessSampleDecodesWithAlpha() started.
+◇ Test packageMetadataKeepsLibrarySignatureAndDeclarationAsSeparateSections() started.
+◇ Test dispatchUsesKnownImageExtensionsAndMalformedDataFailsLocally() started.
+◇ Test canceledReadsDoNotStartOpeningTheFile() started.
+◇ Test packageCommandsDisableHooksAndNeverBuildShellStrings() started.
+◇ Test yarnClassicAndModernCommandsHaveSeparateCompatibilityAndHookPolicy() started.
+◇ Test manifestKeepsScriptLiteralAndTypedDependencyKinds() started.
+◇ Test nearestPackageAndDirectorySelectionStayInsideWorkspace() started.
+◇ Test unknownStartupRecordDoesNotSilentlyOpenAnotherProject() started.
+◇ Test languageFamiliesAndConfigurationCommentsAreDistinct() started.
+◇ Test explicitClosePersistsWithoutRemovingHistoryOrBeingUndoneByABookmark() started.
+◇ Test malformedAndOversizedManifestsAndUnsupportedNodesFailExplicitly() started.
+◇ Test historyHasABoundedRecordCountAndStableBadges() started.
+◇ Test legacyHistoryWithoutAStartupFieldMigratesToItsFirstProject() started.
+◇ Test asynchronousBookmarkUpdateDoesNotReorderHistory() started.
+◇ Test startupRestoresTheLastOpenedProjectAndItsBookmark() started.
+◇ Test revisitingMovesOneNormalizedRecordToTheFront() started.
+✔ Test crossingOtherDividersWhileDraggingKeepsExactlyOneActiveLine() passed after 0.045 seconds.
+✔ Test keyboardFocusIsNeutralAndPointerExitCannotLeaveBlue() passed after 0.045 seconds.
+✔ Test pointerBurstsCommitOnlyLatestValuePerDisplayAndOnceAtRelease() passed after 0.046 seconds.
+✔ Test thinCaretBecomesPixelAlignedAndKeepsNativeLineHeight() passed after 0.047 seconds.
+✔ Test nativeBlinkDamageCoversTheEntireWidenedCaret() passed after 0.049 seconds.
+✔ Test movingTheBoundaryUsesOnlyTheLatestPresentedGeometry() passed after 0.049 seconds.
+✔ Test locationsAcceptLinksAndSingleOrMultipleResults() passed after 0.049 seconds.
+✔ Test caretHasStrongContrastInBothEditorThemes() passed after 0.049 seconds.
+✔ Test protocolPositionsUseUTF16AndCRLFWithoutCountingUnicodeSeparatorsAsLines() passed after 0.049 seconds.
+✔ Test interruptionDropsQueuedResizeAndEveryIndicatorSource() passed after 0.049 seconds.
+✔ Test aSingleBottomDockFillsTheRowAndUpperDocksStopAboveIt() passed after 0.049 seconds.
+✔ Test removedOrTinyDividerNeverLeavesALineOutsideItsRoundedEndpoints() passed after 0.049 seconds.
+✔ Test windowLossClearsHoverAndKeyboardFocusWithoutAnyDrag() passed after 0.049 seconds.
+✔ Test nonfiniteAndOutOfSessionEventsCannotResurrectPendingWork() passed after 0.049 seconds.
+✔ Test nativeCRLFEdgeEditsRemainExactlyEquivalentInTheProtocol() passed after 0.049 seconds.
+✔ Test collapsingEveryDockLeavesExactlyTheFullContentRectangle() passed after 0.049 seconds.
+✔ Test extremeDraggingPreservesUsableCentralAndBottomPanes() passed after 0.049 seconds.
+✔ Test narrowingWindowFitsBottomMinimumWithoutForgettingTheSplitPreference() passed after 0.049 seconds.
+✔ Test releaseWithoutMouseExitClearsLineAndBlocksDelayedEnter() passed after 0.049 seconds.
+✔ Test autoImportAtCompletionStartKeepsReplacementAndCaretCorrect() passed after 0.049 seconds.
+✔ Test resizingAfterWindowFittingDoesNotMoveTheOtherBoundary() passed after 0.050 seconds.
+✔ Test editBatchIsValidatedBeforeMutationAndCompletionCaretAccountsForImports() passed after 0.050 seconds.
+✔ Test invalidLengthsAndOversizedHeadersAreRejected() passed after 0.051 seconds.
+✔ Test bothBottomDocksShareSnappedEdgesWithTheirDivider() passed after 0.053 seconds.
+✔ Test diagnosticRetainsProviderDataForCodeActionRoundTrip() passed after 0.054 seconds.
+✔ Test allSixteenDockCombinationsFitWithoutOverlapAndKeepTheCenter() passed after 0.057 seconds.
+✔ Test framingSurvivesEveryByteBoundaryAndMultipleMessages() passed after 0.109 seconds.
+✔ Test fittingOrHidingDoesNotOverwriteRememberedUserSizes() passed after 0.109 seconds.
+✔ Test contentThatFitsHasNoScrollRangeEvenAfterShrinking() passed after 0.109 seconds.
+✔ Test invalidOrOvershootingPositionsStayFiniteAndWithinBounds() passed after 0.109 seconds.
+✔ Test rangeReadsAreBoundedAndStayPinnedToOneFile() passed after 0.120 seconds.
+✔ Test boundedCatalogBuildsOnlyDeclaredJsonAndYamlAssociations() passed after 0.120 seconds.
+✔ Test invalidOrTinyViewportNeverCreatesNegativeOrNonfiniteGeometry() passed after 0.121 seconds.
+✔ Test overflowMapsThumbPositionsToDocumentOffsets() passed after 0.121 seconds.
+✔ Test pathLinksSpecialFilesAndOversizeAreRejected() passed after 0.121 seconds.
+✔ Test customSettingsDoNotImportEnvironmentOrPutCredentialsOnTheCommandLine() passed after 0.121 seconds.
+✔ Test completionOfAnOlderSaveKeepsNewerTypingDirty() passed after 0.121 seconds.
+✔ Test symlinksAndParentTraversalAreRejected() passed after 0.121 seconds.
+✔ Test configDiscoveryIncludesKnownFoldersButNeverDependenciesOrPrivateDirectories() passed after 0.121 seconds.
+✔ Test specialFilesAndHardLinksAreNotEditable() passed after 0.121 seconds.
+✔ Test localCredentialsSurviveNewClientsWithPrivateModesAndIndependentAccounts() passed after 0.121 seconds.
+✔ Test readsOnlyTheHeadlessTestProcessWithNoApplicationHost() passed after 0.121 seconds.
+✔ Test readOnlyFilesFailSavingWithoutChangingOriginalOrLeavingTemporaryFiles() passed after 0.121 seconds.
+✔ Test ownerWithoutWritePermissionIsNotGrantedTheOtherUsersWriteBit() passed after 0.121 seconds.
+✔ Test emptyTrailingAndMixedUnicodeLines() passed after 0.121 seconds.
+✔ Test schemaRequestsAcceptBothPinnedRpcParameterShapes() passed after 0.121 seconds.
+✔ Test invalidIntervalsAndCounterResetsNeverProduceInventedZero() passed after 0.121 seconds.
+✔ Test invalidOrOldEditsDoNotMutateTheDocument() passed after 0.121 seconds.
+✔ Test externalChangesAreNeverReplacedAndBufferRemainsEditable() passed after 0.121 seconds.
+✔ Test movingAnInactiveToolPreservesOpenPanelsAndSupportsAnEmptyGroup() passed after 0.121 seconds.
+✔ Test everyEdgeLandsOnBackingPixelsIncludingAnimationAndReversal() passed after 0.121 seconds.
+✔ Test symlinksCannotEscapeGrantedRootAndDuplicateAliasesFail() passed after 0.121 seconds.
+✔ Test unsupportedResourceOperationsRemoteTargetsAndNullTextAreRejected() passed after 0.121 seconds.
+✔ Test aclDenyWriteIsRespectedEvenWhenModeBitsAllowIt() passed after 0.121 seconds.
+✔ Test yamlAndCommentedConfigurationsUseTheirOwnServices() passed after 0.121 seconds.
+✔ Test rootItemRefersToTheRootAndCopiesADotInsteadOfAnEmptyPath() passed after 0.121 seconds.
+✔ Test clickingAnotherToolReplacesOnlyThatCornerAndClickingAgainClosesIt() passed after 0.121 seconds.
+✔ Test overlappingUnicodeInvalidRangesAndOversizePreviewNeverProduceReplacement() passed after 0.121 seconds.
+✔ Test displayedAndCopiedPathsPreserveUnicodeSpacesAndLiteralPercentSigns() passed after 0.121 seconds.
+✔ Test anOpenToolCarriesItsSelectionAcrossAllFourCorners() passed after 0.121 seconds.
+✔ Test multiFileChangesAndVersionedEditsPreserveOneSourceRevision() passed after 0.121 seconds.
+✔ Test offlineRulesCoverEveryNetworkResourceCategory() passed after 0.121 seconds.
+✔ Test formatModesAndFiniteScrollGeometry() passed after 0.121 seconds.
+✔ Test ratesUseElapsedTimeAllowMultipleCoresAndStartUnavailable() passed after 0.121 seconds.
+✔ Test unicodeNamesKeepTheirPathIdentityAndActualGlyphWidths() passed after 0.122 seconds.
+✔ Test repeatedMovesNeverDuplicateOrLoseToolsAndKeepSelectionValid() passed after 0.121 seconds.
+✔ Test unifiedDiffPreservesLiteralHunkLinesAndHandlesAddsDeletesAndRenames() passed after 0.121 seconds.
+✔ Test defaultOpensFileListAndDedicatedCodexPanel() passed after 0.121 seconds.
+✔ Test savesPreservePermissionsAndExtendedAttributes() passed after 0.121 seconds.
+✔ Test insertionSlotsReorderInBothDirectionsWithoutChangingSelection() passed after 0.121 seconds.
+✔ Test scrollPinningRequiresTheActualBottomAndRejectsInvalidGeometry() passed after 0.121 seconds.
+✔ Test separateDocumentsCannotOverwriteEachOthersCommittedVersion() passed after 0.121 seconds.
+✔ Test activitiesCollapseOnlyAcrossContiguousToolsAndKeepStableIdentities() passed after 0.121 seconds.
+✔ Test previewPreparationFailureIncludesTheWebKitCompilerReason() passed after 0.121 seconds.
+✔ Test resourceURLsStayWithinTheCurrentPreviewAndSafePath() passed after 0.121 seconds.
+✔ Test aggregateChangesReplacePerToolCountsAndAnEmptyAggregateClearsThem() passed after 0.121 seconds.
+✔ Test cardsUseTheAnchorScreenIncludingNegativeCoordinatesAndStayInsideItsEdges() passed after 0.121 seconds.
+✔ Test pageResourceBudgetCannotOverflowAndRejectsExcessBeforeMutation() passed after 0.121 seconds.
+✔ Test repeatedHeaderOnlyPatchesOfOneFileDoNotCountTheNextHeadersAsContent() passed after 0.121 seconds.
+✔ Test commandsRetainStreamOutputAndAuthoritativeStatusAndActions() passed after 0.121 seconds.
+✔ Test cancelledSaveDoesNotWriteOrLoseTheBuffer() passed after 0.122 seconds.
+✔ Test boundedLRUIncludesNegativeHoverAndDefinitionResults() passed after 0.121 seconds.
+✔ Test utf16FilesKeepOriginalEncodingAndBOM() passed after 0.122 seconds.
+✔ Test anInterruptedOrDisconnectedRunDoesNotKeepActivitiesRunningForever() passed after 0.122 seconds.
+✔ Test targetUsesWholeUnicodeIdentifiersAndRejectsWhitespaceAndNumericLiterals() passed after 0.122 seconds.
+✔ Test plaintextLegacyAndIncompleteMarkdownRemainReadableAndBounded() passed after 0.122 seconds.
+✔ Test aPointerCanCrossTheWhitespaceBridgeToEitherCardEdgeWithoutPreservingUnrelatedWhitespace() passed after 0.122 seconds.
+✔ Test modifierExpeditesTheSameSymbolWithoutLosingTheSingleWorkerSlot() passed after 0.122 seconds.
+✔ Test onlyPublicReasoningSummariesAreCollectedAndTokenUsageIsActual() passed after 0.122 seconds.
+✔ Test unicodeIncrementalEditingAndNativeUndoDeltasPreserveBOMAndCRLF() passed after 0.123 seconds.
+✔ Test dartSignatureDeclarationAndDocumentationBecomeCompactSections() passed after 0.123 seconds.
+✔ Test cancelledAToBToAStillServicesTheLatestPointerAfterTheOldWorkerExits() passed after 0.125 seconds.
+✔ Test previewContainsAnOpaqueBackgroundAndAnExplicitForeground() passed after 0.125 seconds.
+✔ Test invalidDraftCannotOverwriteCurrentConfiguration() passed after 0.136 seconds.
+✔ Test oversizedDefinitionListsAreNotMistakenForCompleteNavigationCaches() passed after 0.136 seconds.
+✔ Test editingDoesNotChangeConfigurationUntilAccepted() passed after 0.136 seconds.
+✔ Test contextResetRejectsOldResultsWhileKeepingOnlyOneWorkerSlot() passed after 0.137 seconds.
+✔ Test sourceGlyphColorCannotTurnThePreviewBlack() passed after 0.137 seconds.
+✔ Test onlyLocalVideoSuffixesEnterPreview() passed after 0.137 seconds.
+✔ Test staleWorkspaceConcurrentEditAndRunningTaskRejectDraft() passed after 0.137 seconds.
+✔ Test failedPatchesAreNotPresentedAsCompletedAndANewPromptStartsANewSummary() passed after 0.137 seconds.
+✔ Test labelsHandleHoursAndUnloadedDuration() passed after 0.137 seconds.
+✔ Test shellChromeLeavesUsableEditorSpaceWithAllFourCorners() passed after 0.137 seconds.
+✔ Test nativeButtonSizeIsPreservedWhileOriginsSnapInsideTheHeaderReserve() passed after 0.137 seconds.
+✔ Test zoomPreservesTheImagePointBeneathThePointer() passed after 0.137 seconds.
+✔ Test fitNeverEnlargesSmallImagesAndKeepsLargeImagesWithinMargins() passed after 0.137 seconds.
+✔ Test dropdownPrefersBelowAndAlignsToItsAnchor() passed after 0.137 seconds.
+✔ Test invalidRasterProposalsAreRejectedBeforeAllocation() passed after 0.137 seconds.
+✔ Test manualZoomAndPanClampAtSupportedLimits() passed after 0.137 seconds.
+✔ Test oversizedAndTinyPopupRequestsRemainInsideTheirDisplay() passed after 0.137 seconds.
+✔ Test movingAcrossASymbolDoesNotResetItsDwellOrCreateMoreWorkers() passed after 0.137 seconds.
+✔ Test submenuConnectsToTheVisibleRowAndFlipsAtTheRightEdge() passed after 0.137 seconds.
+✔ Test dropdownFlipsAboveWhenTheSpaceBelowIsInsufficient() passed after 0.137 seconds.
+✔ Test nestedSplitsCollapseWithoutLosingTheOtherSession() passed after 0.137 seconds.
+✔ Test seekingKeepsOneFlightAndLatestTarget() passed after 0.137 seconds.
+✔ Test seekingRejectsInvalidTimesAndClampsBeforePlayback() passed after 0.137 seconds.
+✔ Test boundedEvictionPreservesOverlappingFreshColorsAndTouchesRecentWindows() passed after 0.137 seconds.
+✔ Test terminalEnvironmentDoesNotReceiveHyCodeAgentSecrets() passed after 0.137 seconds.
+✔ Test c1AndEmbeddedIntroducersCannotBypassTheOutputGate() passed after 0.137 seconds.
+✔ Test structuredMetadataIsRedactedBudgetedAndOldHistoryStillDecodes() passed after 0.138 seconds.
+✔ Test insertionUsesTheSameSlotsAsVisibleButtonsAndNeverEscapesTheRail() passed after 0.137 seconds.
+✔ Test insertedPathsRemainOneShellArgument() passed after 0.137 seconds.
+✔ Test prefetchPreservesVisibleUnicodeScalarsAndStaysWithinTheCoreBudget() passed after 0.137 seconds.
+✔ Test outputGatePassesOnlyBoundedIntegrationFrames() passed after 0.137 seconds.
+✔ Test fileReferencesRespectTheAuthorizedRootAndSourceLocations() passed after 0.137 seconds.
+✔ Test pathsAreQuotedAndConfinedToTheAuthorizedRoot() passed after 0.137 seconds.
+✔ Test readAheadAvoidsARequestForEverySmallScrollAndKeepsEarlierColors() passed after 0.137 seconds.
+✔ Test ordinaryRailsKeepReferenceSpacingAndShortRailsCompactOnlyTheGaps() passed after 0.137 seconds.
+✔ Test continuousScrollEventsJoinOneWorkerWithoutInvalidatingItsResult() passed after 0.137 seconds.
+✔ Test breakpointConfirmationCanArriveBeforeTheResponseAndRemovedEventsClearIt() passed after 0.137 seconds.
+✔ Test splitsAreBoundedAndUnknownSelectionCannotStealFocus() passed after 0.137 seconds.
+✔ Test everyToolFitsTheTwoRailGroupsAtTheMinimumWindowHeight() passed after 0.137 seconds.
+✔ Test stopEpochInvalidatesFramesAndLateEventsCannotResumeEndedSession() passed after 0.137 seconds.
+✔ Test failedOldViewportStillProcessesTheFinalScrollWithoutRetryingInPlace() passed after 0.137 seconds.
+✔ Test promptReportsRequireTokenAndBoundedValidState() passed after 0.137 seconds.
+✔ Test adjacentCoverageIsReusableAndResetRejectsOldRevisionWorkers() passed after 0.138 seconds.
+✔ Test animatedRegionsDoNotOverlapEvenWhenAllDockFlagsReverse() passed after 0.138 seconds.
+✔ Test complexExpressionsAndMidLineEditingStayWithTheShell() passed after 0.137 seconds.
+✔ Test inspectorProjectsSafeCreationLocationsAndCapsTreeDepth() passed after 0.138 seconds.
+✔ Test distinctUnicodeClustersKeepFlagsHangulAndEmojiIntactAcrossChunks() passed after 0.138 seconds.
+✔ Test devicesAreDeduplicatedFilteredAndDoNotCreateFakeTargets() passed after 0.138 seconds.
+✔ Test outputGateDropsGraphicsAndOversizedStringsBeforeTheyReachTheEngine() passed after 0.138 seconds.
+✔ Test dirtyUnicodeBufferAndRevisionSurviveCacheEvictionAndRebuild() passed after 0.139 seconds.
+✔ Test unsavedBreakpointProjectionDiscardsAndPartialSaveKeepsTheDiskBaseline() passed after 0.138 seconds.
+✔ Test commandAndNestedSubcommandsUseOfflineMetadata() passed after 0.138 seconds.
+✔ Test c0AndRepeatedEscapesCannotDesynchronizeTheGateAndEngine() passed after 0.138 seconds.
+✔ Test resizeAtFarEdgesClampsOnlyAfterPreservingTheOldCenter() passed after 0.138 seconds.
+✔ Test nativeResourcesReadCSSAndDecodeImagesWithoutFollowingLinksOrSpecialFiles() passed after 0.139 seconds.
+✔ Test escapedSymbolsVariablesAndRepeatedDefaultsDoNotReadEnvironment() passed after 0.138 seconds.
+✔ Test bareNumberStopsDoNotConsumeFollowingIdentifierAndTypingMovesLaterStops() passed after 0.138 seconds.
+✔ Test replacementWithAFifoDoesNotBlockTheReader() passed after 0.138 seconds.
+✔ Test menuWidthFollowsMeasuredContentAndStaysInsideSmallScreens() passed after 0.138 seconds.
+✔ Test conditionalLogBreakpointsAndRelocationPreserveOneLineOwner() passed after 0.138 seconds.
+✔ Test nestedDefaultsPreservePlaceholderOrder() passed after 0.138 seconds.
+✔ Test defaultsChoiceFinalStopAndUnicodeUseUtf16() passed after 0.138 seconds.
+✔ Test launchArgumentsAreLiteralBoundedAndDoNotImplicitlyRunPub() passed after 0.138 seconds.
+✔ Test integrationUsesPrivateStorageAndRejectsControlInput() passed after 0.138 seconds.
+✔ Test theEmbeddedEngineHandlesFragmentedUnicodeCursorAndAlternateScreen() passed after 0.138 seconds.
+✔ Test outputDecoderPreservesSplitChineseAndEmojiAndBoundsIncompleteBytes() passed after 0.138 seconds.
+✔ Test stoppingAtTheExactItemAndConversationBudgetsStillAllowsPersistence() passed after 0.139 seconds.
+✔ Test outputGatePreservesSplitUtf8AnsiAndBoundedMetadata() passed after 0.138 seconds.
+✔ Test malformedTransformAndOversizedTemplatesAreNotInsertedLiterally() passed after 0.138 seconds.
+✔ Test discoveryAndReadEnforceBudgetsAndEncoding() passed after 0.138 seconds.
+✔ Test diagnosticInboxIsBoundedAndRejectsSameRevisionStaleWork() passed after 0.138 seconds.
+✔ Test keyboardSelectionSkipsDisabledRowsAndSeparatorsAndWraps() passed after 0.138 seconds.
+✔ Test largeChangeListsRemainVisibleAndExplicitlyReportTheProjectionLimit() passed after 0.139 seconds.
+✔ Test aLinkSwapAfterDiscoveryCannotReadOutsideTheProject() passed after 0.138 seconds.
+✔ Test repeatedCombiningMarksAreBoundedBeforeTheEmulator() passed after 0.139 seconds.
+✔ Test emptyAndDisabledMenusHaveNoExecutableSelection() passed after 0.138 seconds.
+✔ Test fencedCodePreservesLiteralContentsAndIncompleteStream() passed after 0.138 seconds.
+✔ Test untrustedServiceDoesNotCreateCacheOrStartTool() passed after 0.138 seconds.
+✔ Test testReporterHandlesChunksNoiseFailuresAndOversizedLines() passed after 0.138 seconds.
+✔ Test cachePathsURIMappingAndProjectModels() passed after 0.138 seconds.
+✔ Test composerRemainsCompactForEmptyAndBoundedForLargeInput() passed after 0.138 seconds.
+✔ Test partialRepaintTouchesOnlyTheGutterIntersection() passed after 0.138 seconds.
+✔ Test routingAndMissingToolsDoNotLaunchAnything() passed after 0.138 seconds.
+✔ Test nestedPackageUsesNearestManifestAndDistinguishesPackageAndLanguageVersions() passed after 0.138 seconds.
+✔ Test oversizedDirtyRectCannotCoverEditorOrAdjacentHeaders() passed after 0.138 seconds.
+✔ Test sqlDDLCompletionNavigationAndUnsavedIncrement() passed after 0.138 seconds.
+✔ Test problemAggregationPreservesSeverityCountsFilteringAndNavigation() passed after 0.138 seconds.
+✔ Test menuPlacementKeepsAllEdgesInsideThePointerScreen() passed after 0.138 seconds.
+✔ Test invalidEmptyOrUnrelatedDamageDoesNotDraw() passed after 0.138 seconds.
+✔ Test applicationDefaultsKeepDraftsAndExplicitProjectSettingsIndependent() passed after 0.138 seconds.
+✔ Test excessiveFencesFallBackWithoutDiscardingAnySource() passed after 0.138 seconds.
+✔ Test sdkDiscoveryReadsMetadataWithoutExecutingSDKOrProjectFiles() passed after 0.138 seconds.
+✔ Test invalidPackageConfigStaysUnresolvedAndUnsupportedLockScalarsStayUnknown() passed after 0.138 seconds.
+✔ Test escapeIntermediateStateIsBoundedAcrossThousandsOfChunks() passed after 0.139 seconds.
+✔ Test discoveryUsesExactRelativeNamesAndPrunesDependenciesAndLinks() passed after 0.138 seconds.
+✔ Test catalogAndReadsExcludeLinksAndBuildOutput() passed after 0.138 seconds.
+✔ Test sqlNavigationRequiresBoundTablesAndRejectsAmbiguity() passed after 0.138 seconds.
+✔ Test sqlDialectDiagnosticsCommentsAndFormatting() passed after 0.138 seconds.
+✔ Test fileReadsStayInsideRootAndRejectLinksAndSpecialFiles() passed after 0.138 seconds.
+✔ Test multilineAndConditionalURIsExcludeConditionComparisonStrings() passed after 0.138 seconds.
+✔ Test everyCharacterAndSeparatorSharesTheCompleteLibraryURI() passed after 0.137 seconds.
+✔ Test commentsCannotHideTheActualImportOrCreateAnEarlierFakeCandidate() passed after 0.137 seconds.
+✔ Test ordinaryStringsCommentsAndUnfinishedOrInterpolatedURIsAreNotDirectiveHits() passed after 0.137 seconds.
+✔ Test lookupIsBoundedEvenForVeryLongLinesAndUnclosedDirectives() passed after 0.137 seconds.
+✔ Test gifUsesFirstFrameAndReportsMultipleFrames() passed after 0.137 seconds.
+✔ Test orientationAndTransparentPixelsAreAppliedInTheProjection() passed after 0.137 seconds.
+✔ Test largeImagesUseABoundedDecodeRatherThanFullResolution() passed after 0.136 seconds.
+✔ Test svgBridgeReturnsOwnedPixelsAndRejectsExternalContent() passed after 0.136 seconds.
+✔ Test unknownContextBeforeTheWindowCannotSwallowALaterRealDirective() passed after 0.136 seconds.
+✔ Test webpLosslessSampleDecodesWithAlpha() passed after 0.136 seconds.
+✔ Test packageMetadataKeepsLibrarySignatureAndDeclarationAsSeparateSections() passed after 0.136 seconds.
+✔ Test dispatchUsesKnownImageExtensionsAndMalformedDataFailsLocally() passed after 0.136 seconds.
+✔ Test packageCommandsDisableHooksAndNeverBuildShellStrings() passed after 0.121 seconds.
+✔ Test yarnClassicAndModernCommandsHaveSeparateCompatibilityAndHookPolicy() passed after 0.121 seconds.
+✔ Test manifestKeepsScriptLiteralAndTypedDependencyKinds() passed after 0.120 seconds.
+✔ Test nearestPackageAndDirectorySelectionStayInsideWorkspace() passed after 0.119 seconds.
+✔ Test unknownStartupRecordDoesNotSilentlyOpenAnotherProject() passed after 0.119 seconds.
+✔ Test languageFamiliesAndConfigurationCommentsAreDistinct() passed after 0.119 seconds.
+✔ Test explicitClosePersistsWithoutRemovingHistoryOrBeingUndoneByABookmark() passed after 0.119 seconds.
+✔ Test malformedAndOversizedManifestsAndUnsupportedNodesFailExplicitly() passed after 0.119 seconds.
+✔ Test historyHasABoundedRecordCountAndStableBadges() passed after 0.119 seconds.
+✔ Test legacyHistoryWithoutAStartupFieldMigratesToItsFirstProject() passed after 0.119 seconds.
+✔ Test asynchronousBookmarkUpdateDoesNotReorderHistory() passed after 0.119 seconds.
+✔ Test startupRestoresTheLastOpenedProjectAndItsBookmark() passed after 0.119 seconds.
+✔ Test revisitingMovesOneNormalizedRecordToTheFront() passed after 0.119 seconds.
+✔ Suite WorkbenchResizeInteractionTests passed after 0.142 seconds.
+✔ Suite EditorFeedbackTests passed after 0.142 seconds.
+✔ Suite LanguageProtocolTests passed after 0.142 seconds.
+✔ Suite WorkbenchLayoutTests passed after 0.142 seconds.
+✔ Suite ProjectTreeScrollAxisTests passed after 0.142 seconds.
+✔ Suite TextDocumentTests passed after 0.142 seconds.
+✔ Test canceledReadsDoNotStartOpeningTheFile() passed after 0.137 seconds.
+✔ Suite ProcessResourceTests passed after 0.143 seconds.
+✔ Test untrustedVueRequestNeverStartsConfiguredExecutable() passed after 0.142 seconds.
+✔ Suite WorkbenchDockingTests passed after 0.143 seconds.
+✔ Suite WorkspaceEntryPathTests passed after 0.143 seconds.
+✔ Test unsavedNativeRevisionsAndUtf16GenerateTheSamePreviewWithoutWritingDisk() passed after 0.141 seconds.
+✔ Suite CodexTranscriptTests passed after 0.143 seconds.
+✔ Suite DartHoverTests passed after 0.143 seconds.
+✔ Suite WorkbenchToolTileTests passed after 0.143 seconds.
+✔ Suite FlutterPresentationTests passed after 0.143 seconds.
+✔ Suite VideoPreviewStateTests passed after 0.143 seconds.
+✔ Suite WorkbenchStyleTests passed after 0.143 seconds.
+✔ Suite ImagePreviewGeometryTests passed after 0.143 seconds.
+✔ Suite WorkbenchPopupPlacementTests passed after 0.143 seconds.
+✔ Suite TerminalModelTests passed after 0.143 seconds.
+✔ Suite SyntaxViewportStateTests passed after 0.143 seconds.
+✔ Suite TerminalCompletionTests passed after 0.143 seconds.
+✔ Suite FlutterRuntimeTests passed after 0.143 seconds.
+✔ Suite LSPSnippetTests passed after 0.143 seconds.
+✔ Suite ContextMenuInteractionTests passed after 0.143 seconds.
+✔ Test cancelledDiscoveryDoesNotContinueScanning() passed after 0.141 seconds.
+✔ Suite DartProjectTests passed after 0.143 seconds.
+✔ Suite CodexPresentationTests passed after 0.143 seconds.
+✔ Suite EditorGutterDrawingTests passed after 0.143 seconds.
+✔ Test cancelledViewportDoesNotEnterTheNativeParser() passed after 0.141 seconds.
+✔ Test cancellationDoesNotStartFileAccess() passed after 0.142 seconds.
+✔ Suite DartDirectiveTests passed after 0.143 seconds.
+✔ Test schemaSizeAndCancellationAreBounded() passed after 0.142 seconds.
+✔ Test nativeABIAndUnicodeDirectoryListing() passed after 0.143 seconds.
+✔ Test cancelledPreparationNeverReturnsPartialWidths() passed after 0.142 seconds.
+✔ Suite WebProjectTests passed after 0.143 seconds.
+✔ Suite RecentProjectTests passed after 0.143 seconds.
+◇ Test conversationsKeepTheirOwnStreamDraftModelAndHistory() started.
+◇ Test invalidOrOversizedInputKeepsThePreviousCredential() started.
+✔ Suite LSPWorkspaceEditTests passed after 0.143 seconds.
+✔ Suite MarkupPreviewTests passed after 0.144 seconds.
+✔ Test independentBatchesDoNotShareResults() passed after 0.143 seconds.
+◇ Test largePageDirtyInputAndCrossPageUndoAreNeverCacheEvicted() started.
+✔ Suite ProjectAnalysisTests passed after 0.143 seconds.
+✔ Suite VideoPreviewFileTests passed after 0.144 seconds.
+✔ Test cancellationCannotOverwriteLaterNativeBufferWork() passed after 0.145 seconds.
+✔ Test emptyAndWhitespaceInputsStayFinite() passed after 0.145 seconds.
+✔ Test conversationsKeepTheirOwnStreamDraftModelAndHistory() passed after 0.038 seconds.
+✔ Test invalidOrOversizedInputKeepsThePreviousCredential() passed after 0.038 seconds.
+✔ Test localSchemasDecodeUnicodeBomAndRemainInsideTheAuthorizedRoot() passed after 0.181 seconds.
+◇ Test cancelledNativeReadNeverPublishesASnapshot() started.
+✔ Suite LSPDocumentQueueTests passed after 0.182 seconds.
+✔ Suite ProjectTreeTextTests passed after 0.182 seconds.
+✔ Suite ConfigurationLanguageTests passed after 0.182 seconds.
+◇ Test deepSeekMaximumDefaultsAreRealMetadataAndContextOverridesStayBounded() started.
+◇ Test symlinkHardlinkAndOversizedRecordsAreRejectedWithoutChangingTheTarget() started.
+✔ Test nativeBridgeReturnsUTF16CapturesWithoutEditingTheDocument() passed after 0.181 seconds.
+✔ Test deepSeekMaximumDefaultsAreRealMetadataAndContextOverridesStayBounded() passed after 0.001 seconds.
+✔ Test cancelledNativeReadNeverPublishesASnapshot() passed after 0.001 seconds.
+◇ Test versionOneHistoryWithoutContextFieldsStillLoadsAndPreservesPreviousChoices() started.
+◇ Test previewReplacementPinningAndClosingPreserveTabIdentity() started.
+✔ Test versionOneHistoryWithoutContextFieldsStillLoadsAndPreservesPreviousChoices() passed after 0.001 seconds.
+✔ Test previewReplacementPinningAndClosingPreserveTabIdentity() passed after 0.001 seconds.
+◇ Test admissionBoundsConcurrencyAndKeepsWritingExclusive() started.
+◇ Test directoriesNeverCreateOrReplaceDocumentTabs() started.
+✔ Test admissionBoundsConcurrencyAndKeepsWritingExclusive() passed after 0.001 seconds.
+✔ Test directoriesNeverCreateOrReplaceDocumentTabs() passed after 0.001 seconds.
+◇ Test rejectedBudgetsKeepThePreviousUsableHistoryAndSplitSecretsStayRedacted() started.
+◇ Test simultaneousNativeReadsKeepTheirResultsSeparate() started.
+✔ Test incrementalIndexMatchesRebuildAcrossCRLFAndEmojiEdits() passed after 0.184 seconds.
+✔ Test symlinkHardlinkAndOversizedRecordsAreRejectedWithoutChangingTheTarget() passed after 0.004 seconds.
+◇ Test aBusyLocalVaultFailsWithoutOverwritingAnExistingRecord() started.
+✔ Test simultaneousNativeReadsKeepTheirResultsSeparate() passed after 0.002 seconds.
+◇ Test branchingNavigationDiscardsForwardHistory() started.
+✔ Test branchingNavigationDiscardsForwardHistory() passed after 0.001 seconds.
+◇ Test refreshedFileInformationPreservesPinnedTab() started.
+✔ Test refreshedFileInformationPreservesPinnedTab() passed after 0.001 seconds.
+◇ Test parentNavigationFromFilesDoesNotSkipTheirContainingDirectory() started.
+✔ Test parentNavigationFromFilesDoesNotSkipTheirContainingDirectory() passed after 0.001 seconds.
+◇ Test historyNavigationResolvesRefreshedFileMetadata() started.
+✔ Test historyNavigationResolvesRefreshedFileMetadata() passed after 0.001 seconds.
+✔ Suite WorkspaceTests passed after 0.188 seconds.
+✔ Test aBusyLocalVaultFailsWithoutOverwritingAnExistingRecord() passed after 0.001 seconds.
+◇ Test aBroadWorkspaceCannotReadOrMoveTheCredentialVault() started.
+✔ Test rejectedBudgetsKeepThePreviousUsableHistoryAndSplitSecretsStayRedacted() passed after 0.005 seconds.
+◇ Test projectStoreRestoresConversationsWithoutCredentialsAndRejectsSymlinks() started.
+✔ Test revisionsAndViewportRangesSurviveEditsAndRejectStaleResults() passed after 0.190 seconds.
+✔ Test projectStoreRestoresConversationsWithoutCredentialsAndRejectsSymlinks() passed after 0.003 seconds.
+◇ Test projectStateHasOneCrossProcessOwnerAndReleasesItsLease() started.
+✔ Test cancellingTheCallingTaskStopsItsOwnedToolGroup() passed after 0.192 seconds.
+◇ Test toolCancellationReclaimsDescendantsHoldingOutputPipes() started.
+✔ Test unsupportedAndLargeFilesStayEditableWithExplicitHighlightStatus() passed after 0.207 seconds.
+✔ Test largePageDirtyInputAndCrossPageUndoAreNeverCacheEvicted() passed after 0.073 seconds.
+✔ Suite MemoryCacheTests passed after 0.217 seconds.
+✔ Test repeatedEditsAtOneLocationKeepIndexStorageBounded() passed after 0.218 seconds.
+✔ Test aBroadWorkspaceCannotReadOrMoveTheCredentialVault() passed after 0.033 seconds.
+✔ Suite CodexCredentialTests passed after 0.222 seconds.
+✔ Test nativeGrammarProjectionAndCancelledSQL() passed after 0.220 seconds.
+✔ Suite NativeLanguageTests passed after 0.222 seconds.
+Dart generated viewport probe (ms, not UI latency): [81.28025, 0.910791, 1.711458, 0.859916, 0.736125]
+✔ Test distantDartViewportsReturnColorsWithReadAheadAndKeepSavedContent() passed after 0.222 seconds.
+✔ Suite SyntaxHighlightTests passed after 0.225 seconds.
+VIDEO_FORMAT_PASS: mov
+✔ Test adjacentInitializeEventsWaitForCapabilitiesAndLaunchBeforeConfiguration() passed after 0.235 seconds.
+◇ Test stalledDAPWriterStillTimesOutAndReclaimsTheChild() started.
+✔ Test projectStateHasOneCrossProcessOwnerAndReleasesItsLease() passed after 0.055 seconds.
+◇ Test setupHandoffPreservesAnActiveSnapshotAndItsLateWritesUntilTheNextOpen() started.
+✔ Test setupHandoffPreservesAnActiveSnapshotAndItsLateWritesUntilTheNextOpen() passed after 0.004 seconds.
+◇ Test jsonlSupportsConcurrentRequestsAndReverseMessagesWithoutEnvironmentLeakage() started.
+IMAGE_FORMAT_PASS: png,jpg,gif,tiff,bmp,jp2,ico,icns,heic,avif
+✔ Test generatedRasterFormatsDecodeWithoutTextOrAppKit() passed after 0.273 seconds.
+✔ Suite ImagePreviewTests passed after 0.276 seconds.
+✔ Test sparseEditsAcrossManyLinesKeepOffsetsAndCRLFBoundaries() passed after 0.299 seconds.
+✔ Suite TextLineIndexTests passed after 0.300 seconds.
+VIDEO_FORMAT_PASS: mp4
+✔ Test jsonlSupportsConcurrentRequestsAndReverseMessagesWithoutEnvironmentLeakage() passed after 0.066 seconds.
+◇ Test malformedAndOversizedFramesCloseTheConnection() started.
+✔ Test everyTextExtensionRoutesWithoutWholeFileTextAndKeepsTailOnSave() passed after 0.326 seconds.
+◇ Test utf16BOMSurrogatesCrossPagesHistoryAndRepeatedSaves() started.
+VIDEO_FORMAT_PASS: m4v
+✔ Test mp4MovM4vLoadThroughPinnedRangesAndDecodeOneVideoFrame() passed after 0.347 seconds.
+◇ Test cancelReleasesThePinnedFileAndAccessLease() started.
+✔ Test cancelReleasesThePinnedFileAndAccessLease() passed after 0.001 seconds.
+◇ Test corruptedAndCanceledResourcesCannotBecomeReady() started.
+✔ Test corruptedAndCanceledResourcesCannotBecomeReady() passed after 0.003 seconds.
+✔ Suite VideoPreviewResourceTests passed after 0.353 seconds.
+✔ Test utf16BOMSurrogatesCrossPagesHistoryAndRepeatedSaves() passed after 0.049 seconds.
+◇ Test literalSearchSpansIOBoundariesAndFindsUncommittedPieces() started.
+✔ Test literalSearchSpansIOBoundariesAndFindsUncommittedPieces() passed after 0.016 seconds.
+◇ Test cancellationDoesNotChangeActivePageOrInstallAPartialFile() started.
+✔ Test cancellationDoesNotChangeActivePageOrInstallAPartialFile() passed after 0.010 seconds.
+◇ Test externalChangesAndReadOnlyModeNeverGetOverwritten() started.
+✔ Test recursiveEventsObserveOnlyOwnFixtureWithoutAMainRunLoop() passed after 0.418 seconds.
+✔ Suite WorkspaceSourceWatcherTests passed after 0.420 seconds.
+✔ Test externalChangesAndReadOnlyModeNeverGetOverwritten() passed after 0.019 seconds.
+◇ Test previewAboveOneMiBUsesWholeDocumentAndNeverJustCurrentPage() started.
+✔ Test previewAboveOneMiBUsesWholeDocumentAndNeverJustCurrentPage() passed after 0.035 seconds.
+◇ Test pendingInputReservationsCannotBeSpentTwiceOrResetByOldReplies() started.
+✔ Test pendingInputReservationsCannotBeSpentTwiceOrResetByOldReplies() passed after 0.001 seconds.
+◇ Test committedSaveFailureIsDistinguishedFromFailureBeforeRename() started.
+✔ Test committedSaveFailureIsDistinguishedFromFailureBeforeRename() passed after 0.004 seconds.
+◇ Test syntaxProjectionNeedsNoDocumentOrDiskQueueAndKeepsPageUTF16Positions() started.
+✔ Test syntaxProjectionNeedsNoDocumentOrDiskQueueAndKeepsPageUTF16Positions() passed after 0.001 seconds.
+✔ Suite LargeTextDocumentTests passed after 0.464 seconds.
+✔ Test realPtyHasAControllingTerminalAndInitialDimensions() passed after 0.535 seconds.
+◇ Test orderedInputAndResizeReachTheRealShell() started.
+✔ Test zleReportsUnicodeAndAcceptsWithoutExecuting() passed after 0.594 seconds.
+◇ Test staleBufferAndCursorCannotAcceptAnOldCandidate() started.
+✔ Test orderedInputAndResizeReachTheRealShell() passed after 0.218 seconds.
+◇ Test controlCInterruptsTheForegroundProcess() started.
+✔ Test controlCInterruptsTheForegroundProcess() passed after 0.224 seconds.
+◇ Test closingAnUnresponsiveSessionIsBoundedAndRejectsLateInput() started.
+✔ Test staleBufferAndCursorCannotAcceptAnOldCandidate() passed after 0.587 seconds.
+◇ Test foregroundChildDoesNotReceiveTheCompletionSequence() started.
+✔ Test stalledDAPWriterStillTimesOutAndReclaimsTheChild() passed after 1.013 seconds.
+✔ Suite FlutterDAPProcessTests passed after 1.250 seconds.
+✔ Test malformedAndOversizedFramesCloseTheConnection() passed after 0.998 seconds.
+◇ Test cancellationIsBoundedAndAStoppedConnectionCannotRestart() started.
+✔ Test cancellationIsBoundedAndAStoppedConnectionCannotRestart() passed after 0.083 seconds.
+◇ Test stoppingOneConversationDoesNotStopAnotherTransport() started.
+✔ Test stoppingOneConversationDoesNotStopAnotherTransport() passed after 0.060 seconds.
+◇ Test outerSandboxRestrictsReadsAndKeepsReadOnlyAndWritingModesSeparate() started.
+✔ Test outerSandboxRestrictsReadsAndKeepsReadOnlyAndWritingModesSeparate() passed after 0.039 seconds.
+✔ Suite CodexTests passed after 1.501 seconds.
+✔ Test closingAnUnresponsiveSessionIsBoundedAndRejectsLateInput() passed after 0.978 seconds.
+◇ Test stoppedOwnersAndInvalidDirectoriesCannotLaunchAChild() started.
+✔ Test stoppedOwnersAndInvalidDirectoriesCannotLaunchAChild() passed after 0.002 seconds.
+◇ Test aBlockedInputConsumerDoesNotPreventShutdown() started.
+✔ Test foregroundChildDoesNotReceiveTheCompletionSequence() passed after 1.252 seconds.
+◇ Test loginStartupRelaysCustomZdotdirExactlyOnce() started.
+✔ Test loginStartupRelaysCustomZdotdirExactlyOnce() passed after 0.271 seconds.
+◇ Test acceptedInsertionPrecedesAnImmediateEnter() started.
+✔ Test acceptedInsertionPrecedesAnImmediateEnter() passed after 0.274 seconds.
+◇ Test builtinReadKeepsCompletionDisabledWhileShellRemainsForeground() started.
+✔ Test builtinReadKeepsCompletionDisabledWhileShellRemainsForeground() passed after 0.398 seconds.
+◇ Test nonExportedZdotdirDoesNotChangeChildStartup() started.
+✔ Test aBlockedInputConsumerDoesNotPreventShutdown() passed after 1.569 seconds.
+◇ Test closeReclaimsBackgroundJobsInSeparateGroupsOfTheSameSession() started.
+✔ Test nonExportedZdotdirDoesNotChangeChildStartup() passed after 0.273 seconds.
+✔ Suite TerminalZshCompletionTests passed after 3.653 seconds.
+✔ Test closeReclaimsBackgroundJobsInSeparateGroupsOfTheSameSession() passed after 1.056 seconds.
+✔ Suite TerminalProcessTests passed after 4.589 seconds.
+✔ Test toolCancellationReclaimsDescendantsHoldingOutputPipes() passed after 5.304 seconds.
+◇ Test exitedToolDoesNotLeavePipeOwningWorkersBehind() started.
+✔ Test exitedToolDoesNotLeavePipeOwningWorkersBehind() passed after 0.008 seconds.
+◇ Test largeDuplexMessagesDoNotBlockTheProtocolActor() started.
+✔ Test largeDuplexMessagesDoNotBlockTheProtocolActor() passed after 0.012 seconds.
+◇ Test unresponsiveReaderStillAllowsTimeoutAndProcessShutdown() started.
+✔ Test unresponsiveReaderStillAllowsTimeoutAndProcessShutdown() passed after 1.076 seconds.
+◇ Test stoppedOwnersCannotLaunchLateProcesses() started.
+✔ Test stoppedOwnersCannotLaunchLateProcesses() passed after 0.001 seconds.
+✔ Suite LanguageProcessTests passed after 6.595 seconds.
+✔ Test run with 301 tests in 51 suites passed after 6.596 seconds.

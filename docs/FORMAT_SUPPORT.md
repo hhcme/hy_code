@@ -1,6 +1,6 @@
 # HyCode 能力与格式台账
 
-更新：2026-10-23。首版仅 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。已建立新的文件工作台与基础文本编辑，旧 ZIP 骨架和外部项目的结果不计入本次完成度。
+更新：2026-10-28。首版仅 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。已建立新的文件工作台与基础文本编辑，旧 ZIP 骨架和外部项目的结果不计入本次完成度。
 
 ## 状态规则
 
@@ -39,7 +39,8 @@ build 28 的 [Web 工具](WEB_TOOLS.md) 增加 JS/TS/JSX/TSX、Vue、HTML/CSS/SC
 | Pub 依赖 | 获取/过期/升级/添加/移除、版本/来源展示；清单保存/冻结/重载，任务可停止 | 解析和任务回收 fixture 通过，真实 Pub/网络与清单 UI 流程未运行 | 未验证 |
 | Flutter 运行/调试与工具 | 显式设备/配置、SDK DAP、普通/条件/日志断点、调用栈/变量/求值、热更新、build/test/Doctor 和基础 Widget 树入口 | 10 项新模型/stdio fixture 回归，保留 LSP 探针；本机 fork 的生成 Dart DAP 探针未通过，真实 Flutter/设备未执行；[完整清单](FLUTTER_PLAN.md) | 未验证 |
 | 项目后台诊断 | 打开项目检查未打开的 Dart/Web 文件；模块反向引用增量、文件监听与 JSON 依赖；左下角三类计数、问题分组及定位 | 受限发现/链接替换/编码/预算/汇总/取消/FSEvents 后台回归、真实服务临时样本；[范围与限制](PROJECT_ANALYSIS.md) | 未验证 |
-| Git、终端 | 仅空面板入口，无服务 | 无 | 未验证 |
+| Git | 仅空面板入口，无服务 | 无 | 未验证 |
+| 终端 | 本地 PTY、原生多标签/分屏、搜索、Shell 设置、项目树入口、关闭保护、zsh 常用命令/路径候选及统一细滚动条；[范围](TERMINAL.md) | 无 GUI 模型、headless 引擎及真实 PTY 固定 fixture；本批结果见专题 | 窗口/IME/TUI/性能未验证 |
 | 正式应用分发 | 未实施签名、公证、上传或应用发布 | 仅本地开发构建 | 未验证 |
 
 build 36 的 202 Swift（38 组）/ 19 Rust / 4 Node 静默检查、7 项配置/监听 Swift ASan 与真实服务回归通过，见[证据](evidence/2026-10-23-build36-configuration-tools.json)。JSON/JSONC、YAML/YML 配置检查、格式化、补全、结构与离线 Schema 见[配置工具](CONFIGURATION_TOOLS.md)；真实窗口尚未验收。

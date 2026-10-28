@@ -20,6 +20,8 @@ python3 scripts/codex_runtime.py setup
 python3 scripts/check_image_dependencies.py
 python3 scripts/check_markup_dependencies.py
 python3 scripts/check_native_language_dependencies.py
+python3 scripts/check_terminal_dependencies.py
+swift build --configuration "$configuration" --jobs 2 --product HyCodeTerminalHost
 swift build --configuration "$configuration" --jobs 2 --product HyCode
 binary_dir="$(swift build --configuration "$configuration" --show-bin-path)"
 bash scripts/build_icons.sh
@@ -27,6 +29,12 @@ app_dir="build/HyCode.app"
 mkdir -p "$app_dir/Contents/MacOS"
 cp "$binary_dir/HyCode" "$app_dir/Contents/MacOS/.HyCode.new"
 mv -f "$app_dir/Contents/MacOS/.HyCode.new" "$app_dir/Contents/MacOS/HyCode"
+cp "$binary_dir/HyCodeTerminalHost" "$app_dir/Contents/MacOS/HyCodeTerminalHost"
+# Preserve SwiftPM resources inside the native application's resource directory.
+if [[ -d "$binary_dir/SwiftTerm_SwiftTerm.bundle" ]]; then
+    mkdir -p "$app_dir/Contents/Resources"
+    /usr/bin/ditto --norsrc --noextattr "$binary_dir/SwiftTerm_SwiftTerm.bundle" "$app_dir/Contents/Resources/SwiftTerm_SwiftTerm.bundle"
+fi
 cp app/macos/Resources/Info.plist "$app_dir/Contents/Info.plist"
 mkdir -p "$app_dir/Contents/Resources/third_party"
 cp .build/icons/HyCode.icns "$app_dir/Contents/Resources/HyCode.icns"
@@ -34,6 +42,7 @@ cp app/macos/Resources/brand/icon.png "$app_dir/Contents/Resources/HyCode.png"
 cp LICENSE THIRD_PARTY_NOTICES.md "$app_dir/Contents/Resources/"
 cp -R third_party/licenses "$app_dir/Contents/Resources/third_party/"
 cp third_party/image-preview-crates.json third_party/markup-preview-crates.json third_party/native-language-crates.json "$app_dir/Contents/Resources/third_party/"
+cp third_party/terminal-dependencies.json "$app_dir/Contents/Resources/third_party/"
 python3 scripts/codex_runtime.py stage "$app_dir/Contents/Resources/codex-runtime"
 runtime_dir="$app_dir/Contents/Resources/web-language-services"
 runtime_stage="$(mktemp -d "$app_dir/Contents/Resources/.web-language-services.XXXXXX")"

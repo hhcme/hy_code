@@ -21,6 +21,8 @@ JSON/JSONC 与 YAML/YML 已增加语法检查、离线 Schema 验证、字段补
 
 内置 [Codex Agent](docs/CODEX_AGENT.md) 默认位于右侧，按用户 Codex 截图和录屏调整原生消息流、可展开工具活动、改动汇总及圆角输入区，支持 HyCode 默认服务与项目自定义 Responses、多个对话、流式输出和停止。提供 DeepSeek V4 Pro/Flash 预设，默认最高思考 max 与 1M 上下文，各对话可调。两个只读任务可并行，修改任务独占并保护已保存文档；系统 CLI/官方 App 的配置和登录保持独立。固定原版运行时已接入，DeepSeek 无工具接口曾验证；API Key 由 HyCode 专用本地文件管理，不使用系统钥匙串。真实模型工具环路和窗口交互尚未验收。
 
+[本地终端](docs/TERMINAL.md)已接入真实 PTY、原生显示、多标签/分屏、输出搜索和项目树打开入口；使用 HyCode 自有样式，显式打开才启动用户 Shell，隐藏保留会话，关闭/切项目/退出先确认并等待回收。增加 zsh 的常用命令/子命令/参数和项目路径候选（Tab 插入）、柔和配色与统一细滚动条。后台模型、协议与窗口/性能分别验收；完整动态 CLI 语义、SSH 和跨重启保活尚未接入。
+
 ## 产品方向
 
 - **先做好代码编辑**：本地文件与项目目录、项目树、多标签、面包屑、可靠编辑与安全保存。
@@ -43,6 +45,7 @@ JSON/JSONC 与 YAML/YML 已增加语法检查、离线 Schema 验证、字段补
 | [技术设计](docs/TECH_DESIGN.md) | Swift/Rust 分层、文档所有权和 FFI |
 | [开发约定](docs/DEVELOPMENT.md) | 开发入口、真实命令、验证与证据规则 |
 | [内置 Codex Agent](docs/CODEX_AGENT.md) | 右侧多会话、自定义服务、凭据与运行隔离、后台证据 |
+| [本地交互终端](docs/TERMINAL.md) | 原生多标签/分屏、Shell、PTY 生命周期、资源和验证边界 |
 | [品牌与应用图标](docs/BRANDING.md) | 同系列设计、资源、提示词与打包 |
 | [当前文件工作台](docs/WORKBENCH.md) | 布局、交互、源码地图、构建及验证边界 |
 | [Markdown / HTML 分屏预览](docs/MARKUP_PREVIEW.md) | 同文档源码、静态预览、比例/滚动联动与资源边界 |

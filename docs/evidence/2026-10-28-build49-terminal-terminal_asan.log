@@ -1,0 +1,63 @@
+Building for debugging...
+[Pre-planning 1 / 270]
+[Planning deferred tasks]
+warning: missing creator for mutated node: ('<repo>/.build/terminal-asan/out/Products/Debug/SwiftTerm_SwiftTerm.bundle/Contents/MacOS')
+[4 / 20] HyCodeWorkspace
+[6 / 22] HyCodeWorkspace
+[11 / 25] HyCodeTerminalProbe-product
+[13 / 27] HyCodeTerminalProbe-product
+[18 / 27] HyCodeTerminalProbe-product
+[21 / 27] HyCodeWorkspaceTests-product
+[23 / 29] HyCodeWorkspaceTests-product
+[25 / 29] HyCodeTerminalProbe-product
+[27 / 30] HyCodeWorkspaceTests-product
+[29 / 30] HyCodeWorkspaceTests-product
+Build complete! (2.61秒)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite TerminalModelTests started.
+◇ Suite TerminalProcessTests started.
+◇ Test c1AndEmbeddedIntroducersCannotBypassTheOutputGate() started.
+◇ Test fileReferencesRespectTheAuthorizedRootAndSourceLocations() started.
+◇ Test outputGatePreservesSplitUtf8AnsiAndBoundedMetadata() started.
+◇ Test theEmbeddedEngineHandlesFragmentedUnicodeCursorAndAlternateScreen() started.
+◇ Test splitsAreBoundedAndUnknownSelectionCannotStealFocus() started.
+◇ Test c0AndRepeatedEscapesCannotDesynchronizeTheGateAndEngine() started.
+◇ Test distinctUnicodeClustersKeepFlagsHangulAndEmojiIntactAcrossChunks() started.
+◇ Test terminalEnvironmentDoesNotReceiveHyCodeAgentSecrets() started.
+◇ Test repeatedCombiningMarksAreBoundedBeforeTheEmulator() started.
+◇ Test outputGateDropsGraphicsAndOversizedStringsBeforeTheyReachTheEngine() started.
+◇ Test nestedSplitsCollapseWithoutLosingTheOtherSession() started.
+◇ Test escapeIntermediateStateIsBoundedAcrossThousandsOfChunks() started.
+◇ Test insertedPathsRemainOneShellArgument() started.
+◇ Test realPtyHasAControllingTerminalAndInitialDimensions() started.
+✔ Test splitsAreBoundedAndUnknownSelectionCannotStealFocus() passed after 0.002 seconds.
+✔ Test nestedSplitsCollapseWithoutLosingTheOtherSession() passed after 0.002 seconds.
+✔ Test c1AndEmbeddedIntroducersCannotBypassTheOutputGate() passed after 0.003 seconds.
+✔ Test outputGatePreservesSplitUtf8AnsiAndBoundedMetadata() passed after 0.003 seconds.
+✔ Test insertedPathsRemainOneShellArgument() passed after 0.003 seconds.
+✔ Test terminalEnvironmentDoesNotReceiveHyCodeAgentSecrets() passed after 0.003 seconds.
+✔ Test c0AndRepeatedEscapesCannotDesynchronizeTheGateAndEngine() passed after 0.007 seconds.
+✔ Test distinctUnicodeClustersKeepFlagsHangulAndEmojiIntactAcrossChunks() passed after 0.007 seconds.
+✔ Test fileReferencesRespectTheAuthorizedRootAndSourceLocations() passed after 0.009 seconds.
+✔ Test outputGateDropsGraphicsAndOversizedStringsBeforeTheyReachTheEngine() passed after 0.018 seconds.
+✔ Test theEmbeddedEngineHandlesFragmentedUnicodeCursorAndAlternateScreen() passed after 0.020 seconds.
+✔ Test escapeIntermediateStateIsBoundedAcrossThousandsOfChunks() passed after 0.041 seconds.
+✔ Test repeatedCombiningMarksAreBoundedBeforeTheEmulator() passed after 0.043 seconds.
+✔ Suite TerminalModelTests passed after 0.043 seconds.
+✔ Test realPtyHasAControllingTerminalAndInitialDimensions() passed after 0.234 seconds.
+◇ Test orderedInputAndResizeReachTheRealShell() started.
+✔ Test orderedInputAndResizeReachTheRealShell() passed after 0.229 seconds.
+◇ Test controlCInterruptsTheForegroundProcess() started.
+✔ Test controlCInterruptsTheForegroundProcess() passed after 0.221 seconds.
+◇ Test closingAnUnresponsiveSessionIsBoundedAndRejectsLateInput() started.
+✔ Test closingAnUnresponsiveSessionIsBoundedAndRejectsLateInput() passed after 1.049 seconds.
+◇ Test stoppedOwnersAndInvalidDirectoriesCannotLaunchAChild() started.
+✔ Test stoppedOwnersAndInvalidDirectoriesCannotLaunchAChild() passed after 0.001 seconds.
+◇ Test aBlockedInputConsumerDoesNotPreventShutdown() started.
+✔ Test aBlockedInputConsumerDoesNotPreventShutdown() passed after 1.592 seconds.
+◇ Test closeReclaimsBackgroundJobsInSeparateGroupsOfTheSameSession() started.
+✔ Test closeReclaimsBackgroundJobsInSeparateGroupsOfTheSameSession() passed after 1.047 seconds.
+✔ Suite TerminalProcessTests passed after 4.378 seconds.
+✔ Test run with 20 tests in 2 suites passed after 4.378 seconds.

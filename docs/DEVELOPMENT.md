@@ -1,5 +1,7 @@
 # HyCode 开发约定
 
+build 48 增加[本地交互终端](TERMINAL.md)。`check_native.sh` 先编译纯 C `HyCodeTerminalHost`，终端回归只用生成路径、固定非登录 `/bin/sh -c` 与真实无 GUI PTY；候选另用生成 HOME/配置和禁用全局启动文件的固定 `zsh -d -i`（登录中继样本另带 `-l`）；SwiftTerm 仅实例化 headless 内核，不创建终端视图/应用宿主、不读取用户 Shell 配置或使用系统剪贴板。上游模块链接 AppKit 不等于测试实例化了视图；原生输入/焦点/TUI 仍须另验。
+
 build 42 增加[内置 Codex](CODEX_AGENT.md)。`python3 scripts/codex_runtime.py setup` 显式准备固定官方原生资源，首次约 135 MiB 下载；`check` 只做离线哈希/许可校验。应用构建私有复制资源，不安装全局命令、不读取系统登录。通用检查只用固定 JSONL 和文件沙箱样本；官方 CLI 的 `HyCodeCodexProbe` 单独显式运行，只连接 loopback 假服务、生成项目和固定无 GUI 命令。真实服务、本地凭据、窗口、性能和发布独立验收。
 
 build 43 增加 DeepSeek 原生 Responses 预设、最高思考 max 和 1M 上下文默认值；项目和各对话可分别调整。`HyCodeCodexSetup` 的 configure/verify 仅在用户要求配置后显式运行，该阶段曾将隐藏标准输入写入 HyCode Keychain；build 47 起只写应用自管本地文件；设置通过独立交接文件在下次打开项目时应用，不能覆盖旧窗口的草稿。真实验证只有原生无工具的固定 Responses 短请求，不启动 Agent 或访问项目源码；不加入自动检查，也不修改系统 Codex。旧钥匙串 ACL 方案已按用户要求移除，不再依赖开发签名关联凭据。详情与证据见同一专题。
@@ -63,7 +65,7 @@ Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并�
 | `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `47`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `52`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
 
