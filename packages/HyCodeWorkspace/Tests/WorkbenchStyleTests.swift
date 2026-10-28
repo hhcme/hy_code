@@ -7,7 +7,7 @@ struct WorkbenchStyleTests {
     @Test func everyToolFitsTheTwoRailGroupsAtTheMinimumWindowHeight() {
         let height: CGFloat = 540 - WorkbenchStyleMetrics.headerHeight - WorkbenchStyleMetrics.statusHeight
         let side = WorkbenchStyleMetrics.toolSide
-        let step = WorkbenchStyleMetrics.toolStep
+        let step = WorkbenchRailGeometry.step(height: height)
         for topCount in 0...WorkbenchTool.allCases.count {
             let bottomCount = WorkbenchTool.allCases.count - topCount
             let topStart = WorkbenchRailGeometry.start(count: topCount, top: true, height: height)
@@ -25,7 +25,7 @@ struct WorkbenchStyleTests {
             for count in 0...WorkbenchTool.allCases.count {
                 let start = WorkbenchRailGeometry.start(count: count, top: top, height: height)
                 for index in 0..<count {
-                    let buttonY = start + CGFloat(index) * WorkbenchStyleMetrics.toolStep
+                    let buttonY = start + CGFloat(index) * WorkbenchRailGeometry.step(height: height)
                     #expect(
                         WorkbenchRailGeometry.insertionIndex(y: buttonY, count: count, top: top, height: height)
                             == index)
@@ -40,6 +40,12 @@ struct WorkbenchStyleTests {
                 }
             }
         }
+    }
+    @Test func ordinaryRailsKeepReferenceSpacingAndShortRailsCompactOnlyTheGaps() {
+        #expect(WorkbenchRailGeometry.step(height: 821) == WorkbenchStyleMetrics.toolStep)
+        let compact = WorkbenchRailGeometry.step(height: 461)
+        #expect(compact < WorkbenchStyleMetrics.toolStep)
+        #expect(compact >= WorkbenchStyleMetrics.toolSide + 2)
     }
     @Test func nativeButtonSizeIsPreservedWhileOriginsSnapInsideTheHeaderReserve() {
         for scale in [1.0, 1.5, 2, 3] {

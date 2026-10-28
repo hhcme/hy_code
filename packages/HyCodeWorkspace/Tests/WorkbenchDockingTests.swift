@@ -3,17 +3,18 @@ import Testing
 @testable import HyCodeWorkspace
 
 struct WorkbenchDockingTests {
-    @Test func defaultOpensOnlyTheFileList() {
+    @Test func defaultOpensFileListAndDedicatedCodexPanel() {
         let docking = WorkbenchDocking()
-        #expect(docking.active == [.topLeading: .project])
+        #expect(docking.active == [.topLeading: .project, .topTrailing: .codex])
         #expect(
             docking.visibility
-                == WorkbenchVisibility(project: true, information: false, openTabs: false, workspace: false))
+                == WorkbenchVisibility(project: true, information: true, openTabs: false, workspace: false))
         #expect(Set(docking.groups.values.flatMap { $0 }) == Set(WorkbenchTool.allCases))
     }
 
     @Test func clickingAnotherToolReplacesOnlyThatCornerAndClickingAgainClosesIt() {
         var docking = WorkbenchDocking()
+        docking.hide(.codex)
         docking.toggle(.terminal)
         docking.toggle(.git)
         #expect(docking.isVisible(.project))
@@ -28,6 +29,7 @@ struct WorkbenchDockingTests {
     @Test func anOpenToolCarriesItsSelectionAcrossAllFourCorners() {
         for target in WorkbenchCorner.allCases {
             var docking = WorkbenchDocking()
+            docking.hide(.codex)
             docking.move(.project, to: target, at: 0)
             #expect(docking.corner(of: .project) == target)
             #expect(docking.active[target] == .project)
@@ -38,6 +40,8 @@ struct WorkbenchDockingTests {
 
     @Test func movingAnInactiveToolPreservesOpenPanelsAndSupportsAnEmptyGroup() {
         var docking = WorkbenchDocking()
+        docking.hide(.codex)
+        docking.move(.codex, to: .bottomTrailing, at: 999)
         docking.move(.information, to: .topLeading, at: 1)
         docking.move(.analysis, to: .topLeading, at: 2)
         #expect(docking.groups[.topTrailing] == [])
@@ -49,6 +53,7 @@ struct WorkbenchDockingTests {
 
     @Test func insertionSlotsReorderInBothDirectionsWithoutChangingSelection() {
         var docking = WorkbenchDocking()
+        docking.hide(.codex)
         docking.move(.project, to: .topLeading, at: 3)
         #expect(docking.groups[.topLeading] == [.search, .structure, .project])
         docking.move(.project, to: .topLeading, at: 0)
@@ -60,6 +65,7 @@ struct WorkbenchDockingTests {
 
     @Test func repeatedMovesNeverDuplicateOrLoseToolsAndKeepSelectionValid() {
         var docking = WorkbenchDocking()
+        docking.hide(.codex)
         for (index, tool) in WorkbenchTool.allCases.enumerated() {
             for corner in WorkbenchCorner.allCases {
                 docking.toggle(tool)

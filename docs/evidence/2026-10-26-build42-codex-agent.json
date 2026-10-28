@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-26",
+  "phase": "build42-codex-agent",
+  "baseRevision": "aed85992466c2bc4fc12ff46bbe9d289ed524f03",
+  "sourceState": "uncommitted; no commit, push or publication performed",
+  "product": {
+    "version": "0.1.0",
+    "build": "42",
+    "bundleIdentifier": "io.github.hhcme.hycode",
+    "declaredMinimumMacOS": "14.0",
+    "architecture": "arm64"
+  },
+  "artifact": {
+    "path": "build/HyCode.app",
+    "configuration": "release",
+    "executableSHA256": "e20041b89164240684cb641b51222eb427471a8747992c011e0d810e20aba007",
+    "sizeKiB": 531392,
+    "runtimeSizeKiB": 325080,
+    "launched": false,
+    "installed": false,
+    "signature": "linker ad-hoc executable; Info.plist not bound, resources not sealed, no TeamIdentifier",
+    "distributionSigned": false,
+    "notarized": false,
+    "published": false
+  },
+  "runtime": {
+    "name": "official OpenAI Codex",
+    "version": "0.164.0",
+    "manifest": "tools/codex-runtime/manifest.json",
+    "manifestSHA256": "5352a8324efa32fa02c077a2b2a0796b77db9c83fae9a9bc1b3a26c491dc0314",
+    "fourBundledFileHashesVerified": true,
+    "voiceResourcesExcluded": true,
+    "systemCLIOrAppModified": false,
+    "externalNodeRequired": false,
+    "binaryDeclaredMinimumMacOS": "11.0 (CLI and Code Mode host; static vtool inspection only)"
+  },
+  "validation": {
+    "nativeChecks": {
+      "result": "passed",
+      "swiftTests": 243,
+      "rustTests": 37,
+      "nodeTests": 4,
+      "includesNoGUI": true
+    },
+    "swiftASan": {
+      "result": "passed",
+      "focusedCodexTests": 10,
+      "rustAndOfficialBinariesInstrumented": false
+    },
+    "officialRuntimeLoopbackProbe": {
+      "result": "passed",
+      "responsesRequests": 6,
+      "concurrentReadOnlyConversations": 2,
+      "streamedAssistantReply": true,
+      "crossProcessThreadResume": true,
+      "workspaceWriteInitialization": true,
+      "actualFixedCommandAndGeneratedFileWrite": true,
+      "modelKeyAbsentFromActualToolEnvironment": true,
+      "runningCommandInterruptedAndPIDReaped": true,
+      "realProviderUsed": false,
+      "realAccountUsed": false,
+      "userProjectUsed": false,
+      "GUIUsed": false
+    },
+    "independentReview": {
+      "result": "no remaining confirmed P1/P2 after fixes",
+      "readOnly": true
+    },
+    "documentation": "local links and immutable historical manifest hashes passed",
+    "bundledRuntimeProbe": {
+      "result": "passed",
+      "runtimePath": "build/HyCode.app/Contents/Resources/codex-runtime/bin/codex",
+      "probeConfiguration": "release",
+      "responsesRequests": 6,
+      "GUIUsed": false
+    }
+  },
+  "verifiedRepairs": [
+    "granular approval requires experimentalApi capability in pinned runtime",
+    "ExternalSandbox reuses outer Seatbelt without nested sandbox_apply",
+    "POSIX realpath and unescaped slash literals used for Seatbelt/TOML",
+    "draft/message budgets validated before state mutation and persistence",
+    "credentials redacted after stream chunks are assembled",
+    "12 tool buttons fit minimum-height rails with adaptive gaps and original geometry assertions"
+  ],
+  "limits": [
+    "real provider compatibility, billing and model entitlement not tested",
+    "real Keychain read/write/authorization not tested",
+    "native window, focus, input, scrolling, docking and performance not tested",
+    "macOS 14 runtime not tested",
+    "commands may use network; outer sandbox is filesystem isolation, not a complete OS/network boundary",
+    "writing tasks are exclusive; require clean buffers and reload documents afterward; no shared native undo or worktree merge",
+    "no official desktop feature parity claim",
+    "main-process resource monitor excludes agent children",
+    "additional SDK/toolchain roots are not configurable yet; external Homebrew/Flutter/Xcode paths may be denied"
+  ],
+  "logs": {
+    "native": {
+      "path": ".build/codex-check-native.log",
+      "sha256": "3954b2ef6b3e28842f292647c6019cd934d63b6ffc4708bd094de8940053a4d8"
+    },
+    "protocol": {
+      "path": ".build/codex-probe.log",
+      "sha256": "4fbd4c45ca65430f25584a0ebde50169ba32367d0bf670596c72eab385f5d3aa"
+    },
+    "asan": {
+      "path": ".build/codex-asan.log",
+      "sha256": "21ee9209113e5e77d25e6e3d6d49ae4bf44c14bc77208995d2235d60b82215a2"
+    },
+    "build": {
+      "path": ".build/codex-build-release.log",
+      "sha256": "c696568bc30ad208f7ee1c971f4bb2925be4243f0efc1f4b6109da66e31d8575"
+    },
+    "bundledProtocol": {
+      "path": ".build/codex-bundled-probe.log",
+      "sha256": "1212b016b4275e5e1a45ffe24b7147e632e2c1783296123a491d0cc1f498524b"
+    }
+  },
+  "sourceSHA256": {
+    "AGENTS.md": "b276728dd8141ba5331a0c520243a7536d9a13bd811b87e6c4cef6b4040be226",
+    "Package.swift": "82ffab41ed10dc3122b7c3dbb611fd8811a23de02dfc8265d1ca1054c626f350",
+    "README.md": "087ed84fdd2e6da0c0e595ae34583c2afcc5aec8824f480e13594b7245db1dde",
+    "THIRD_PARTY_NOTICES.md": "09747df32fe674756fc9423e7072fb271897e6aa9443d9bb8f4b338b35eb0a1a",
+    "app/macos/Resources/Info.plist": "efaf5642cb095c983850bcb23e680358d00d50acdfb7d93fdc4065d70ba8c690",
+    "app/macos/Sources/Agent/CodexBundledRuntime.swift": "81fbbcfce19a2e8c2115cfb2c8bf064508a824cb62395bb81a8ae8a837a81028",
+    "app/macos/Sources/Agent/CodexCredentials.swift": "887cee80850cbf8cdf3e4e950f90827c23d3bfc7571aaa8a8c5fad7dac24ee4c",
+    "app/macos/Sources/Agent/CodexPanel.swift": "2dd7f3c8d1e5527cb48a8e32b81ca0ed9b26633ab1abbb5d8155028bd9801d48",
+    "app/macos/Sources/Agent/CodexWorkspaceController.swift": "2f4df9e4a294d5792cc59d4a47c2ff9d07db089535dbcab18a7ed0d5ea435d4c",
+    "app/macos/Sources/Editor/EditorDocument.swift": "c1d4fdeb7cfb5def6ee6d4caa258c302c635983616d433a7d0f090b4e52c0194",
+    "app/macos/Sources/Editor/EditorWorkspace.swift": "0fc7d4c8cc03838d2371dc53dbcccd6069b4eb2ec95d5a159e61f9711e668906",
+    "app/macos/Sources/Language/LanguageEditPreview.swift": "52849bde89a86805b745083883aee5db7ee9bd394760fa0581fbff6d06e52f20",
+    "app/macos/Sources/Workbench/WorkbenchCanvas.swift": "0d33becdf4ab4b33af7fef6f18b22bdf443f728d27e67bac87ef516f2fac25f8",
+    "app/macos/Sources/Workbench/WorkbenchStore.swift": "c39ca9918a0306a78eaec74c4dd350cb97addd77f4f65035452063a4c4b07e8a",
+    "app/macos/Sources/Workbench/WorkbenchToolPresentation.swift": "891684209fc77d38b38ac45bfd08172665cd017785fde8f2b1b326a777f44bf5",
+    "app/macos/Sources/Workbench/WorkbenchToolRail.swift": "4ae951e39d2db04d5db954b52af52aeb1f1055819acaabae57d603312fade1a5",
+    "app/macos/Sources/Workbench/WorkbenchView.swift": "2485c59c69ae53afb235c0d6138cdf5c95f3ba56b3adb58e1f1bb560fc6f5bac",
+    "docs/CODEX_AGENT.md": "ddf5feef9d0f9108f78fa7b79dacfb1895e42cd92d4965b876298eb0c7ecbc7d",
+    "docs/DEPENDENCIES.md": "55f0e7445f754bdfa514f0907d83033ccbc9ef46eb58dfb9b447acbd679c49b0",
+    "docs/DEVELOPMENT.md": "bee8789341c94ce7e93eaa341da680ddab18716a28bd1b505c6c37ec7b1f4e44",
+    "docs/EDITOR_DIRECTION.md": "364a7aa7ea16103cc20d527546d325408c6249fa9b15e96f58ff028717299086",
+    "docs/PRODUCT_REQUIREMENTS.md": "781a446c827b264e17705032606ef29095f86ebd805661620355098373dce391",
+    "docs/README.md": "f01d3df8136fa58713a737320c7dd09d36cdf6b20ed2068c3f8b4316acfa4933",
+    "docs/TECH_DESIGN.md": "5d5a572e01157a80015cfba56874e179a0cecf78863127cf309062d998800cbc",
+    "docs/WORKBENCH.md": "5f455855f9275290f1180a0f3eac92df306cc7f8357364f600c3260fc753a1f0",
+    "docs/adr/0014-codex-agent.md": "b472c6a3a6aae126dab73783422a7af1328223887564940d600edbc9e2a81439",
+    "docs/adr/README.md": "94b9aca81a2d882474661b836b6ce3c2a2f8d80d9370d7ec8f7f1ebb10efe109",
+    "packages/HyCodeWorkspace/Sources/Agent/CodexAgentRun.swift": "3ea5868602d2a18de24f3138b7438b0719e09838d3a2922b78665231d43b4ccf",
+    "packages/HyCodeWorkspace/Sources/Agent/CodexConfiguration.swift": "91d9ff2df6dd062de982a17f6c4d7f8b040d6f35b4ef1ca0e03b2a40a1f3180f",
+    "packages/HyCodeWorkspace/Sources/Agent/CodexConversation.swift": "ffc76523540a520edc0e778ee55acf40206b2e12633c0b51c8754ada3478cdf9",
+    "packages/HyCodeWorkspace/Sources/Agent/CodexJSONLConnection.swift": "ab716d657d8728ca5f29e8698f4045e1c0cdfbd1df18adcc63c91419f8aca58b",
+    "packages/HyCodeWorkspace/Sources/Agent/CodexSandbox.swift": "1be97d9b13f8fc10e43b4351e5efa71839202cc8676d77aa170ba3d967eea272",
+    "packages/HyCodeWorkspace/Sources/Agent/CodexStore.swift": "cdf2aaeee4c326b87302e6ef6a0dba6f82b4fb70556896db615738b9f20ca0ab",
+    "packages/HyCodeWorkspace/Sources/Language/OwnedToolProcess.swift": "de5b2cd61ce658b8c12d6699443dbca6e5890cb52329745076b6cf90cfc7499a",
+    "packages/HyCodeWorkspace/Sources/WorkbenchDocking.swift": "4df3f9f0e0dfec03831e1a425e7eba82c66adf94e72b5c636d3eacaee80b8369",
+    "packages/HyCodeWorkspace/Sources/WorkbenchStyleMetrics.swift": "a87cf8cab320a178b1038016715312b70f7fc602e00cfd1a729461b496bf4437",
+    "packages/HyCodeWorkspace/Tests/CodexTests.swift": "440defebe52371ae0774bf3f4ba01f984090beb94e7b4941ed8c92e4be4a8108",
+    "packages/HyCodeWorkspace/Tests/WorkbenchDockingTests.swift": "2291f298e50fd9a5796b886c2c172ce9668978f2ebac323d96239ec543c90bd3",
+    "packages/HyCodeWorkspace/Tests/WorkbenchStyleTests.swift": "7b73c659331d0a4f20f1bd35320a397bf69c1491ea1c84b1ce48f02995248931",
+    "scripts/build_macos.sh": "72421c8f40fde201f1d63e22a4e338f3302a965c32eff40e0508b514808f2c75",
+    "scripts/check_native.sh": "98f9b3b68910efda6c2f7ba8fc3335ea623e26342b550cbba22e3b1f3de0abea",
+    "scripts/codex_runtime.py": "d20058c2b93c5f1bee14431f3f307866b7afe3dfee54a1c978818c9536ba3dd6",
+    "third_party/licenses/codex-0.164.0/LICENSE": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+    "third_party/licenses/codex-0.164.0/NOTICE": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+    "third_party/licenses/codex-0.164.0/PCRE2-LICENCE": "9cf7ac6976099a1d856826d3ef1b093bd6b84489dc6100628ac79e740cf9885a",
+    "third_party/licenses/codex-0.164.0/RATATUI-LICENSE": "6cfda12c40ae6c1175a0d1798c56e4d7089d9c781a2dbe29a53076defde829d0",
+    "third_party/licenses/codex-0.164.0/RIPGREP-LICENSE-MIT": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f",
+    "tools/CodexProbe/main.swift": "9e3d861be544c48a4f9305be48459af79fbc3a90b3aec27f5d07d6d0214d06f4",
+    "tools/codex-runtime/manifest.json": "5352a8324efa32fa02c077a2b2a0796b77db9c83fae9a9bc1b3a26c491dc0314",
+    "tools/fixtures/codex_adapter.py": "9710bd3b970de709e4092b95e829d37524e093795844ac9a74ed8c47212c09b2",
+    "tools/fixtures/codex_provider.py": "ba0c4a735273be4550130641ac9b59f7dee22b5fec83b9dcc5b7201a99a11c8b"
+  }
+}

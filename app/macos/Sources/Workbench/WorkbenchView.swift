@@ -81,6 +81,10 @@ struct WorkbenchView: View {
             FlutterDebugPanel(controller: store.flutter, headerHeight: panelHeaderHeight(.debug)) {
                 store.docking.hide(.debug)
             }
+        case .codex:
+            CodexPanel(controller: store.codex, headerHeight: panelHeaderHeight(.codex)) {
+                store.docking.hide(.codex)
+            }
         default:
             VStack(spacing: 0) {
                 toolPanelHeader(tool)

@@ -38,7 +38,7 @@ final class NativeToolRail: NSView {
     override var isFlipped: Bool { true }
     private var top: WorkbenchCorner { leading ? .topLeading : .topTrailing }
     private var bottom: WorkbenchCorner { leading ? .bottomLeading : .bottomTrailing }
-    private let step = WorkbenchMetrics.toolStep
+    private var step: CGFloat { WorkbenchRailGeometry.step(height: bounds.height) }
 
     init(leading: Bool, session: UUID) {
         self.leading = leading

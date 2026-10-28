@@ -29,6 +29,7 @@ final class WorkbenchStore {
     let web = WebWorkspaceController()
     let native = NativeToolsController()
     let problems = WorkspaceProblemsController()
+    let codex = CodexWorkspaceController()
     var analysisLanguage = "dart"
     var languageController: any EditorLanguageController {
         switch analysisLanguage {
@@ -115,6 +116,17 @@ final class WorkbenchStore {
         resetProject()
         access = WorkspaceAccess(url: url)
         rootURL = url
+        codex.configure(access: access)
+        codex.executionAllowed = { [weak self] in
+            guard let self else { return false }
+            return !self.dart.toolRunning && !self.web.toolRunning && !self.flutter.active
+                && !self.flutter.commandRunning && !self.editing.isClosing
+        }
+        codex.prepareWrite = { [weak self] id in
+            guard let self, self.codex.executionAllowed() else { return false }
+            return await self.editing.prepareAgentWrite(id)
+        }
+        codex.finishWrite = { [weak self] id in self?.editing.finishAgentWrite(id) }
         problems.configure(root: url)
         dart.onDiagnosticsChanged = { [weak self] values, limited in
             self?.problems.update("dart", values: values, limited: limited)
@@ -167,11 +179,12 @@ final class WorkbenchStore {
         flutter.onNavigate = { [weak self] in self?.navigateSemantic($0) }
         flutter.executionAllowed = { [weak self] in
             guard let self else { return false }
-            return !self.dart.toolRunning && !self.web.toolRunning && !self.editing.isClosing
+            return !self.codex.busy && !self.dart.toolRunning && !self.web.toolRunning && !self.editing.isClosing
                 && !self.editing.preparingLanguageEdit && self.editing.editPreview == nil
         }
         flutter.prepareRun = { [weak self] in
-            guard let self, !self.dart.toolRunning, !self.web.toolRunning, !self.editing.isClosing else { return false }
+            guard let self, !self.codex.busy, !self.dart.toolRunning, !self.web.toolRunning, !self.editing.isClosing
+            else { return false }
             return await self.editing.saveAll()
         }
         flutter.onReveal = { [weak self] in
@@ -186,17 +199,18 @@ final class WorkbenchStore {
         dart.onNavigate = { [weak self] in self?.navigateSemantic($0) }
         let session = sessionID
         dart.prepareTool = { [weak self] root in
-            guard let self, self.sessionID == session, !self.web.toolRunning else { return false }
+            guard let self, self.sessionID == session, !self.codex.busy, !self.web.toolRunning else { return false }
             return await self.editing.preparePackageTool(root)
         }
         web.executionAllowed = { [weak self] in
             guard let self else { return false }
-            return !self.dart.toolRunning && !self.flutter.active && !self.flutter.commandRunning
+            return !self.codex.busy && !self.dart.toolRunning && !self.flutter.active && !self.flutter.commandRunning
                 && !self.editing.isClosing
                 && !self.editing.preparingLanguageEdit && self.editing.editPreview == nil
         }
         web.prepareTool = { [weak self] root in
-            guard let self, self.sessionID == session, !self.dart.toolRunning, !self.editing.isClosing else {
+            guard let self, self.sessionID == session, !self.codex.busy, !self.dart.toolRunning, !self.editing.isClosing
+            else {
                 return false
             }
             guard await self.editing.saveAll() else { return false }
@@ -280,6 +294,7 @@ final class WorkbenchStore {
     }
 
     private func stopProjectTools() async {
+        await codex.stopAll()
         let analysis = dart.stop()
         let runtime = flutter.stop()
         let web = web.stop()
@@ -304,6 +319,7 @@ final class WorkbenchStore {
     }
 
     private func resetProject() {
+        codex.configure(access: nil)
         problems.configure(root: nil)
         editing.reset()
         dart.configure(access: nil)
@@ -440,8 +456,8 @@ final class WorkbenchStore {
         projectIntent = UUID()
         editing.confirmClosing(Array(editing.documents.values)) { [weak self] allowed in
             if allowed, let self {
-                self.editing.reset()
                 await self.stopProjectTools()
+                self.editing.reset()
                 self.tabs = BrowserTabs()
                 self.history = NavigationHistory()
                 self.browsingLocation = self.rootURL == nil ? nil : .directory("")

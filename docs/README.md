@@ -17,6 +17,7 @@
 | --- | --- | --- |
 | 品牌 | [品牌与应用图标](BRANDING.md) | 系列视觉、资源来源、图标导出及验证边界 |
 | 当前工程 | [文件浏览工作台](WORKBENCH.md) | 布局、交互、源码地图、构建与证据 |
+| AI Agent | [内置 Codex](CODEX_AGENT.md) | 右侧多会话、自定义 Responses、运行/凭据隔离、静默验证 |
 | 视觉 | [WebStorm 截图对齐](VISUAL_ALIGNMENT.md) | 像素采样、整体界面覆盖、共享控件与真实窗口验证缺口 |
 | 分屏预览 | [Markdown / HTML](MARKUP_PREVIEW.md) | 原生源码、静态预览、资源限制和滚动映射 |
 | 原生语言 | [Swift / Java / SQL](NATIVE_LANGUAGES.md) | 外部语义、项目模型、信任与离线 DDL |

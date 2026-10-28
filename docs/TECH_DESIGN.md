@@ -1,5 +1,7 @@
 # HyCode 重写技术设计
 
+build 42 的 [Codex Agent 宿主](CODEX_AGENT.md)通过独立 JSONL actor 连接官方固定 app-server，不依赖可视终端。项目/会话/凭据和进程分别拥有，正式文本仍由既有 Rust/Swift 文档所有者管理；修改任务独占并冻结已保存文档。隔离、预算与未验收项见 [ADR 0014](adr/0014-codex-agent.md)。
+
 更新：2026-10-23。首版确定为 macOS / Apple Silicon、Swift 原生界面 + Rust 内核。当前已有文件工作台、基础编辑、行号与后台增量着色，见[工作台](WORKBENCH.md)、[编辑](EDITING.md)、[高亮](SYNTAX.md)。Dart/Flutter 外部 SDK 服务与依赖工具见 [ADR 0005](adr/0005-dart-tooling.md)，Web 多服务与文本修改预览见 [ADR 0007](adr/0007-web-tooling.md)。其余语言语义、统一跨文件撤销和大文件模式仍待实现。
 
 ## 分层与职责
@@ -75,3 +77,7 @@ Markdown/HTML 使用同一正式文本的修订绑定只读投影；后台 Rust 
 ## build 40：磁盘文档与原生分段投影
 
 用户确认经常处理超过 1 GB 的文本；采用 Rust 磁盘 piece table、原生有界页、独占跨页历史和后台整文件查找/完整原子保存。所有扩展名共享大小/长行路由，局部页不得用于全文 LSP 修改。范围、资源预算、真实 GB 后台样本与连续滚动/全局行号/窗口性能缺口见[大文件专题](LARGE_FILES.md)和[ADR 0013](adr/0013-disk-backed-text.md)。
+
+Codex build 45 的工具元数据、公共思考摘要和只读差异由同一会话持有。协议文本/活动投影与差异统计在 utility 任务完成，主线程按运行身份回写协议字段，保留期间输入的草稿/标题；滚动观察只连接当前聊天的原生 ScrollView。状态修订驱动分组与汇总更新，不引入第二个消息或文件所有者，见[内置 Codex](CODEX_AGENT.md)。
+
+2026-10-28 按用户明确要求，Codex 凭据由应用本地文件 actor 拥有，不使用 Security/LocalAuthentication 的钥匙串 API。目录 0700、记录 0600，按账户哈希命名，采用不跟随链接的目录相对 FD、短跨进程租约和原子替换。它是本地文件权限隔离，不宣称系统钥匙串加密；不把密钥写入项目状态、参数或日志，Agent 沙箱另外拒绝凭据目录访问和祖先移动，见[内置 Codex](CODEX_AGENT.md)。

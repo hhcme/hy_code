@@ -20,6 +20,7 @@ struct LanguageEditPreview: Identifiable, Sendable {
 
 extension EditorWorkspace {
     func previewLanguageEdit(_ edit: JSONValue, feature: EditorLanguageFeatures, revision: Int, title: String) {
+        guard agentWriteID == nil else { return }
         guard !isClosing, packageToolRoot == nil, !preparingLanguageEdit, editPreview == nil,
             let source = feature.document, !source.closed, feature.version == revision
         else { return }

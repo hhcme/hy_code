@@ -10,6 +10,7 @@ import Observation
     weak var web: WebWorkspaceController?
     weak var native: NativeToolsController?
     var packageToolRoot: URL?
+    private(set) var agentWriteID: UUID?
     var preparingLanguageEdit = false
     var editPreview: LanguageEditPreview?
     var editRequest = UUID()
@@ -43,7 +44,7 @@ import Observation
         }
         let document = EditorDocument(
             path: path, access: access, autoSave: autoSave, language: language, web: web, native: native)
-        if packageToolRoot != nil && isManifest(document) { document.toolManaged = true }
+        if agentWriteID != nil || (packageToolRoot != nil && isManifest(document)) { document.toolManaged = true }
         document.onEdit = { [weak self] in
             // Include buffers above the semantic size limit and other language
             // families in the fence used by unversioned workspace edit replies.
@@ -66,6 +67,7 @@ import Observation
         editPreview = nil
         preparingLanguageEdit = false
         packageToolRoot = nil
+        agentWriteID = nil
         pendingToolReload.removeAll()
         for document in documents.values { document.close() }
         documents.removeAll()
@@ -119,7 +121,9 @@ import Observation
         return success && !documents.values.contains(where: \.isDirty)
     }
     func preparePackageTool(_ root: URL) async -> Bool {
-        guard !isClosing, packageToolRoot == nil, !preparingLanguageEdit, editPreview == nil else { return false }
+        guard !isClosing, agentWriteID == nil, packageToolRoot == nil, !preparingLanguageEdit, editPreview == nil else {
+            return false
+        }
         packageToolRoot = root
         let protected = documents.values.filter(isManifest)
         for document in protected { document.toolManaged = true }
@@ -135,6 +139,36 @@ import Observation
             return false
         }
         return true
+    }
+    /// A writing agent owns disk changes while the native document owners are
+    /// frozen. Never save dirty buffers implicitly to enable an agent task.
+    func prepareAgentWrite(_ id: UUID) async -> Bool {
+        guard !isClosing, agentWriteID == nil, packageToolRoot == nil, !preparingLanguageEdit, editPreview == nil,
+            !documents.values.contains(where: { $0.isDirty || $0.composing || $0.loading })
+        else { return false }
+        agentWriteID = id
+        let protected = Array(documents.values)
+        for document in protected { document.toolManaged = true }
+        for document in protected { await document.finishPendingOperations() }
+        guard agentWriteID == id, !isClosing, !protected.contains(where: { $0.isDirty || $0.composing }) else {
+            finishAgentWrite(id, reload: false)
+            return false
+        }
+        return true
+    }
+    func finishAgentWrite(_ id: UUID, reload: Bool = true) {
+        guard agentWriteID == id else { return }
+        agentWriteID = nil
+        for (path, document) in documents {
+            document.toolManaged = false
+            guard reload, !document.isDirty, !document.readOnly else { continue }
+            if isClosing {
+                pendingToolReload[path] = document.id
+            } else {
+                document.close()
+                documents[path] = document.reloadedAfterTool(language: language, web: web, native: native)
+            }
+        }
     }
     func finishPackageTool(_ root: URL, reload: Bool = true) {
         guard packageToolRoot == root else { return }

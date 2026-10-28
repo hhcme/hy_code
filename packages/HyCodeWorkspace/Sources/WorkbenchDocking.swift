@@ -7,7 +7,7 @@ public enum WorkbenchCorner: String, CaseIterable, Sendable {
 }
 
 public enum WorkbenchTool: String, CaseIterable, Identifiable, Sendable {
-    case project, search, structure, git, terminal, debug, analysis, problems, information, openTabs, workspace
+    case project, search, structure, git, terminal, debug, analysis, problems, information, openTabs, workspace, codex
     public var id: String { rawValue }
 }
 
@@ -16,11 +16,11 @@ public enum WorkbenchTool: String, CaseIterable, Identifiable, Sendable {
 public struct WorkbenchDocking: Equatable, Sendable {
     public private(set) var groups: [WorkbenchCorner: [WorkbenchTool]] = [
         .topLeading: [.project, .search, .structure],
-        .topTrailing: [.information, .analysis],
+        .topTrailing: [.codex, .information, .analysis],
         .bottomLeading: [.git, .terminal, .debug, .problems],
         .bottomTrailing: [.openTabs, .workspace],
     ]
-    public private(set) var active: [WorkbenchCorner: WorkbenchTool] = [.topLeading: .project]
+    public private(set) var active: [WorkbenchCorner: WorkbenchTool] = [.topLeading: .project, .topTrailing: .codex]
     public init() {}
 
     public func corner(of tool: WorkbenchTool) -> WorkbenchCorner? {

@@ -37,7 +37,7 @@ final class NativeWorkbenchCanvas: NSView {
     private let editorHost = NSHostingView(rootView: AnyView(EmptyView()))
     private var toolHosts: [WorkbenchTool: NSHostingView<AnyView>] = [:]
     private var dividers: [WorkbenchDivider: WorkbenchResizeHandle] = [:]
-    private var sizes = WorkbenchPaneSizes()
+    private var sizes = WorkbenchPaneSizes(informationWidth: 380)
     private var visibility = WorkbenchVisibility()
     private var initialized = false
     private var contentLayoutDirty = true

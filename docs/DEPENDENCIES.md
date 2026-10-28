@@ -28,6 +28,12 @@ Cargo 共 107 项直接/传递依赖（原 37 项、图片新增 52 项、Markdo
 
 当前 Swift/Rust 桥接为仓库内窄 C ABI，未采用 UniFFI 或 cbindgen。文本与目录内核通过单元测试及 Swift 桥接/保存测试；系统 UI 的真实窗口、旧系统及应用分发仍未验证。
 
+## 内置 Codex 运行程序
+
+采用官方 Codex CLI 0.164.0（Apache-2.0）及其 Code Mode host、ripgrep 15.2.0（MIT，含 PCRE2 10.45 BSD 通知）。作为独立子进程随包分发，不与本项目 Rust 内核链接，也不要求系统 Node。固定来源、原生 npm 归档 SHA-512、四个文件 SHA-256 与许可原文哈希见 [manifest](../tools/codex-runtime/manifest.json)；上游 LICENSE/NOTICE 和 Ratatui/ripgrep/PCRE2 原始通知保留于[许可目录](../third_party/licenses/codex-0.164.0)。采用上游编译产物，第三方代码保留自身许可。Voice 相关二进制/动态库/资源未采用。
+
+首次约 135 MiB 下载，运行文件约 318 MiB；构建、校验和协议探针分别记录。真实模型工具环路、App 内本地凭据、窗口、旧系统、性能和分发签名尚未验收，见[内置 Codex](CODEX_AGENT.md)。
+
 ## 品牌素材与构建工具
 
 HyCode 应用图标由内置 imagegen 根据用户要求重新创作，HyHub 只作视觉参考，其原图和脚本未复制；图稿、提示词与来源边界见[品牌说明](BRANDING.md)。构建使用 macOS 自带 `sips` / `iconutil` 导出 ICNS，属于平台工具；应用运行不需要 imagegen。图片预览新增的 Rust 图像依赖另列于已采用台账，不用于品牌图标生成。
@@ -41,3 +47,7 @@ HyCode 应用图标由内置 imagegen 根据用户要求重新创作，HyHub 只
 | [UniFFI](https://github.com/mozilla/uniffi-rs) | 后续复杂桥接评估 | 当前目录接口未使用，不预判编辑事务方案 |
 
 官方和社区组件均可采用，但维护方身份不代替实际质量验证。每次新增或升级应记录：固定版本与校验、来源、许可/版权/传递依赖、使用模块、链接和分发方式、生命周期/线程/取消/错误、资源预算、本项目证据与限制。第三方内容保留自身许可，不能以项目 MIT 覆盖。
+
+## Codex 界面参考（未采用组件）
+
+VS Code Codex 扩展 26.1007.21434 及官方 IDE 文档图片仅用于观察侧栏结构，没有复制或打包其 VSIX、脚本、样式、图标或图片。界面由自有 SwiftUI/AppKit 代码实现，采用 Apple 系统符号；不将此参考登记为已采用的开源依赖。参考与验收边界见[内置 Codex](CODEX_AGENT.md)。

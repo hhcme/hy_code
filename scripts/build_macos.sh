@@ -16,6 +16,7 @@ if [[ ! -f tools/web-language-services/node_modules/typescript/lib/tsserver.js ]
     bash scripts/setup_web_tools.sh
 fi
 node scripts/web_tools.mjs
+python3 scripts/codex_runtime.py setup
 python3 scripts/check_image_dependencies.py
 python3 scripts/check_markup_dependencies.py
 python3 scripts/check_native_language_dependencies.py
@@ -33,6 +34,7 @@ cp app/macos/Resources/brand/icon.png "$app_dir/Contents/Resources/HyCode.png"
 cp LICENSE THIRD_PARTY_NOTICES.md "$app_dir/Contents/Resources/"
 cp -R third_party/licenses "$app_dir/Contents/Resources/third_party/"
 cp third_party/image-preview-crates.json third_party/markup-preview-crates.json third_party/native-language-crates.json "$app_dir/Contents/Resources/third_party/"
+python3 scripts/codex_runtime.py stage "$app_dir/Contents/Resources/codex-runtime"
 runtime_dir="$app_dir/Contents/Resources/web-language-services"
 runtime_stage="$(mktemp -d "$app_dir/Contents/Resources/.web-language-services.XXXXXX")"
 trap 'rm -rf "$runtime_stage"' EXIT

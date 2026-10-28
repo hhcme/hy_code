@@ -76,7 +76,7 @@ import Observation
         if loading { return "正在打开…" }
         if loadError != nil { return "无法编辑" }
         if readOnly { return "依赖源代码 · 只读" }
-        if toolManaged { return "包操作中 · 清单只读" }
+        if toolManaged { return "工具操作中 · 文档暂时只读" }
         if savingCount > 0 { return "正在保存…" }
         if needsReloadAfterSave { return "已写入磁盘 · 需重新载入" }
         if error != nil { return "保存失败 · 更改已保留" }

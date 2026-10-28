@@ -16,15 +16,17 @@ struct WorkbenchMenuItem {
 struct WorkbenchMenuButton<Label: View>: View {
     let title: String
     let items: [WorkbenchMenuItem]
+    var labelColor: Color = WorkbenchColors.text
+    var neutral = false
     @ViewBuilder let label: () -> Label
     @State private var interaction = WorkbenchMenuInteraction()
     @Environment(\.isEnabled) private var enabled
 
     var body: some View {
-        label().foregroundStyle(WorkbenchColors.text).accessibilityHidden(true)
+        label().foregroundStyle(labelColor).accessibilityHidden(true)
             .modifier(
                 WorkbenchControlSurface(
-                    active: interaction.open, hovering: interaction.hovering,
+                    active: interaction.open, neutral: neutral, hovering: interaction.hovering,
                     pressed: interaction.pressed, focused: interaction.focused)
             )
             .overlay {

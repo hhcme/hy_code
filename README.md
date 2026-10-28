@@ -19,6 +19,8 @@ JSON/JSONC 与 YAML/YML 已增加语法检查、离线 Schema 验证、字段补
 
 底栏增加[自身资源监控](docs/PERFORMANCE_MONITOR.md)：每 2 秒显示主进程内存/CPU，可清理自身闲置语法缓存，保留未保存内容、撤销记录和当前文件缓存。子服务占用未计入；真实窗口与回收效果仍待验收。
 
+内置 [Codex Agent](docs/CODEX_AGENT.md) 默认位于右侧，按用户 Codex 截图和录屏调整原生消息流、可展开工具活动、改动汇总及圆角输入区，支持 HyCode 默认服务与项目自定义 Responses、多个对话、流式输出和停止。提供 DeepSeek V4 Pro/Flash 预设，默认最高思考 max 与 1M 上下文，各对话可调。两个只读任务可并行，修改任务独占并保护已保存文档；系统 CLI/官方 App 的配置和登录保持独立。固定原版运行时已接入，DeepSeek 无工具接口曾验证；API Key 由 HyCode 专用本地文件管理，不使用系统钥匙串。真实模型工具环路和窗口交互尚未验收。
+
 ## 产品方向
 
 - **先做好代码编辑**：本地文件与项目目录、项目树、多标签、面包屑、可靠编辑与安全保存。
@@ -40,6 +42,7 @@ JSON/JSONC 与 YAML/YML 已增加语法检查、离线 Schema 验证、字段补
 | [产品需求](docs/PRODUCT_REQUIREMENTS.md) | 工作区、编辑、保存和工作台交互 |
 | [技术设计](docs/TECH_DESIGN.md) | Swift/Rust 分层、文档所有权和 FFI |
 | [开发约定](docs/DEVELOPMENT.md) | 开发入口、真实命令、验证与证据规则 |
+| [内置 Codex Agent](docs/CODEX_AGENT.md) | 右侧多会话、自定义服务、凭据与运行隔离、后台证据 |
 | [品牌与应用图标](docs/BRANDING.md) | 同系列设计、资源、提示词与打包 |
 | [当前文件工作台](docs/WORKBENCH.md) | 布局、交互、源码地图、构建及验证边界 |
 | [Markdown / HTML 分屏预览](docs/MARKUP_PREVIEW.md) | 同文档源码、静态预览、比例/滚动联动与资源边界 |
@@ -75,6 +78,7 @@ macOS / Apple Silicon 的本地构建（当前验证环境：Xcode 27.1 / Swift 
 
 ```sh
 bash scripts/setup_web_tools.sh  # 外部 Node 22.22.2+ / npm；首次联网准备固定依赖，禁用 hooks
+python3 scripts/codex_runtime.py setup  # 首次准备固定 Codex 原生运行包，无全局安装
 bash scripts/build_macos.sh debug
 bash scripts/check_native.sh
 ```

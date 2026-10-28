@@ -25,6 +25,7 @@ extension WorkbenchTool {
         case .information: "文件信息"
         case .openTabs: "已打开标签"
         case .workspace: "项目概览"
+        case .codex: "Codex"
         }
     }
     var symbol: String {
@@ -40,6 +41,7 @@ extension WorkbenchTool {
         case .information: "info.circle"
         case .openTabs: "rectangle.stack"
         case .workspace: "square.grid.2x2"
+        case .codex: "chevron.left.forwardslash.chevron.right"
         }
     }
     var shortcut: Character? {
@@ -54,7 +56,7 @@ extension WorkbenchTool {
         case .structure: "8"
         case .git: "9"
         case .terminal: "0"
-        case .search: nil
+        case .search, .codex: nil
         }
     }
 }

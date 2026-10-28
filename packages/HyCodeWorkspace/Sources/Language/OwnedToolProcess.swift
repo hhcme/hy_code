@@ -20,7 +20,8 @@ final class OwnedToolProcess: @unchecked Sendable {
 
     static func launch(
         executable: URL, arguments: [String], directory: URL, input: FileHandle? = nil,
-        environment additions: [String: String] = [:], removingEnvironment: Set<String> = []
+        environment additions: [String: String] = [:], removingEnvironment: Set<String> = [],
+        inheritEnvironment: Bool = true
     ) throws -> OwnedToolProcess {
         let out = Pipe()
         let err = Pipe()
@@ -59,7 +60,7 @@ final class OwnedToolProcess: @unchecked Sendable {
         } else {
             try check(posix_spawn_file_actions_addchdir_np(&actions, directory.path))
         }
-        var environment = ProcessInfo.processInfo.environment
+        var environment = inheritEnvironment ? ProcessInfo.processInfo.environment : [:]
         environment.merge(additions) { _, new in new }
         for key in removingEnvironment { environment[key] = nil }
         environment["FLUTTER_SUPPRESS_ANALYTICS"] = "true"

@@ -1,5 +1,9 @@
 # Third-party notices
 
+## Codex runtime 0.164.0
+
+The application bundles the unmodified official Codex CLI and Code Mode host from OpenAI under Apache-2.0, with upstream LICENSE and NOTICE in `third_party/licenses/codex-0.164.0/`. The native package also includes ripgrep 15.2.0 (MIT) with PCRE2 10.45. Their original license notices and the Ratatui MIT notice are retained in the same directory. The official source, archive integrity, selected file hashes and notice hashes are recorded in `tools/codex-runtime/manifest.json`. Voice binaries, libraries and assets are excluded.
+
 ## Bundled Web and configuration language services (build 36)
 
 Public npm JavaScript packages are fixed by [package-lock.json](tools/web-language-services/package-lock.json). All 119 direct/transitive entries (106 existing entries unchanged plus 13 YAML additions), registry archives, integrity metadata, license expressions and retained notice SHA-256 values are in [third-party.json](tools/web-language-services/third-party.json). Original LICENSE/COPYRIGHT/NOTICE files are retained in [third_party/licenses/npm/](third_party/licenses/npm/). `node scripts/web_tools.mjs` checks installed package metadata and retained files. External Node.js (minimum 22.22.2) is not copied into the app.

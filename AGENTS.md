@@ -2,6 +2,7 @@
 
 - 正式名称 HyCode，仓库为 `hhcme/hy_code`。目标是高性能原生开源代码编辑器；首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。
 - 开始前读 README.md、docs/EDITOR_DIRECTION.md、docs/PRODUCT_REQUIREMENTS.md、docs/TECH_DESIGN.md、docs/DEVELOPMENT.md，再按 docs/README.md 读任务专题。
+- 内置 Codex 多会话、DeepSeek 预设/思考与上下文预算、项目自定义 Responses 服务、私有运行资源/应用自管本地凭据、并发与修改互斥见 docs/CODEX_AGENT.md；默认展开右侧 Codex。系统 Codex 登录与配置保持独立，固定官方资源须校验；通用测试只用生成项目和本机替身。不读写系统钥匙串；真实服务及用户本地凭据仅在用户要求配置后显式验证，不使用用户源码或启动 GUI，不在源码、参数或日志写入密钥。
 - Web 多语言服务、修改预览和 package 工具的当前范围见 docs/WEB_TOOLS.md；需要外部 Node 22.22.2+，Vue 项目插件须显式工作区信任。Web 调试与框架专用工具尚未全部实现。
 - 2026-10-21 清理旧实现后，现已重新建立 macOS 文件工作台、原生基础编辑、Rust 文本/目录内核及后台测试。当前范围见 docs/WORKBENCH.md、docs/EDITING.md 和 docs/SYNTAX.md；行号/语法高亮已接入，Dart/Flutter 首批语义与 Pub 工具已接入，见 docs/DART_FLUTTER.md；Flutter 运行/调试、热更新、测试/构建及基础 Inspector 首批入口已接入，真实 Flutter/设备未验证；完整必做范围见 docs/FLUTTER_PLAN.md。旧源码和 docs/history/ 仅用于追溯，不据此恢复旧产品。
 - JSON/JSONC、YAML/YML 的语法/Schema 检查、格式化与补全见 docs/CONFIGURATION_TOOLS.md；仅使用固定离线 Schema 或原生授权根内的受限读取，不自动联网或加载项目格式化插件。

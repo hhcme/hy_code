@@ -40,6 +40,16 @@ public enum WorkbenchStyleMetrics {
 }
 
 public enum WorkbenchRailGeometry {
+    /// Keep the reference spacing in ordinary windows; compact the gaps when
+    /// every tool is moved to one rail at the minimum supported window height.
+    public static func step(height: CGFloat) -> CGFloat {
+        let available = max(0, height - 2 * WorkbenchStyleMetrics.railEndInset - WorkbenchStyleMetrics.toolSide)
+        return min(
+            WorkbenchStyleMetrics.toolStep,
+            max(
+                WorkbenchStyleMetrics.toolSide + 2, floor(available / CGFloat(max(1, WorkbenchTool.allCases.count - 1)))
+            ))
+    }
     public static func start(count: Int, top: Bool, height: CGFloat) -> CGFloat {
         let inset = WorkbenchStyleMetrics.railEndInset
         return top
@@ -47,16 +57,16 @@ public enum WorkbenchRailGeometry {
             : max(
                 inset,
                 height - inset - WorkbenchStyleMetrics.toolSide
-                    - CGFloat(max(0, count - 1)) * WorkbenchStyleMetrics.toolStep)
+                    - CGFloat(max(0, count - 1)) * step(height: height))
     }
     public static func insertionIndex(y: CGFloat, count: Int, top: Bool, height: CGFloat) -> Int {
         let origin = start(count: count, top: top, height: height)
-        let slot = floor((y - origin) / WorkbenchStyleMetrics.toolStep + 0.5)
+        let slot = floor((y - origin) / step(height: height) + 0.5)
         return Int(min(CGFloat(count), max(0, slot)))
     }
     public static func insertionY(index: Int, count: Int, top: Bool, height: CGFloat) -> CGFloat {
         let origin = start(count: count, top: top, height: height)
-        return min(max(1, height - 3), max(1, origin + CGFloat(index) * WorkbenchStyleMetrics.toolStep - 5))
+        return min(max(1, height - 3), max(1, origin + CGFloat(index) * step(height: height) - 5))
     }
 }
 

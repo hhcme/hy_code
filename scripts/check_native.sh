@@ -8,7 +8,7 @@ for script in scripts/build_core.sh scripts/build_icons.sh scripts/build_macos.s
     bash -n "$script"
 done
 cargo fmt --all -- --check
-xcrun swift-format lint --strict --recursive app/macos/Sources packages/HyCodeWorkspace tools/DirectoryProbe tools/DartProbe tools/DebugProbe tools/WebProbe tools/NativeLanguageProbe tools/MarkupRuleProbe tools/LargeFileProbe Package.swift
+xcrun swift-format lint --strict --recursive app/macos/Sources packages/HyCodeWorkspace tools/DirectoryProbe tools/DartProbe tools/DebugProbe tools/WebProbe tools/NativeLanguageProbe tools/MarkupRuleProbe tools/LargeFileProbe tools/CodexProbe tools/CodexSetup Package.swift
 for script in tools/web-language-services/native/*.mjs; do
     node --check "$script"
 done
@@ -18,6 +18,7 @@ node scripts/web_tools.mjs
 python3 scripts/check_image_dependencies.py
 python3 scripts/check_markup_dependencies.py
 python3 scripts/check_native_language_dependencies.py
+python3 scripts/codex_runtime.py check
 xcrun clang -x c -std=c11 -fsyntax-only -Wall -Wextra -Werror bindings/CHyCodeCore/include/hycode_core.h
 xcrun clang++ -x c++ -std=c++17 -fsyntax-only -Wall -Wextra -Werror bindings/CHyCodeCore/include/hycode_core.h
 cargo clippy --locked --workspace --all-targets -- -D warnings

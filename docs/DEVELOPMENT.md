@@ -1,10 +1,16 @@
 # HyCode 开发约定
 
+build 42 增加[内置 Codex](CODEX_AGENT.md)。`python3 scripts/codex_runtime.py setup` 显式准备固定官方原生资源，首次约 135 MiB 下载；`check` 只做离线哈希/许可校验。应用构建私有复制资源，不安装全局命令、不读取系统登录。通用检查只用固定 JSONL 和文件沙箱样本；官方 CLI 的 `HyCodeCodexProbe` 单独显式运行，只连接 loopback 假服务、生成项目和固定无 GUI 命令。真实服务、本地凭据、窗口、性能和发布独立验收。
+
+build 43 增加 DeepSeek 原生 Responses 预设、最高思考 max 和 1M 上下文默认值；项目和各对话可分别调整。`HyCodeCodexSetup` 的 configure/verify 仅在用户要求配置后显式运行，该阶段曾将隐藏标准输入写入 HyCode Keychain；build 47 起只写应用自管本地文件；设置通过独立交接文件在下次打开项目时应用，不能覆盖旧窗口的草稿。真实验证只有原生无工具的固定 Responses 短请求，不启动 Agent 或访问项目源码；不加入自动检查，也不修改系统 Codex。旧钥匙串 ACL 方案已按用户要求移除，不再依赖开发签名关联凭据。详情与证据见同一专题。
+
 Web 固定运行资源另需外部 Node 22.22.2+ 与 npm。首次执行 `bash scripts/setup_web_tools.sh` 联网准备锁定的公开 npm 包（禁用 hooks），不修改用户项目。构建缺资源时调用此步骤，应用带服务 JavaScript 而不带 Node。`check_native.sh` 仅检查已准备资源，不安装 npm 包。设置中可指定 Node 路径。
 
 `swift run --jobs 2 HyCodeWebProbe /absolute/path/to/node tools/web-language-services` 仅用自建临时 fixture 检查 stdio、未保存分析、自动导入、Vue 桥接和不执行配置插件的 canary；不启动 AppKit、浏览器/dev server 或用户 scripts。完整边界见 [Web 工具](WEB_TOOLS.md)。
 
 更新：2026-10-23。首版仅 macOS / Apple Silicon，Swift 原生界面 + Rust 内核。当前已有文件工作台、原生基础编辑、Rust 文本/目录内核及无 GUI 测试；实际功能与证据见[工作台说明](WORKBENCH.md)和[编辑说明](EDITING.md)。
+
+build 47 将凭据改为应用自管本地文件、不使用系统钥匙串，保留行内错误和自有原生菜单；build 45 已调整消息、活动展开、改动汇总、输入框与滚动跟随；build 44 的 HyCode 默认服务继续保留。原生输入各自拥有 UndoManager，IME、聚焦、滚动和视觉仍需窗口验收。实现与参考边界见[内置 Codex](CODEX_AGENT.md)。
 
 ## 开始工作
 
@@ -57,7 +63,7 @@ Rust 用例使用 `--test-threads=1` 串行降载；build 26 复查时曾在并�
 | `tools/DartProbe/` | 显式 SDK、临时样本/缓存的 stdio 分析器协议探针；不运行 Pub、GUI 或用户项目 |
 | `THIRD_PARTY_NOTICES.md`、`third_party/licenses/` | 实际依赖与标准库通知 |
 
-当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `41`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
+当前 Bundle ID 为 `io.github.hhcme.hycode`，本地开发版本 `0.1.0` / build `47`。这些标识不表示已有正式版本或商店记录。先运行 `bash scripts/build_core.sh` 才能单独构建 Swift 包；普通使用以组合脚本为准，不运行 `swift run HyCode` 做测试。
 
 Dart/Flutter 首批工具与 SDK 协议检查见 [DART_FLUTTER.md](DART_FLUTTER.md)。`HyCodeDartProbe /path/to/sdk` 是纯命令行临时样本，未运行 Flutter 应用、设备、Pub 或网络安装；真实 SDK 操作不会自动加入通用检查脚本。新原生进程适配的取消/后代清理测试仅生成自己的 cat/sleep/sh 固定 fixture，不执行用户命令。
 
@@ -133,3 +139,5 @@ build 39 修复 Markdown/HTML 内容规则的 WebKit 子集兼容性。通用检
 [大文件专题](LARGE_FILES.md)列出普通小型测试和独立 `HyCodeLargeFileProbe --gib1`。常规检查不反复写 GB 文件；手动探针使用自有临时 UTF-8 样本、taskpolicy 后台优先级、限速生成和固定缓冲，不创建 GUI。真实窗口、IME/撤销/批量替换和帧率仍未验证。
 
 本批 227 Swift /33 Rust /4 Node、9 项 Swift ASan 与真实生成的 1.08 GB 探针通过。Release 0.1.0 / build 40 已静默构建，未启动或安装；[证据](evidence/2026-10-23-build40-large-files.json)区分后台、窗口、sanitizer 与发布状态。
+
+Codex 的本地凭据测试只操作生成的临时目录和假值，覆盖权限、原子替换、账户隔离、符号/硬链接、跨进程租约，以及宽项目根下的真实 Seatbelt 读取/移动拒绝。不查询任何系统钥匙串，也不把真实用户凭据加入通用测试，见[内置 Codex](CODEX_AGENT.md)。
